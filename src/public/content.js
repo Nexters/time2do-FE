@@ -20,11 +20,11 @@ const messagesFromReactAppListener = (msg, sender, sendResponse) => {
  */
 chrome.runtime.onMessage.addListener(messagesFromReactAppListener);
 
-document.addEventListener("pointermove", (e) => {
-  console.log(e.clientX, e.clientY);
-  chrome.runtime.sendMessage({
-    type: "POINTER_MOVE",
-    x: e.clientX,
-    y: e.clientY,
-  });
-});
+// document.addEventListener("pointermove", (e) => {
+//   console.log(e.clientX, e.clientY);
+//   chrome.runtime.sendMessage({
+//     type: "POINTER_MOVE",
+//     x: e.clientX,
+//     y: e.clientY,
+//   });
+// });
