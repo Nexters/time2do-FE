@@ -47,7 +47,7 @@ function App() {
   return (
     <div className="App">
       <div className="wrapper">
-        <h1 className="text-stone-400">TIMER</h1>
+        <h1 className="text-stone-400">맑눈광1호</h1>
         <Face />
       </div>
     </div>
