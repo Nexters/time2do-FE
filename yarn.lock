@@ -209,6 +209,13 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
+"@bradgarropy/use-countdown@^1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@bradgarropy/use-countdown/-/use-countdown-1.5.2.tgz#a8dcf2928dff009334712056647068d0df9ca977"
+  integrity sha512-Ev7125MW8BJC+r0tRdvuyieCR74zaVyfgRlrOUQKsLDprgB2NAxlLJHHkOvAsYWXA2R+PRXq2ujJ4wf4VdTxvQ==
+  dependencies:
+    date-fns "^2.19.0"
+
 "@esbuild/android-arm64@0.16.17":
   version "0.16.17"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.16.17.tgz#cf91e86df127aa3d141744edafcba0abdc577d23"
@@ -895,6 +902,11 @@ daisyui@^2.49.0:
     css-selector-tokenizer "^0.8.0"
     postcss-js "^4.0.0"
     tailwindcss "^3"
+
+date-fns@^2.19.0:
+  version "2.29.3"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.3.tgz#27402d2fc67eb442b511b70bbdf98e6411cd68a8"
+  integrity sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==
 
 debug@^4.1.0, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"

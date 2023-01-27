@@ -1,8 +1,14 @@
 import { useRef } from 'react'
-import { Face } from './components'
+import useCountdown from '@bradgarropy/use-countdown'
 
 function App() {
   const wrapperRef = useRef(null)
+  const { minutes, seconds } = useCountdown({
+    minutes: 30,
+    seconds: 30,
+    format: 'hh:mm:ss',
+    onCompleted: () => console.log('onCompleted'),
+  })
 
   return (
     <div className="bg-gradient-to-br from-green-200 to-blue-400 text-[#191f28]">
@@ -27,8 +33,8 @@ function App() {
               <div className="mb-12">
                 <div className="mb-3">
                   <span className="countdown font-mono text-5xl font-bold">
-                    <span style={{ '--value': 10 }}></span>:<span style={{ '--value': 24 }}></span>:
-                    <span style={{ '--value': 19 }}></span>
+                    <span style={{ '--value': 0 }}></span>:<span style={{ '--value': minutes }}></span>:
+                    <span style={{ '--value': seconds }}></span>
                   </span>
                 </div>
                 <div className="text-lg">5:00 PM 시작 예정</div>

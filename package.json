@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bradgarropy/use-countdown": "^1.5.2",
     "@formkit/auto-animate": "^1.0.0-beta.5",
     "daisyui": "^2.49.0",
     "react": "^18.2.0",
