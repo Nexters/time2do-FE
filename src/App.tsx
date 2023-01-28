@@ -17,7 +17,7 @@ function App() {
       <main className="grid min-h-screen grid-rows-header-footer relative w-screen max-w-md m-auto">
         <header
           ref={wrapperRef}
-          className="w-full h-[500px] bg-gradient-to-b from-[#BEFF7C] to-[#F9F9F9] overflow-x-hidden touch-none">
+          className="w-full h-[500px] bg-gradient-to-b from-[#BEFF7C] to-[#F9F9F9] overflow-x-hidden">
           <div className="grid items-end justi h-full w-full">
             {/* <div className="row-span-full col-span-full pb-20">
               <Face wrapperRef={wrapperRef} />
