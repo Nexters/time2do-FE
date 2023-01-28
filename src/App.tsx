@@ -4,7 +4,7 @@ import { CountDownDetails, CountDownHome, CountDownNew, History, Home, Login, Pr
 
 function App() {
   return (
-    <Routes location="/">
+    <Routes>
       <Route element={<DefaultLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/countdown" element={<CountDownHome />} />
