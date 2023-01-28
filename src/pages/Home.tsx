@@ -13,7 +13,7 @@ export function Home({}: Props) {
 
   return (
     <>
-      <header className="w-full h-[30rem] bg-gradient-to-b from-[#BEFF7C] to-[#F9F9F9] overflow-x-hidden">
+      <header className="w-full h-[30rem] bg-gradient-to-b from-[#BEFF7C] to-[#F9F9F9]">
         <div className="grid items-end justi h-full w-full">
           <div className="min-w-full text-center row-span-full col-span-full mb-[4.5rem] mb-">
             <div className="mb-5">
