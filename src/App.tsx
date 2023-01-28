@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import { DefaultLayout } from './layouts/DefaultLayout'
-import { CountDownDetails, CountDownHome, CountDownNew, History, Home, Login, Profile } from './pages'
+import { CountDownDetails, CountDownHome, CountDownNew, History, Home, Login, NotFound, Profile } from './pages'
 
 function App() {
   return (
-    <Routes location="/">
+    <Routes>
       <Route element={<DefaultLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/countdown" element={<CountDownHome />} />
@@ -13,6 +13,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/history" element={<History />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   )
