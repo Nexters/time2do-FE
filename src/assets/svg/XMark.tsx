@@ -6,16 +6,16 @@ const XMark = ({}: Props) => {
       <path
         d="M18 6.00012L6 18.0001"
         stroke="#8B95A1"
-        stroke-width="1.5"
-        stroke-linecap="square"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+        strokeLinejoin="round"
       />
       <path
         d="M6 6.00012L18 18.0001"
         stroke="#8B95A1"
-        stroke-width="1.5"
-        stroke-linecap="square"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+        strokeLinejoin="round"
       />
     </svg>
   )
