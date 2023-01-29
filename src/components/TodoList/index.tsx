@@ -20,6 +20,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
     if (!value.trim()) return
     setNewTodoText('')
     onChange([{ text: value, id: Date.now(), completed: false }, ...todos])
+    newTodoInputRef.current?.focus()
   }
 
   return (
