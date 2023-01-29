@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import Plus from '../../assets/svg/Plus'
 import XMark from '../../assets/svg/XMark'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { ReactSortable } from 'react-sortablejs'
 
 interface Props {
   todos: any[]
@@ -16,6 +17,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
   const [parent] = useAutoAnimate()
 
   const addTodo = (value: string) => {
+    if (!value.trim()) return
     setNewTodoText('')
     onChange([{ text: value, id: Date.now(), completed: false }, ...todos])
   }
@@ -47,7 +49,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
               placeholder="할 일을 입력해주세요."
               value={newTodoText}
               onChange={e => setNewTodoText(e.target.value)}
-              onKeyDown={e => {
+              onKeyPress={e => {
                 e.key === 'Enter' && addTodo(newTodoText)
               }}
             />
@@ -61,38 +63,40 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
           </div>
         )}
         <ul ref={parent}>
-          {todos.map((todo, i) => (
-            <li key={todo.id} className="bg-white flex justify-between items-center p-3 mb-2 rounded-md">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={e => {
-                    onChange(
-                      todos.map((todo, j) => {
-                        if (i === j) {
-                          return {
-                            ...todo,
-                            completed: e.target.checked,
+          <ReactSortable list={todos} setList={onChange} animation={200} swap>
+            {todos.map((todo, i) => (
+              <li key={todo.id} className="bg-white flex justify-between items-center p-3 mb-2 rounded-md cursor-grab">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={e => {
+                      onChange(
+                        todos.map((todo, j) => {
+                          if (i === j) {
+                            return {
+                              ...todo,
+                              completed: e.target.checked,
+                            }
                           }
-                        }
-                        return todo
-                      }),
-                    )
-                  }}
-                  className="checkbox checkbox-accent mr-2 focus:outline-none focus:ring-lime-300 focus:border-lime-300"
-                />
-                {todo.text}
-              </div>
-              <button
-                onClick={e => {
-                  e.preventDefault()
-                  onChange(todos.filter((_, j) => i !== j))
-                }}>
-                <XMark />
-              </button>
-            </li>
-          ))}
+                          return todo
+                        }),
+                      )
+                    }}
+                    className="checkbox checkbox-accent mr-2 focus:outline-none focus:ring-lime-300 focus:border-lime-300"
+                  />
+                  {todo.text}
+                </div>
+                <button
+                  onClick={e => {
+                    e.preventDefault()
+                    onChange(todos.filter((_, j) => i !== j))
+                  }}>
+                  <XMark />
+                </button>
+              </li>
+            ))}
+          </ReactSortable>
         </ul>
       </div>
     </>
