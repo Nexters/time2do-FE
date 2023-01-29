@@ -12,6 +12,8 @@ export function Home({}: Props) {
     { id: 4, text: '운동하기4', completed: true },
     { id: 5, text: '운동하기5', completed: true },
   ])
+  // 가능하면 ctrl+z를 누르면 이전 상태로 돌아가게 하고 싶다.
+  // const [todosHistory, setTodosHistory] = useState([])
 
   const { minutes, seconds } = useCountdown({
     minutes: 30,
