@@ -26,10 +26,11 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
     newTodoInputRef.current?.focus()
   }
 
-  // 타이머 영향으로 계속 리렌더링 되고 있어 이 부분이라도 메모이제이션을 해줌
   const memoizedTodos = () => {
     return todos.map((todo, i) => (
-      <li key={todo.id} className="bg-white flex justify-between items-center p-3 mb-2 rounded-md cursor-grab">
+      <li
+        key={todo.id}
+        className="mb-2 flex cursor-grab items-center justify-between rounded-md bg-[#191F28] p-3 text-[#B0B8C1]">
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -47,7 +48,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
                 }),
               )
             }}
-            className="ignore-dnd checkbox checkbox-accent mr-2 focus:outline-none focus:ring-lime-300 focus:border-lime-300"
+            className="ignore-dnd checkbox-primary checkbox mr-2 focus:border-lime-300 focus:outline-none focus:ring-lime-300"
           />
           {todo.text}
         </div>
@@ -65,8 +66,8 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-semibold">1월 25일의 할 일 목록</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-[#B0B8C1]">1월 25일의 할 일 목록</h1>
         <div>
           <button
             onClick={() => {
@@ -75,7 +76,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
                 newTodoInputRef.current?.focus()
               }, 0)
             }}
-            className="btn btn-sm text-white">
+            className="btn-primary btn-sm btn text-white">
             <Plus />할 일 추가
           </button>
         </div>
@@ -86,7 +87,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
             <input
               ref={newTodoInputRef}
               type="text"
-              className="input w-full mb-2 focus:outline-none focus:ring-lime-300 focus:border-lime-300 rounded-r-none"
+              className="focus:border-primary-300 focus:ring-primary-300 input mb-2 w-full rounded-r-none bg-[#191F28] p-3 text-[#B0B8C1] focus:outline-none"
               placeholder="할 일을 입력해주세요."
               value={newTodoText}
               onChange={e => setNewTodoText(e.target.value)}
@@ -98,7 +99,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
               onClick={() => {
                 addTodo(newTodoText)
               }}
-              className="btn rounded-l-none">
+              className="btn-primary btn rounded-l-none">
               추가
             </button>
           </div>

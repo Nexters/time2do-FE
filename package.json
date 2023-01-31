@@ -9,13 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bradgarropy/use-countdown": "^1.5.2",
     "@formkit/auto-animate": "^1.0.0-beta.5",
     "daisyui": "^2.49.0",
+    "dayjs": "^1.11.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.0",
     "react-sortablejs": "^6.1.4",
+    "react-timer-hook": "^3.0.5",
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
@@ -34,6 +35,7 @@
     "eslint-plugin-react": "^7.32.1",
     "postcss": "^8.4.21",
     "prettier": "2.8.3",
+    "prettier-plugin-tailwindcss": "^0.2.2",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.9.3",
     "vite": "^4.0.0"
