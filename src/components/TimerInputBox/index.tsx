@@ -79,6 +79,29 @@ TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
   )
 }
 
-TimerInputBox.StartTimeSet = () => {}
+TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
+  return (
+    <div className={'mb-8 h-min'}>
+      <label className={'label'}>
+        <span className={'label-text text-sm font-bold text-gray-400 '}>
+          {timerName}
+          {'*'}
+        </span>
+      </label>
+      <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38]'}>
+        <input
+          className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
+          value={'2020년 7월 22일 금요일'}
+          readOnly={true}
+        />
+        <input
+          className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
+          value={'오후 04:00'}
+          readOnly={true}
+        />
+      </div>
+    </div>
+  )
+}
 
 export default TimerInputBox
