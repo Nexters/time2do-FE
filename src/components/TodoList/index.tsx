@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Plus from '../../assets/svg/Plus'
 import XMark from '../../assets/svg/XMark'
-import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { ReactSortable } from 'react-sortablejs'
 
 interface Props {
@@ -13,7 +12,6 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
   const [newTodoText, setNewTodoText] = useState('')
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [showNewTodoInput, setShowNewTodoInput] = useState(false)
-  const [parent] = useAutoAnimate()
 
   let hasFocus = document.activeElement
   if (!hasFocus || hasFocus == document.body) hasFocus = null
@@ -26,11 +24,11 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
     newTodoInputRef.current?.focus()
   }
 
-  const memoizedTodos = () => {
+  const renderTodos = () => {
     return todos.map((todo, i) => (
       <li
         key={todo.id}
-        className="mb-2 flex cursor-grab items-center justify-between rounded-md bg-[#191F28] p-3 text-[#B0B8C1]">
+        className="mb-2 flex cursor-grab items-center justify-between rounded-md bg-grey-900 p-3 text-grey-400">
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -67,7 +65,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-[#B0B8C1]">1월 25일의 할 일 목록</h1>
+        <h1>1월 25일의 할 일 목록</h1>
         <div>
           <button
             onClick={() => {
@@ -87,7 +85,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
             <input
               ref={newTodoInputRef}
               type="text"
-              className="focus:border-primary-300 focus:ring-primary-300 input mb-2 w-full rounded-r-none bg-[#191F28] p-3 text-[#B0B8C1] focus:outline-none"
+              className="focus:border-primary-300 focus:ring-primary-300 input mb-2 w-full rounded-r-none border-grey-900 bg-grey-1000 p-3 focus:outline-none"
               placeholder="할 일을 입력해주세요."
               value={newTodoText}
               onChange={e => setNewTodoText(e.target.value)}
@@ -104,13 +102,9 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
             </button>
           </div>
         )}
-        {hasFocus ? (
-          <ul ref={parent}>{memoizedTodos()}</ul>
-        ) : (
-          <ReactSortable list={todos} setList={onChange} filter=".ignore-dnd" animation={200}>
-            {memoizedTodos()}
-          </ReactSortable>
-        )}
+        <ReactSortable list={todos} setList={onChange} filter=".ignore-dnd" animation={200}>
+          {renderTodos()}
+        </ReactSortable>
       </div>
     </>
   )
