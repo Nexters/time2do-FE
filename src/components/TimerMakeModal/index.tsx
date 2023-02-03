@@ -17,7 +17,7 @@ TimerMakeModal.StartTimePicker = () => {
     <div className={'w-[390px] bg-[#191F28] p-[22px]'}>
       <div className={'mb-[22px] w-full text-left'}>
         <label className={'label'}>
-          <span className={'text-sm font-bold text-[#B0B8C1]'}>오전/오후</span>
+          <span className={'text-smㄷ font-bold text-[#B0B8C1]'}>오전/오후</span>
         </label>
         <div className={'flex text-lg'}>
           <div className={'mr-2 h-[60px] w-[168px] flex-1'}>

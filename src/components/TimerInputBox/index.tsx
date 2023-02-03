@@ -87,6 +87,7 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
   const [timePickerVisible, setTimePickerVisible] = useState(false)
 
   const [startTime, setStartTime] = useState(new Date())
+  const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토']
 
   return (
     <>
@@ -97,10 +98,12 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
             {'*'}
           </span>
         </label>
-        <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38]'}>
+        <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38] text-[18px] font-medium'}>
           <input
             className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
-            value={`${startTime.getFullYear()}년 ${startTime.getMonth()}월 ${startTime.getDay()}일`}
+            value={`${startTime.getFullYear()}년 ${startTime.getMonth()}월 ${startTime.getDay()}일 ${
+              WEEKDAY[startTime.getDay()]
+            }요일`}
             readOnly={true}
             onClick={() => {
               setDatePickerVisible(true)
@@ -109,8 +112,10 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
           <input
             className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
             value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
-              startTime.getHours() < 12 ? startTime.getHours() : startTime.getHours() - 12
-            } : ${startTime.getMinutes()}`}
+              startTime.getHours() < 12
+                ? `${('00' + startTime.getHours()).slice(-2)}`
+                : `${('00' + (startTime.getHours() - 12)).slice(-2)}`
+            } : ${('00' + startTime.getMinutes()).slice(-2)}`}
             readOnly={true}
             onClick={() => {
               setTimePickerVisible(!timePickerVisible)
