@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 interface Props {
   timerName: string
   placeHolder: string
@@ -80,6 +82,11 @@ TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
 }
 
 TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
+  const [datePickerVisible, setDatePickerVisible] = useState(false)
+  const [timePickerVisible, setTimePickerVisible] = useState(false)
+
+  const [startTime, setStartTime] = useState(new Date())
+
   return (
     <div className={'mb-8 h-min'}>
       <label className={'label'}>
@@ -91,12 +98,14 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
       <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38]'}>
         <input
           className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
-          value={'2020년 7월 22일 금요일'}
+          value={`${startTime.getFullYear()}년 ${startTime.getMonth()}월 ${startTime.getDay()}일`}
           readOnly={true}
         />
         <input
           className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
-          value={'오후 04:00'}
+          value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
+            startTime.getHours() < 12 ? startTime.getHours() : startTime.getHours() - 12
+          } : ${startTime.getMinutes()}`}
           readOnly={true}
         />
       </div>
