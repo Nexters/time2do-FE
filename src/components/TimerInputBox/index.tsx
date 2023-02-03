@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import TimerMakeModal from '../TimerMakeModal'
 
 interface Props {
   timerName: string
@@ -88,28 +89,37 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
   const [startTime, setStartTime] = useState(new Date())
 
   return (
-    <div className={'mb-8 h-min'}>
-      <label className={'label'}>
-        <span className={'label-text text-sm font-bold text-gray-400 '}>
-          {timerName}
-          {'*'}
-        </span>
-      </label>
-      <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38]'}>
-        <input
-          className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
-          value={`${startTime.getFullYear()}년 ${startTime.getMonth()}월 ${startTime.getDay()}일`}
-          readOnly={true}
-        />
-        <input
-          className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
-          value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
-            startTime.getHours() < 12 ? startTime.getHours() : startTime.getHours() - 12
-          } : ${startTime.getMinutes()}`}
-          readOnly={true}
-        />
+    <>
+      <div className={'mb-8 h-min'}>
+        <label className={'label'}>
+          <span className={'label-text text-sm font-bold text-gray-400 '}>
+            {timerName}
+            {'*'}
+          </span>
+        </label>
+        <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38]'}>
+          <input
+            className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
+            value={`${startTime.getFullYear()}년 ${startTime.getMonth()}월 ${startTime.getDay()}일`}
+            readOnly={true}
+            onClick={() => {
+              setDatePickerVisible(true)
+            }}
+          />
+          <input
+            className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
+            value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
+              startTime.getHours() < 12 ? startTime.getHours() : startTime.getHours() - 12
+            } : ${startTime.getMinutes()}`}
+            readOnly={true}
+            onClick={() => {
+              setTimePickerVisible(!timePickerVisible)
+            }}
+          />
+        </div>
       </div>
-    </div>
+      {timePickerVisible && <TimerMakeModal.StartTimePicker />}
+    </>
   )
 }
 

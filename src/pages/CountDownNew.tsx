@@ -15,7 +15,6 @@ export function CountDownNew({}: Props) {
         <TimerInputBox.StartTimeSet timerName={'타이머 시작 시간'} />
         <button className={'btn-primary btn mt-[100px] w-full border-0 bg-[#786DFF] text-xl'}>그룹 생성하기</button>
       </div>
-      <TimerMakeModal />
     </div>
   )
 }
