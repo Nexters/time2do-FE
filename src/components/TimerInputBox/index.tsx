@@ -72,7 +72,7 @@ TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
           {min.map((time, index) => {
             return (
               <option key={index} value={time} selected={time === 3}>
-                {('00' + time).slice(-2)}분
+                {String(time).padStart(2, '0')}분
               </option>
             )
           })}
@@ -109,18 +109,20 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
               setDatePickerVisible(true)
             }}
           />
-          <input
-            className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
-            value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
-              startTime.getHours() < 12
-                ? `${('00' + startTime.getHours()).slice(-2)}`
-                : `${('00' + (startTime.getHours() - 12)).slice(-2)}`
-            } : ${('00' + startTime.getMinutes()).slice(-2)}`}
-            readOnly={true}
-            onClick={() => {
-              setTimePickerVisible(!timePickerVisible)
-            }}
-          />
+          <label>
+            <input
+              className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
+              value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
+                startTime.getHours() < 12
+                  ? `${String(startTime.getHours()).padStart(2, '0')}`
+                  : `${String(startTime.getHours() - 12).padStart(2, '0')}`
+              } : ${String(startTime.getMinutes()).padStart(2, '0')}`}
+              readOnly={true}
+              onClick={() => {
+                setTimePickerVisible(!timePickerVisible)
+              }}
+            />
+          </label>
         </div>
       </div>
       {timePickerVisible && <TimerMakeModal.StartTimePicker />}

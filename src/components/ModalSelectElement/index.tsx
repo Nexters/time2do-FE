@@ -4,8 +4,10 @@ interface Props {
   content: number | string
   data: boolean | number
   setData: React.Dispatch<React.SetStateAction<any>>
+
+  isMinute?: boolean
 }
-const ModalSelectElement = ({ content, data, setData }: Props) => {
+const ModalSelectElement = ({ content, data, setData, isMinute = false }: Props) => {
   let contentData
   const [select, setSelect] = useState(false)
   const dataHandling = () => {
@@ -33,7 +35,7 @@ const ModalSelectElement = ({ content, data, setData }: Props) => {
       onClick={() => {
         dataHandling()
       }}>
-      <label className={'w-full'}>{content}</label>
+      <label className={'w-full'}>{isMinute ? String(content).padStart(2, '0') : content}</label>
     </div>
   )
 }

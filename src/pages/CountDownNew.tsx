@@ -6,7 +6,7 @@ interface Props {}
 
 export function CountDownNew({}: Props) {
   return (
-    <div className={'h-screen bg-[#0F1214] text-center'}>
+    <div className={'h-full bg-[#0F1214] text-center'}>
       <div className={'m-auto w-11/12'}>
         <Header title={'다운 타이머 만들기'} />
         <TimerInputBox timerName={'타이머 이름'} placeHolder={'타이머 이름을 입력해주세요. (15자 이내)'} />
