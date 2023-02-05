@@ -58,7 +58,7 @@ ModalSelectElement.CalenderElement = ({ content, data, setData, timeInfo }: Cale
     setSelect(nowData.valueOf() === elementData.valueOf())
   }, [data])
 
-  return (
+  return content !== ' ' ? (
     <div
       className={`${
         select ? 'bg-primary text-[#FFFFFF]' : 'bg-[#232B38] text-[#6B7684]'
@@ -68,6 +68,8 @@ ModalSelectElement.CalenderElement = ({ content, data, setData, timeInfo }: Cale
       }}>
       <label className={'w-full'}>{content}</label>
     </div>
+  ) : (
+    <div></div>
   )
 }
 
