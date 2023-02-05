@@ -31,9 +31,12 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
 
 TimerMakeModal.StartDatePicker = () => {
   return (
-    <>
-      <h1>달력</h1>
-    </>
+    <div
+      className={
+        'fixed right-1/2 bottom-1/2  w-[390px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-[#191F28] px-[22px] py-6'
+      }>
+      <button className={'h-15 btn w-full border-none bg-[#333D4B]'}>수정완료</button>
+    </div>
   )
 }
 
@@ -46,22 +49,24 @@ interface StartTimePickerProps {
 TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: StartTimePickerProps) => {
   const [dayTime, setDayTime] = useState(false)
   const [hour, setHour] = useState(3)
-  const [minute, setMinute] = useState(0)
+  const [minute, setMinute] = useState(30)
 
   const times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
   const handleOnClick = () => {
+    console.log(startTime)
     setStartTime(
       new Date(
         startTime.getFullYear(),
         startTime.getMonth(),
-        startTime.getDay(),
+        startTime.getDate(),
         dayTime ? hour + 12 : hour,
         minute,
         0,
       ),
     )
+
     modalClose()
   }
 

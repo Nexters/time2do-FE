@@ -90,12 +90,10 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
   const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토']
 
   const modalOpen = () => {
-    console.log('open')
-    console.log(modalState)
     return setModalVisible(true)
   }
   const modalClose = () => {
-    console.log(modalState)
+    console.log(startTime)
     return setModalVisible(false)
   }
 
@@ -112,7 +110,7 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
         <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38] text-[18px] font-medium'}>
           <input
             className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
-            value={`${startTime.getFullYear()}년 ${startTime.getMonth()}월 ${startTime.getDay()}일 ${
+            value={`${startTime.getFullYear()}년 ${startTime.getMonth() + 1}월 ${startTime.getDate()}일 ${
               WEEKDAY[startTime.getDay()]
             }요일`}
             readOnly={true}
