@@ -1,6 +1,17 @@
-import React, { MouseEventHandler, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ModalSelectElement from '../ModalSelectElement'
 import { createPortal } from 'react-dom'
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  addDays,
+  subDays,
+} from 'date-fns'
 
 interface TimerMakeModalProps {
   children: React.ReactNode
@@ -30,11 +41,90 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
 }
 
 TimerMakeModal.StartDatePicker = () => {
+  const [date, setDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(new Date())
+
+  const days = ['월', '화', '수', '목', '금', '토', '일']
+
+  const movePrevMonth = () => {
+    setDate(subMonths(date, 1))
+  }
+
+  const moveNextMonth = () => {
+    setDate(addMonths(date, 1))
+  }
+
+  const createDays = () => {
+    const monthStart = startOfMonth(date)
+    const monthEnd = endOfMonth(date)
+
+    const calendarStart = subDays(startOfWeek(monthStart), -1)
+    const calendarEnd = endOfWeek(monthEnd)
+
+    let weekDays: string[] = []
+    const calendarRows = []
+    let nowDate = calendarStart
+
+    let formattedDate = ''
+    const pushPrevWeekDays = () => {
+      const prevWeekStart = addDays(startOfWeek(endOfMonth(subMonths(date, 1))), 1)
+      const prevWeekEnd = addDays(endOfWeek(endOfMonth(subMonths(date, 1))), 1)
+      let dayIndex = prevWeekStart
+
+      while (dayIndex < prevWeekEnd) {
+        formattedDate = dayIndex.getMonth() === date.getMonth() ? format(dayIndex, 'd') : ' '
+        weekDays.push(formattedDate)
+        dayIndex = addDays(dayIndex, 1)
+      }
+      calendarRows.push(weekDays)
+      weekDays = []
+    }
+
+    if (nowDate.getDate() === 2 && !calendarRows.length) {
+      pushPrevWeekDays()
+    }
+
+    while (nowDate <= calendarEnd) {
+      for (let i = 0; i < 7; i++) {
+        formattedDate = nowDate.getMonth() === date.getMonth() ? format(nowDate, 'd') : ' '
+
+        weekDays.push(formattedDate)
+        nowDate = addDays(nowDate, 1)
+      }
+      calendarRows.push(weekDays)
+      weekDays = []
+    }
+    console.log(calendarRows)
+    return calendarRows
+  }
+
   return (
     <div
       className={
         'fixed right-1/2 bottom-1/2  w-[390px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-[#191F28] px-[22px] py-6'
       }>
+      <div className={'flex'}>
+        <div className={'w-1/2 text-left'}>
+          <span>{`${format(date, 'yyyy')}년 ${format(date, 'M')}월`}</span>
+        </div>
+        <div className={'flex w-1/2 justify-end'}>
+          <button onClick={movePrevMonth}>이전달</button>
+          <button onClick={moveNextMonth}>다음달</button>
+        </div>
+      </div>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              {days.map(dayName => {
+                return <td key={dayName}>{dayName}</td>
+              })}
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div>{createDays()}</div>
       <button className={'h-15 btn w-full border-none bg-[#333D4B]'}>수정완료</button>
     </div>
   )
@@ -46,6 +136,7 @@ interface StartTimePickerProps {
   modalClose: any
 }
 
+// eslint-disable-next-line react/display-name
 TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: StartTimePickerProps) => {
   const [dayTime, setDayTime] = useState(false)
   const [hour, setHour] = useState(3)
@@ -55,7 +146,6 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
   const handleOnClick = () => {
-    console.log(startTime)
     setStartTime(
       new Date(
         startTime.getFullYear(),

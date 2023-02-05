@@ -1,7 +1,5 @@
 import TimerInputBox from '../components/TimerInputBox'
 import Header from '../components/Header'
-import TimerMakeModal from '../components/TimerMakeModal'
-import React from 'react'
 
 interface Props {}
 
