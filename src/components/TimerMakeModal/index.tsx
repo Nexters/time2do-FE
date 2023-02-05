@@ -164,7 +164,7 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
           </div>
         </div>
       </div>
-      <button className={'h-15 btn w-full border-none bg-[#333D4B]'} onClick={handleOnClick}>
+      <button className={'h-15 btn w-full border-none bg-[#333D4B] text-xl font-semibold'} onClick={handleOnClick}>
         수정완료
       </button>
     </div>
@@ -253,7 +253,7 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
         </div>
       </div>
 
-      <button className={'h-15 btn w-full border-none bg-[#333D4B]'} onClick={handleOnClick}>
+      <button className={'h-15 btn w-full border-none bg-[#333D4B] text-xl font-semibold'} onClick={handleOnClick}>
         수정완료
       </button>
     </div>
