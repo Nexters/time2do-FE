@@ -1,8 +1,40 @@
-import { useState } from 'react'
+import React, { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import ModalSelectElement from '../ModalSelectElement'
+import { createPortal } from 'react-dom'
 
-const TimerMakeModal = () => {
-  return <div>달력</div>
+interface TimerMakeModalProps {
+  children: React.ReactNode
+  closePortal: any
+}
+const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
+  const modalRef = useRef<Element | null>()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    if (document) {
+      modalRef.current = document.getElementById('root-modal')
+    }
+  }, [])
+
+  if (modalRef.current && mounted) {
+    return createPortal(
+      <div className="h-full w-full bg-gray-700">
+        <div className="absolute h-screen w-screen bg-[#000000] opacity-80" role="presentation" onClick={closePortal} />
+        {children}
+      </div>,
+      modalRef.current,
+    )
+  }
+  return null
+}
+
+TimerMakeModal.StartDatePicker = () => {
+  return (
+    <>
+      <h1>달력</h1>
+    </>
+  )
 }
 
 TimerMakeModal.StartTimePicker = () => {
@@ -14,7 +46,10 @@ TimerMakeModal.StartTimePicker = () => {
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
   return (
-    <div className={'w-[390px] rounded-2xl bg-[#191F28] px-[22px] py-6'}>
+    <div
+      className={
+        'fixed right-1/2 bottom-1/2  w-[390px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-[#191F28] px-[22px] py-6'
+      }>
       <div className={'mb-6'}>
         <label>
           <span className={'text-[22px] font-bold'}>시작 시간</span>

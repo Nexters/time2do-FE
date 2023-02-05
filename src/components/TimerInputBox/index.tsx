@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import TimerMakeModal from '../TimerMakeModal'
 
 interface Props {
@@ -83,14 +83,25 @@ TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
 }
 
 TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
-  const [datePickerVisible, setDatePickerVisible] = useState(false)
-  const [timePickerVisible, setTimePickerVisible] = useState(false)
+  const [modalState, setModalState] = useState<'date' | 'time'>('date')
+  const [modalVisible, setModalVisible] = useState(false)
 
   const [startTime, setStartTime] = useState(new Date())
   const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토']
 
+  const modalOpen = () => {
+    console.log('open')
+    console.log(modalState)
+    return setModalVisible(true)
+  }
+  const modalClose = () => {
+    console.log(modalState)
+    return setModalVisible(false)
+  }
+
   return (
     <>
+      <div id={'root-modal'} className={'absolute left-0 top-0'}></div>
       <div className={'mb-8 h-min'}>
         <label className={'label'}>
           <span className={'label-text text-sm font-bold text-gray-400 '}>
@@ -106,7 +117,8 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
             }요일`}
             readOnly={true}
             onClick={() => {
-              setDatePickerVisible(true)
+              setModalState('date')
+              modalOpen()
             }}
           />
           <label>
@@ -119,13 +131,18 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
               } : ${String(startTime.getMinutes()).padStart(2, '0')}`}
               readOnly={true}
               onClick={() => {
-                setTimePickerVisible(!timePickerVisible)
+                setModalState('time')
+                modalOpen()
               }}
             />
           </label>
         </div>
+        {modalVisible && (
+          <TimerMakeModal closePortal={modalClose}>
+            {modalState === 'date' ? <TimerMakeModal.StartDatePicker /> : <TimerMakeModal.StartTimePicker />}
+          </TimerMakeModal>
+        )}
       </div>
-      {timePickerVisible && <TimerMakeModal.StartTimePicker />}
     </>
   )
 }
