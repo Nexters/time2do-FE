@@ -40,9 +40,9 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
   return null
 }
 
-TimerMakeModal.StartDatePicker = () => {
-  const [date, setDate] = useState(new Date())
-  const [selectedDate, setSelectedDate] = useState(new Date())
+// eslint-disable-next-line react/display-name
+TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: StartTimePickerProps) => {
+  const [date, setDate] = useState(startTime)
 
   const days = ['월', '화', '수', '목', '금', '토', '일']
 
@@ -54,6 +54,14 @@ TimerMakeModal.StartDatePicker = () => {
     setDate(addMonths(date, 1))
   }
 
+  const handleOnClick = () => {
+    setStartTime(
+      new Date(date.getFullYear(), date.getMonth(), date.getDate(), startTime.getHours(), startTime.getMinutes(), 0),
+    )
+
+    modalClose()
+  }
+
   const createDays = () => {
     const monthStart = startOfMonth(date)
     const monthEnd = endOfMonth(date)
@@ -61,11 +69,12 @@ TimerMakeModal.StartDatePicker = () => {
     const calendarStart = subDays(startOfWeek(monthStart), -1)
     const calendarEnd = endOfWeek(monthEnd)
 
-    let weekDays: string[] = []
+    let weekDays: string[][] = []
     const calendarRows = []
     let nowDate = calendarStart
 
     let formattedDate = ''
+
     const pushPrevWeekDays = () => {
       const prevWeekStart = addDays(startOfWeek(endOfMonth(subMonths(date, 1))), 1)
       const prevWeekEnd = addDays(endOfWeek(endOfMonth(subMonths(date, 1))), 1)
@@ -73,7 +82,7 @@ TimerMakeModal.StartDatePicker = () => {
 
       while (dayIndex < prevWeekEnd) {
         formattedDate = dayIndex.getMonth() === date.getMonth() ? format(dayIndex, 'd') : ' '
-        weekDays.push(formattedDate)
+        weekDays.push([String(dayIndex.getFullYear()), String(dayIndex.getMonth()), formattedDate])
         dayIndex = addDays(dayIndex, 1)
       }
       calendarRows.push(weekDays)
@@ -88,13 +97,12 @@ TimerMakeModal.StartDatePicker = () => {
       for (let i = 0; i < 7; i++) {
         formattedDate = nowDate.getMonth() === date.getMonth() ? format(nowDate, 'd') : ' '
 
-        weekDays.push(formattedDate)
+        weekDays.push([String(nowDate.getFullYear()), String(nowDate.getMonth()), formattedDate])
         nowDate = addDays(nowDate, 1)
       }
       calendarRows.push(weekDays)
       weekDays = []
     }
-    console.log(calendarRows)
     return calendarRows
   }
 
@@ -113,19 +121,39 @@ TimerMakeModal.StartDatePicker = () => {
         </div>
       </div>
       <div>
-        <table>
+        <table className={'w-full'}>
           <thead>
             <tr>
               {days.map(dayName => {
-                return <td key={dayName}>{dayName}</td>
+                return <th key={dayName}>{dayName}</th>
               })}
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            {createDays().map(weeks => {
+              return (
+                <tr>
+                  {weeks.map(days => {
+                    return (
+                      <td>
+                        <ModalSelectElement.CalenderElement
+                          content={days[2]}
+                          data={date}
+                          setData={setDate}
+                          timeInfo={days}
+                        />
+                      </td>
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
         </table>
       </div>
-      <div>{createDays()}</div>
-      <button className={'h-15 btn w-full border-none bg-[#333D4B]'}>수정완료</button>
+      <button className={'h-15 btn w-full border-none bg-[#333D4B]'} onClick={handleOnClick}>
+        수정완료
+      </button>
     </div>
   )
 }
@@ -139,8 +167,8 @@ interface StartTimePickerProps {
 // eslint-disable-next-line react/display-name
 TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: StartTimePickerProps) => {
   const [dayTime, setDayTime] = useState(false)
-  const [hour, setHour] = useState(3)
-  const [minute, setMinute] = useState(30)
+  const [hour, setHour] = useState(startTime.getHours())
+  const [minute, setMinute] = useState(startTime.getMinutes())
 
   const times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
@@ -190,7 +218,7 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
         <div className={'flex grid w-full grid-cols-6 gap-2 text-lg'}>
           {times.map(time => {
             return (
-              <div className={'text- mr-2 h-[51px] w-[51px] text-[22px] font-semibold'}>
+              <div key={time} className={'text- mr-2 h-[51px] w-[51px] text-[22px] font-semibold'}>
                 <ModalSelectElement content={time} data={hour} setData={setHour} />
               </div>
             )
@@ -204,7 +232,7 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
         <div className={'flex grid w-full grid-cols-6 gap-2 text-lg text-[22px] font-semibold'}>
           {minutes.map(min => {
             return (
-              <div className={'mr-2 h-[51px] w-[51px]'}>
+              <div key={min} className={'mr-2 h-[51px] w-[51px]'}>
                 <ModalSelectElement content={min} data={minute} setData={setMinute} isMinute />
               </div>
             )
