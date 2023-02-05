@@ -139,7 +139,15 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
         </div>
         {modalVisible && (
           <TimerMakeModal closePortal={modalClose}>
-            {modalState === 'date' ? <TimerMakeModal.StartDatePicker /> : <TimerMakeModal.StartTimePicker />}
+            {modalState === 'date' ? (
+              <TimerMakeModal.StartDatePicker />
+            ) : (
+              <TimerMakeModal.StartTimePicker
+                startTime={startTime}
+                setStartTime={setStartTime}
+                modalClose={modalClose}
+              />
+            )}
           </TimerMakeModal>
         )}
       </div>

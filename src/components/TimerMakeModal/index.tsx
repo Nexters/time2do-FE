@@ -37,13 +37,33 @@ TimerMakeModal.StartDatePicker = () => {
   )
 }
 
-TimerMakeModal.StartTimePicker = () => {
+interface StartTimePickerProps {
+  startTime: Date
+  setStartTime: React.Dispatch<React.SetStateAction<Date>>
+  modalClose: any
+}
+
+TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: StartTimePickerProps) => {
   const [dayTime, setDayTime] = useState(false)
   const [hour, setHour] = useState(3)
   const [minute, setMinute] = useState(0)
 
   const times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+
+  const handleOnClick = () => {
+    setStartTime(
+      new Date(
+        startTime.getFullYear(),
+        startTime.getMonth(),
+        startTime.getDay(),
+        dayTime ? hour + 12 : hour,
+        minute,
+        0,
+      ),
+    )
+    modalClose()
+  }
 
   return (
     <div
@@ -97,7 +117,9 @@ TimerMakeModal.StartTimePicker = () => {
         </div>
       </div>
 
-      <button className={'h-15 btn w-full border-none bg-[#333D4B]'}>수정완료</button>
+      <button className={'h-15 btn w-full border-none bg-[#333D4B]'} onClick={handleOnClick}>
+        수정완료
+      </button>
     </div>
   )
 }
