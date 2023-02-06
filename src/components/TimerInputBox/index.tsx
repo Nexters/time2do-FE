@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import TimerMakeModal from '../TimerMakeModal'
+import { useFormContext } from 'react-hook-form'
+import TagBox from './_fragment/TagBox'
 
 interface Props {
   timerName: string
@@ -8,6 +10,7 @@ interface Props {
 }
 
 const TimerInputBox = ({ required = true, timerName, placeHolder }: Props) => {
+  // const { register } = useFormContext()
   return (
     <div className={'h-min'}>
       <label className={'label'}>
@@ -17,7 +20,7 @@ const TimerInputBox = ({ required = true, timerName, placeHolder }: Props) => {
         </span>
       </label>
       <input
-        className={'input-bordered input mb-8 w-full bg-[#232B38] text-lg text-[#B0B8C1] placeholder:text-[#4E5968]'}
+        className={'input mb-8 h-[60px] w-full bg-[#232B38] text-lg text-[#B0B8C1] placeholder:text-[#4E5968]'}
         type={'text'}
         placeholder={placeHolder}
         required={required}
@@ -28,20 +31,69 @@ const TimerInputBox = ({ required = true, timerName, placeHolder }: Props) => {
 }
 
 TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) => {
+  const [tags, setTags] = useState<string[]>([])
+  const [input, setInput] = useState<string>('')
+
+  const insertTag = () => {
+    if (tags.length >= 2) {
+      setInput('')
+      return
+    }
+    if (!input) return
+    setTags([...tags, input.trim()])
+    setInput('')
+    console.log(tags)
+  }
+
+  const deleteTag = target => {
+    setTags(
+      tags.filter(tag => {
+        return tag !== target
+      }),
+    )
+  }
+
+  const onChange = e => {
+    setInput(e.target.value)
+  }
+
+  const onKeyPress = e => {
+    if (e.key === 'Enter') {
+      insertTag()
+    }
+  }
+
   return (
-    <div className={'h-min'}>
-      <label className={'label'}>
-        <span className={'label-text text-sm font-bold text-gray-400 '}>
-          {timerName}
-          {required && '*'}
-        </span>
-      </label>
-      <input
-        className={'input-bordered input mb-8 w-full bg-[#232B38] text-lg text-[#B0B8C1] placeholder:text-[#4E5968]'}
-        type={'text'}
-        placeholder={placeHolder}
-        required={required}
-      />
+    <div className={'mb-8 h-min'}>
+      <div className={'mb-[14px]'}>
+        <label className={'label'}>
+          <span className={'label-text text-sm font-bold text-gray-400 '}>
+            {timerName}
+            {required && '*'}
+          </span>
+        </label>
+        <div className={' flex h-[60px] w-full items-center rounded-[10px] bg-[#232B38] text-lg text-[#B0B8C1] '}>
+          <input
+            className={'input mr-3 flex-1 border-none bg-transparent placeholder:text-[#4E5968]'}
+            type={'text'}
+            placeholder={placeHolder}
+            value={input}
+            onChange={e => onChange(e)}
+            onKeyPress={e => onKeyPress(e)}
+          />
+          <button
+            className={'flex-0 p-x-[10px] mr-3 h-[40px] w-[52px] rounded-[10px] bg-[#333D4B] text-lg font-medium'}
+            type={'button'}
+            onClick={insertTag}>
+            추가
+          </button>
+        </div>
+      </div>
+      <div className={'flex'}>
+        {tags.map(tag => {
+          return <TagBox tagName={tag} deleteTag={deleteTag} />
+        })}
+      </div>
     </div>
   )
 }
@@ -93,7 +145,6 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
     return setModalVisible(true)
   }
   const modalClose = () => {
-    console.log(startTime)
     return setModalVisible(false)
   }
 

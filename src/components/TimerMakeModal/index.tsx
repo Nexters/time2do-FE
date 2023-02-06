@@ -180,8 +180,9 @@ interface StartTimePickerProps {
 // eslint-disable-next-line react/display-name
 TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: StartTimePickerProps) => {
   const [dayTime, setDayTime] = useState(false)
-  const [hour, setHour] = useState(startTime.getHours())
+  const [hour, setHour] = useState(startTime.getHours() > 12 ? startTime.getHours() - 12 : startTime.getHours())
   const [minute, setMinute] = useState(startTime.getMinutes())
+  console.log(hour, minute)
 
   const times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
