@@ -42,7 +42,7 @@ const ModalSelectElement = ({ content, data, setData, isMinute = false }: ModalS
 
 interface CalendarElementProps extends ModalSelectElementProps {
   data: Date
-  timeInfo: string[]
+  timeInfo: any
 }
 // eslint-disable-next-line react/display-name
 ModalSelectElement.CalenderElement = ({ content, data, setData, timeInfo }: CalendarElementProps) => {
