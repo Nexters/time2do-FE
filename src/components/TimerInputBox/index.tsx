@@ -133,7 +133,7 @@ TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
         <select className="select-bordered select w-full flex-1 bg-[#232B38]">
           {min.map((time, index) => {
             return (
-              <option key={index} value={time} selected={time === 3}>
+              <option key={index} value={time}>
                 {String(time).padStart(2, '0')}분
               </option>
             )
