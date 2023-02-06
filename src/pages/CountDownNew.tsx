@@ -30,7 +30,7 @@ export function CountDownNew() {
             />
             <TimerInputBox.TargetTimeSet timerName={'목표시간'} />
             <TimerInputBox.StartTimeSet timerName={'타이머 시작 시간'} />
-            <button className={'btn-primary btn mt-[100px] w-full border-0 bg-[#786DFF] text-xl'}>그룹 생성하기</button>
+            <button className={'btn-primary btn h-[60px] w-full border-0 bg-[#786DFF] text-xl'}>그룹 생성하기</button>
           </form>
         </FormProvider>
       </div>

@@ -73,7 +73,7 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
     <>
       <input type={'hidden'} {...register('tags')} />
       <div className={'mb-8 h-min'}>
-        <div className={'mb-[14px]'}>
+        <div className={''}>
           <label className={'label'}>
             <span className={'label-text text-sm font-bold text-gray-400 '}>
               {timerName}
@@ -119,18 +119,17 @@ TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
           {'*'}
         </span>
       </label>
-      <div className={'flex w-full'}>
-        <select className="select mr-[10px] w-full flex-1 bg-[#232B38]">
+      <div className={'flex h-[60px] w-full'}>
+        <select className="select mr-[10px] h-full w-full flex-1 bg-[#232B38]">
           {hour.map((time, index) => {
             return (
               <option key={index} value={time}>
-                {time}
-                시간
+                {time}시간
               </option>
             )
           })}
         </select>
-        <select className="select-bordered select w-full flex-1 bg-[#232B38]">
+        <select className="select h-full w-full flex-1 bg-[#232B38]">
           {min.map((time, index) => {
             return (
               <option key={index} value={time}>
@@ -169,9 +168,9 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
     <>
       <input type={'hidden'} {...register('setTime')} />
       <div id={'root-modal'} className={'absolute left-0 top-0'}></div>
-      <div className={'mb-8 h-min'}>
+      <div className={'mb-8 mb-[100px] h-min'}>
         <label className={'label'}>
-          <span className={'label-text text-sm font-bold text-gray-400 '}>
+          <span className={'label-text text-sm font-bold text-gray-400'}>
             {timerName}
             {'*'}
           </span>

@@ -6,11 +6,11 @@ interface Props {
 
 const Header = ({ title }: Props) => {
   return (
-    <header className={'flex text-center items-center h-14 w-full'}>
-      <button>
+    <header className={'mb-[30px] flex h-14 w-full items-center text-center'}>
+      <div className={'w-full flex-1 text-center text-[19px] text-white'}>{title}</div>
+      <button className={'absolute'}>
         <img src={BackIcon} alt={'뒤로가기 버튼'} />
       </button>
-      <label className={'text-white text-[19px]'}>{title}</label>
     </header>
   )
 }
