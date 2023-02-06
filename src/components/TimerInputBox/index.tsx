@@ -161,6 +161,17 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
   }
 
   useEffect(() => {
+    const nowTime = new Date()
+    const nowMinute = nowTime.getMinutes()
+    const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    const timeIndex = Math.ceil(nowMinute / 5) > minutes.length ? 0 : Math.ceil(nowMinute / 5)
+    if (timeIndex === 0) {
+      startTime.setHours(startTime.getHours() + 1)
+    }
+    startTime.setMinutes(minutes[Math.ceil(nowMinute / 5)])
+  }, [])
+
+  useEffect(() => {
     setValue('setTime', startTime)
   }, [startTime])
 
