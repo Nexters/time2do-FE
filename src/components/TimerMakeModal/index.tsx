@@ -98,7 +98,10 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
     while (nowDate <= calendarEnd) {
       for (let i = 0; i < 7; i++) {
         formattedDate = nowDate.getMonth() === date.getMonth() ? format(nowDate, 'd') : ' '
-
+        if (i === 0 && calendarRows.length > 1 && formattedDate !== format(nowDate, 'd')) {
+          nowDate = addDays(calendarEnd, 1)
+          break
+        }
         weekDays.push([String(nowDate.getFullYear()), String(nowDate.getMonth()), formattedDate])
         nowDate = addDays(nowDate, 1)
       }
