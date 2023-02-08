@@ -179,16 +179,16 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
     <>
       <input type={'hidden'} {...register('setTime')} />
       <div id={'root-modal'} className={'absolute left-0 top-0'}></div>
-      <div className={'mb-8 mb-[100px] h-min'}>
+      <div className={'mb-8 mb-[6.25rem] h-min'}>
         <label className={'label'}>
           <span className={'label-text text-sm font-bold text-gray-400'}>
             {timerName}
             {'*'}
           </span>
         </label>
-        <div className={'h-[120px] overflow-hidden rounded-[10px] bg-[#232B38] text-[18px] font-medium'}>
+        <div className={'h-[7.5rem] overflow-hidden rounded-[10px] bg-grey-900 text-lg font-medium'}>
           <input
-            className={'focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none'}
+            className={'focus-visible:none input h-1/2 w-full rounded-none bg-grey-900 focus:outline-none'}
             value={`${startTime.getFullYear()}년 ${startTime.getMonth() + 1}월 ${startTime.getDate()}일 ${
               WEEKDAY[startTime.getDay()]
             }요일`}

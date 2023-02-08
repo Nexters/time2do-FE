@@ -30,8 +30,8 @@ const ModalSelectElement = ({ content, data, setData, isMinute = false }: ModalS
   return (
     <div
       className={`${
-        select ? 'bg-primary text-[#FFFFFF]' : 'bg-[#232B38] text-[#6B7684]'
-      } p-autos flex h-full w-full items-center rounded-[10px] text-center`}
+        select ? 'bg-primary text-white' : 'bg-grey-800 text-grey-600'
+      } p-autos flex h-full w-full items-center rounded-[0.625rem] text-center`}
       onClick={() => {
         dataHandling()
       }}>
@@ -61,11 +61,9 @@ ModalSelectElement.CalenderElement = ({ content, data, setData, timeInfo }: Cale
   return content !== ' ' ? (
     <div
       className={`${
-        select ? 'bg-primary text-[#FFFFFF]' : 'bg-[#232B38] text-[#6B7684]'
-      } p-autos flex h-full w-full items-center rounded-[10px] text-center`}
-      onClick={() => {
-        dataHandling()
-      }}>
+        select ? 'bg-primary text-white' : 'bg-grey-900 text-grey-600'
+      } p-autos flex h-full w-full items-center rounded-[0.625rem] text-center`}
+      onClick={dataHandling}>
       <label className={'w-full'}>{content}</label>
     </div>
   ) : (
