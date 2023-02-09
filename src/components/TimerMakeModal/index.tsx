@@ -112,46 +112,43 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
   }
 
   return (
-    <div
-      className={
-        'fixed right-1/2 bottom-1/2  w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-1000 px-[1.375rem] pb-[1.125rem] pt-[25px]'
-      }>
-      <div className={'mb-6 mt-[0.0625rem]'}>
+    <div className="fixed right-1/2 bottom-1/2  w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-1000 px-[1.375rem] pb-[1.125rem] pt-[25px]">
+      <div className="mb-6 mt-[0.0625rem]">
         <label>
-          <span className={'text-[1.375rem] font-bold'}>시작 날짜</span>
+          <span className="text-[1.375rem] font-bold">시작 날짜</span>
         </label>
       </div>
-      <div className={'mb-7 flex items-center text-xl font-semibold'}>
-        <div className={'w-1/2 text-left '}>
+      <div className="mb-7 flex items-center text-xl font-semibold">
+        <div className="w-1/2 text-left ">
           <span>{`${format(date, 'yyyy')}년 ${format(date, 'M')}월`}</span>
         </div>
-        <div className={'flex w-1/2 justify-end'}>
+        <div className="flex w-1/2 justify-end">
           <button onClick={movePrevMonth}>
-            <img src={PrevArrow} alt={'이전 달 이동'} />
+            <img src={PrevArrow} alt="이전 달 이동" />
           </button>
           <button onClick={moveNextMonth}>
-            <img src={NextArrow} alt={'다음 달로 이동'} />{' '}
+            <img src={NextArrow} alt="다음 달로 이동" />{' '}
           </button>
         </div>
       </div>
       <div>
-        <div className={'mb-3 w-full'}>
-          <div className={'mb-1.5 flex w-full'}>
+        <div className="mb-3 w-full">
+          <div className="mb-1.5 flex w-full">
             {days.map(dayName => {
               return (
-                <div key={dayName} className={'flex-1'}>
+                <div key={dayName} className="flex-1">
                   {dayName}
                 </div>
               )
             })}
           </div>
-          <div className={'mb-6 w-full'}>
+          <div className="mb-6 w-full">
             {createDays().map(weeks => {
               return (
-                <div key={weeks.toString()} className={'mb-2  flex gap-2'}>
+                <div key={weeks.toString()} className="mb-2  flex gap-2">
                   {weeks.map(days => {
                     return (
-                      <div key={days.toString()} className={'h-[2.625rem] w-[2.625rem] text-[1.375rem] font-semibold'}>
+                      <div key={days.toString()} className="h-[2.625rem] w-[2.625rem] text-[1.375rem] font-semibold">
                         <ModalSelectElement.CalenderElement
                           content={days[2]}
                           data={date}
@@ -167,7 +164,7 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
           </div>
         </div>
       </div>
-      <button className={'h-15 btn w-full border-none bg-grey-800 text-xl font-semibold'} onClick={handleOnClick}>
+      <button className="h-15 btn w-full border-none bg-grey-800 text-xl font-semibold" onClick={handleOnClick}>
         수정완료
       </button>
     </div>
@@ -206,50 +203,47 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
   }
 
   return (
-    <div
-      className={
-        'fixed right-1/2 bottom-1/2  w-[390px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-[#191F28] px-[22px] py-6'
-      }>
-      <div className={'mb-6'}>
+    <div className="fixed right-1/2 bottom-1/2  w-[390px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-[#191F28] px-[22px] py-6">
+      <div className="mb-6">
         <label>
-          <span className={'text-5.5 font-bold'}>시작 시간</span>
+          <span className="text-5.5 font-bold">시작 시간</span>
         </label>
       </div>
-      <div className={'mb-5.5 w-full text-left'}>
-        <label className={'label'}>
-          <span className={'text-sm font-bold text-grey-400'}>오전/오후</span>
+      <div className="mb-5.5 w-full text-left">
+        <label className="label">
+          <span className="text-sm font-bold text-grey-400">오전/오후</span>
         </label>
-        <div className={'flex text-lg'}>
-          <div className={'mr-2 h-[3.75rem] w-[10.5rem] flex-1'}>
-            <ModalSelectElement content={'오전'} data={dayTime} setData={setDayTime} />
+        <div className="flex text-lg">
+          <div className="mr-2 h-[3.75rem] w-[10.5rem] flex-1">
+            <ModalSelectElement content="오전" data={dayTime} setData={setDayTime} />
           </div>
-          <div className={'h-[3.75rem] w-[10.5rem] flex-1'}>
-            <ModalSelectElement content={'오후'} data={dayTime} setData={setDayTime} />
+          <div className="h-[3.75rem] w-[10.5rem] flex-1">
+            <ModalSelectElement content="오후" data={dayTime} setData={setDayTime} />
           </div>
         </div>
       </div>
-      <div className={'mb-6 w-full text-left'}>
-        <label className={'label'}>
-          <span className={'text-sm font-bold text-grey-400'}>시</span>
+      <div className="mb-6 w-full text-left">
+        <label className="label">
+          <span className="text-sm font-bold text-grey-400">시</span>
         </label>
-        <div className={'grid w-full grid-cols-6 gap-2 text-lg'}>
+        <div className="grid w-full grid-cols-6 gap-2 text-lg">
           {times.map(time => {
             return (
-              <div key={time} className={'mr-2 h-[3.1875rem] w-[3.1875rem] text-5.5 font-semibold'}>
+              <div key={time} className="mr-2 h-[3.1875rem] w-[3.1875rem] text-5.5 font-semibold">
                 <ModalSelectElement content={time} data={hour} setData={setHour} />
               </div>
             )
           })}
         </div>
       </div>
-      <div className={'mb-6 w-full text-left'}>
-        <label className={'label'}>
-          <span className={'text-sm font-bold text-[#B0B8C1]'}>분</span>
+      <div className="mb-6 w-full text-left">
+        <label className="label">
+          <span className="text-sm font-bold text-[#B0B8C1]">분</span>
         </label>
-        <div className={'grid w-full grid-cols-6 gap-2 text-lg text-5.5 font-semibold'}>
+        <div className="grid w-full grid-cols-6 gap-2 text-lg text-5.5 font-semibold">
           {minutes.map(min => {
             return (
-              <div key={min} className={'mr-2 h-[3.1875rem] w-[3.1875rem]'}>
+              <div key={min} className="mr-2 h-[3.1875rem] w-[3.1875rem]">
                 <ModalSelectElement content={min} data={minute} setData={setMinute} isMinute />
               </div>
             )
@@ -257,7 +251,7 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
         </div>
       </div>
 
-      <button className={'h-15 btn w-full border-none bg-grey-800 text-xl font-semibold'} onClick={handleOnClick}>
+      <button className="h-15 btn w-full border-none bg-grey-800 text-xl font-semibold" onClick={handleOnClick}>
         수정완료
       </button>
     </div>
