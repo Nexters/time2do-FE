@@ -108,43 +108,72 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
 }
 
 // eslint-disable-next-line react/display-name
-TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
-  const hour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-  const min = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; startTime: Date }) => {
+  const hourList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  const minutesList = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+  const { register, setValue } = useFormContext()
+
+  const [hour, setHour] = useState('1')
+  const [minute, setMinute] = useState('0')
+
+  const handleHourSelect = (e: any) => {
+    setHour(e.target.value)
+  }
+
+  const handleMinuteSelect = (e: any) => {
+    setMinute(e.target.value)
+  }
+
+  useEffect(() => {
+    const endTime = new Date(startTime)
+    endTime.setHours(startTime.getHours() + parseInt(hour))
+    endTime.setMinutes(startTime.getMinutes() + parseInt(minute))
+    console.log(endTime)
+    setValue('endTime', endTime)
+  }, [hour, minute])
+
   return (
-    <div className="mb-8 h-min">
-      <label className="label">
-        <span className="label-text text-sm font-bold text-gray-400 ">{timerName}*</span>
-      </label>
-      <div className="flex h-[60px] w-full">
-        <select className="select mr-[10px] h-full w-full flex-1 bg-[#232B38]">
-          {hour.map((time, index) => {
-            return (
-              <option key={index} value={time}>
-                {time}시간
-              </option>
-            )
-          })}
-        </select>
-        <select className="select h-full w-full flex-1 bg-[#232B38]">
-          {min.map((time, index) => {
-            return (
-              <option key={index} value={time}>
-                {String(time).padStart(2, '0')}분
-              </option>
-            )
-          })}
-        </select>
+    <>
+      <input type="hidden" {...register('endTime')} />
+      <div className="mb-8 h-min">
+        <label className="label">
+          <span className="label-text text-sm font-bold text-gray-400 ">{timerName}*</span>
+        </label>
+        <div className="flex h-[60px] w-full">
+          <select className="select mr-[10px] h-full w-full flex-1 bg-[#232B38]" onChange={handleHourSelect}>
+            {hourList.map((time, index) => {
+              return (
+                <option key={index} value={time}>
+                  {time}시간
+                </option>
+              )
+            })}
+          </select>
+          <select className="select h-full w-full flex-1 bg-[#232B38]" onChange={handleMinuteSelect}>
+            {minutesList.map((time, index) => {
+              return (
+                <option key={index} value={time}>
+                  {String(time).padStart(2, '0')}분
+                </option>
+              )
+            })}
+          </select>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
+interface StartTimeSetProps {
+  timerName: string
+  startTime: Date
+  setStartTime: React.Dispatch<React.SetStateAction<Date>>
+}
+
 // eslint-disable-next-line react/display-name
-TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
+TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeSetProps) => {
   const [modalState, setModalState] = useState<'date' | 'time'>('date')
   const [modalVisible, setModalVisible] = useState(false)
-  const [startTime, setStartTime] = useState(new Date())
 
   const { register, setValue } = useFormContext()
 
@@ -169,12 +198,12 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
   }, [])
 
   useEffect(() => {
-    setValue('setTime', startTime)
+    setValue('startTime', startTime)
   }, [startTime])
 
   return (
     <>
-      <input type="hidden" {...register('setTime')} />
+      <input type="hidden" {...register('startTime')} />
       <div id="root-modal" className="absolute left-0 top-0"></div>
       <div className="mb-8 mb-[6.25rem] h-min">
         <label className="label">
