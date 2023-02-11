@@ -23,7 +23,7 @@ export const CountUpHeader = ({}: Props) => {
   const renderTimer = () => {
     if (!hasStarted)
       return (
-        <button onClick={startTimer} className="btn-primary btn h-14 gap-2 rounded-full text-lg">
+        <button onClick={startTimer} className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
             <path
               fillRule="evenodd"
@@ -38,7 +38,7 @@ export const CountUpHeader = ({}: Props) => {
     return (
       <div className="flex items-center justify-center gap-3">
         {isRunning ? (
-          <button onClick={() => pause()} className="btn-primary btn rounded-full text-lg">
+          <button onClick={() => pause()} className="btn-primary btn h-14 rounded-full px-5 text-lg">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
               <path
                 fillRule="evenodd"
@@ -49,7 +49,7 @@ export const CountUpHeader = ({}: Props) => {
             멈추기
           </button>
         ) : (
-          <button onClick={startTimer} className="btn-primary btn h-14 gap-2 rounded-full text-lg">
+          <button onClick={startTimer} className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
               <path
                 fillRule="evenodd"
@@ -61,8 +61,8 @@ export const CountUpHeader = ({}: Props) => {
           </button>
         )}
 
-        <button onClick={resetTimer} className="btn-circle btn border-none bg-grey-900">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="h-6 w-6">
+        <button onClick={resetTimer} className="btn-circle btn h-14 w-14 rounded-full border-none bg-grey-900">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="h-8 w-8">
             <path
               fillRule="evenodd"
               d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z"
