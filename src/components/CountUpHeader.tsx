@@ -23,7 +23,7 @@ export const CountUpHeader = ({}: Props) => {
   const renderTimer = () => {
     if (!hasStarted)
       return (
-        <button onClick={startTimer} className="btn-primary btn gap-2 rounded-full text-lg">
+        <button onClick={startTimer} className="btn-primary btn h-14 gap-2 rounded-full text-lg">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
             <path
               fillRule="evenodd"
@@ -31,7 +31,7 @@ export const CountUpHeader = ({}: Props) => {
               clipRule="evenodd"
             />
           </svg>
-          타이머 시작하기
+          시작하기
         </button>
       )
 
@@ -49,7 +49,7 @@ export const CountUpHeader = ({}: Props) => {
             멈추기
           </button>
         ) : (
-          <button onClick={startTimer} className="btn-primary btn gap-2 rounded-full text-lg">
+          <button onClick={startTimer} className="btn-primary btn h-14 gap-2 rounded-full text-lg">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
               <path
                 fillRule="evenodd"
@@ -76,17 +76,17 @@ export const CountUpHeader = ({}: Props) => {
 
   return (
     <div className="grid h-full w-full items-end justify-center bg-[url('/img/character.png')] bg-cover bg-center text-white">
-      <div className="col-span-full row-span-full mb-[4.5rem] min-w-full text-center">
-        <div className="mb-3 text-xl font-semibold">일이삼사오육칠발구십일이삼사오</div>
-        <div className="mb-12">
+      <div className="col-span-full row-span-full mb-9 min-w-full text-center">
+        <div className="mb-3">
           <div className="mb-3">
-            <span className="countdown font-mono text-5xl font-bold">
+            <span className="countdown font-montserrat text-6xl font-bold">
               {/* @ts-ignore */}
               <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:{/* @ts-ignore */}
               <span style={{ '--value': seconds }}></span>
             </span>
           </div>
         </div>
+        <div className="mb-4 text-lg font-semibold">오늘 무조건 다 끝내본다!!</div>
         <div>{renderTimer()}</div>
       </div>
     </div>

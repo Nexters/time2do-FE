@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 400;
+    src: url('/fonts/PretendardStd-Regular.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 700;
+    src: url('/fonts/PretendardStd-Bold.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Pretendard';
+    font-weight: 900;
+    src: url('/fonts/PretendardStd-ExtraBold.woff2') format('woff2');
+  }
+}
+
 @layer components {
   :root .countup {
     line-height: 1em;

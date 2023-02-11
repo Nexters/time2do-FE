@@ -3,8 +3,15 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        pretendard: "'Pretendard', sans-serif",
+        montserrat: "'Montserrat', sans-serif",
+      },
       minHeight: {
         screen: ['100vh /* fallback for Opera, IE and etc. */', '100dvh'],
+      },
+      height: {
+        button: '3.75rem',
       },
       gridTemplateRows: {
         'header-footer': 'auto 1fr auto',
@@ -20,8 +27,9 @@ module.exports = {
           600: '#6B7684',
           700: '#4E5968',
           800: '#333D4B',
-          900: '#232B38',
-          1000: '#191F28',
+          850: '#232B38',
+          900: '#191F28',
+          1000: '#111417',
         },
       },
       spacing: {
@@ -51,9 +59,9 @@ module.exports = {
     themes: [
       {
         mytheme: {
-          primary: '#786DFF',
+          primary: '#6C5CFF',
           'primary-focus': '#6E64E7',
-          secondary: '#BEFF7C',
+          secondary: '#5FDF30',
           'secondary-focus': '#56CB2D',
           accent: '#FF6D6D',
         },

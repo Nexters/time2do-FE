@@ -65,7 +65,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
-        <h1>1월 25일의 할 일 목록</h1>
+        <h1 className="font-pretendard">1월 25일의 할 일 목록</h1>
         <div>
           <button
             onClick={() => {

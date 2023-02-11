@@ -15,7 +15,7 @@ export function Home({}: Props) {
 
   return (
     <>
-      <header className="h-[30rem] w-full bg-grey-900">
+      <header className="h-[32rem] w-full bg-grey-1000">
         <CountUpHeader />
       </header>
       <div className="bg-grey-1000 py-7 px-6">
