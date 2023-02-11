@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 export function CountDownNew() {
   const [startTime, setStartTime] = useState(new Date())
+  const [modalVisible, setModalVisible] = useState(false)
 
   const methods = useForm({
     defaultValues: {
@@ -38,7 +39,13 @@ export function CountDownNew() {
               startTime={startTime}
               setStartTime={setStartTime}
             />
-            <button className="btn-primary btn h-[60px] w-full border-0 bg-[#786DFF] text-xl">그룹 생성하기</button>
+            <button
+              className="btn-primary btn h-[60px] w-full border-0 bg-[#786DFF] text-xl"
+              onClick={() => {
+                setModalVisible(true)
+              }}>
+              그룹 생성하기
+            </button>
           </form>
         </FormProvider>
       </div>

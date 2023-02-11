@@ -126,9 +126,9 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
 
   useEffect(() => {
     const endTime = new Date(startTime)
-    endTime.setHours(startTime.getHours() + parseInt(hour))
-    endTime.setMinutes(startTime.getMinutes() + parseInt(minute))
-    console.log(endTime)
+    console.log(startTime)
+    endTime.setHours(endTime.getHours() + parseInt(hour))
+    endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
     setValue('endTime', endTime)
   }, [hour, minute])
 
@@ -190,7 +190,7 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
     const nowTime = new Date()
     const nowMinute = nowTime.getMinutes()
     const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
-    const timeIndex = Math.ceil(nowMinute / 5) > minutes.length ? 0 : Math.ceil(nowMinute / 5)
+    const timeIndex = Math.ceil(nowMinute / 5) > minutes.length - 1 ? 0 : Math.ceil(nowMinute / 5)
     if (timeIndex === 0) {
       startTime.setHours(startTime.getHours() + 1)
     }

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import ModalSelectElement from '../ModalSelectElement'
 import PrevArrow from '../../assets/svg/PrevArrow.svg'
 import NextArrow from '../../assets/svg/NextArrow.svg'
+import LinkShareIcon from '../../assets/svg/LinkShareIcon.svg'
 import { createPortal } from 'react-dom'
 import {
   format,
@@ -182,7 +183,6 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
   const [dayTime, setDayTime] = useState(startTime.getHours() > 12)
   const [hour, setHour] = useState(startTime.getHours() > 12 ? startTime.getHours() - 12 : startTime.getHours())
   const [minute, setMinute] = useState(startTime.getMinutes())
-  console.log(hour, minute)
 
   const times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
@@ -254,6 +254,37 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
       <button className="h-15 btn w-full border-none bg-grey-800 text-xl font-semibold" onClick={handleOnClick}>
         수정완료
       </button>
+    </div>
+  )
+}
+
+TimerMakeModal.CompleteModal = () => {
+  const [groupCode, setGroupCode] = useState<string>('')
+  const getGroupCode = () => {
+    return '123456'
+  }
+
+  useEffect(() => {
+    setGroupCode(getGroupCode())
+  }, [])
+
+  return (
+    <div className="fixed right-1/2 bottom-1/2  w-[390px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-[#191F28] px-[22px] py-6">
+      <span>그룹이 생성되었어요!</span>
+      <span>코드를 공유해 친구들을 초대해봐요</span>
+
+      <div>
+        <span>{`#${groupCode}`}</span>
+      </div>
+      <div className="flex">
+        <button>닫기</button>
+        <button>
+          <div className="flex">
+            <img src={LinkShareIcon} alt="링크 공유하기 버튼" />
+            <span>코드 공유</span>
+          </div>
+        </button>
+      </div>
     </div>
   )
 }
