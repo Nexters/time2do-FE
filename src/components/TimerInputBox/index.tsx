@@ -14,13 +14,14 @@ const TimerInputBox = ({ required = true, timerName, placeHolder }: Props) => {
   return (
     <div className="h-min">
       <label className="label">
-        <span className="label-text text-sm font-bold text-gray-400">
+        <span className="label-text text-sm font-bold text-gray-300">
           {timerName}
           {required && '*'}
         </span>
       </label>
       <input
-        className="input mb-8 h-[60px] w-full bg-[#232B38] text-lg text-[#B0B8C1] placeholder:text-[#4E5968]"
+        className="input mb-8 h-[60px] w-full border-grey-800 bg-grey-900 text-lg text-grey-300
+        placeholder:text-grey-700"
         type="text"
         placeholder={placeHolder}
         required={required}
@@ -75,12 +76,14 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
       <div className="mb-8 h-min">
         <div className="">
           <label className="label">
-            <span className="label-text text-sm font-bold text-gray-400 ">
+            <span className="label-text text-sm font-bold text-gray-300 ">
               {timerName}
               {required && '*'}
             </span>
           </label>
-          <div className=" flex h-[60px] w-full items-center rounded-[10px] bg-[#232B38] text-lg text-[#B0B8C1] ">
+          <div
+            className="border-1 flex h-[60px] w-full items-center rounded-[10px]
+          border-solid border-grey-800 bg-[#232B38] text-lg text-[#B0B8C1]">
             <input
               className="input mr-3 flex-1 border-none bg-transparent placeholder:text-[#4E5968]"
               type="text"
@@ -90,7 +93,7 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
               onKeyPress={e => onKeyPress(e)}
             />
             <button
-              className="flex-0 p-x-[10px] mr-3 h-[40px] w-[52px] rounded-[10px] bg-[#333D4B] text-lg font-medium"
+              className="flex-0 p-x-[10px] mr-3 h-[40px] w-[52px] rounded-[6px] bg-primary text-lg font-medium text-grey-200"
               type="button"
               onClick={insertTag}>
               추가
@@ -126,6 +129,7 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
 
   useEffect(() => {
     const endTime = new Date(startTime)
+
     console.log(startTime)
     endTime.setHours(endTime.getHours() + parseInt(hour))
     endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
@@ -137,10 +141,12 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
       <input type="hidden" {...register('endTime')} />
       <div className="mb-8 h-min">
         <label className="label">
-          <span className="label-text text-sm font-bold text-gray-400 ">{timerName}*</span>
+          <span className="label-text text-sm font-bold text-gray-300 ">{timerName}*</span>
         </label>
         <div className="flex h-[60px] w-full">
-          <select className="select mr-[10px] h-full w-full flex-1 bg-[#232B38]" onChange={handleHourSelect}>
+          <select
+            className="select mr-[10px] h-full w-full flex-1 border-grey-800 bg-[#232B38]"
+            onChange={handleHourSelect}>
             {hourList.map((time, index) => {
               return (
                 <option key={index} value={time}>
@@ -149,7 +155,7 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
               )
             })}
           </select>
-          <select className="select h-full w-full flex-1 bg-[#232B38]" onChange={handleMinuteSelect}>
+          <select className="select h-full w-full flex-1 border-grey-800 bg-[#232B38]" onChange={handleMinuteSelect}>
             {minutesList.map((time, index) => {
               return (
                 <option key={index} value={time}>
@@ -190,10 +196,11 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
     const nowTime = new Date()
     const nowMinute = nowTime.getMinutes()
     const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
-    const timeIndex = Math.ceil(nowMinute / 5) > minutes.length - 1 ? 0 : Math.ceil(nowMinute / 5)
+    const timeIndex = Math.ceil(nowMinute / 5) > minutes.length ? 0 : Math.ceil(nowMinute / 5)
     if (timeIndex === 0) {
       startTime.setHours(startTime.getHours() + 1)
     }
+    console.log('nt',nowTime)
     startTime.setMinutes(minutes[Math.ceil(nowMinute / 5)])
   }, [])
 
@@ -207,7 +214,7 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
       <div id="root-modal" className="absolute left-0 top-0"></div>
       <div className="mb-8 mb-[6.25rem] h-min">
         <label className="label">
-          <span className="label-text text-sm font-bold text-gray-400">{timerName}*</span>
+          <span className="label-text text-sm font-bold text-gray-300">{timerName}*</span>
         </label>
         <div className="h-[7.5rem] overflow-hidden rounded-[10px] bg-grey-900 text-lg font-medium">
           <input
