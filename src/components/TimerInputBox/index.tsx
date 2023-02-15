@@ -14,13 +14,14 @@ const TimerInputBox = ({ required = true, timerName, placeHolder }: Props) => {
   return (
     <div className="h-min">
       <label className="label">
-        <span className="label-text text-sm font-bold text-gray-400">
+        <span className="label-text text-sm font-bold text-gray-300">
           {timerName}
           {required && '*'}
         </span>
       </label>
       <input
-        className="input mb-8 h-[60px] w-full bg-[#232B38] text-lg text-[#B0B8C1] placeholder:text-[#4E5968]"
+        className="input mb-8 h-[60px] w-full border-grey-800 bg-grey-900 text-lg text-grey-300
+        placeholder:text-grey-700"
         type="text"
         placeholder={placeHolder}
         required={required}
@@ -75,12 +76,14 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
       <div className="mb-8 h-min">
         <div className="">
           <label className="label">
-            <span className="label-text text-sm font-bold text-gray-400 ">
+            <span className="label-text text-sm font-bold text-gray-300 ">
               {timerName}
               {required && '*'}
             </span>
           </label>
-          <div className=" flex h-[60px] w-full items-center rounded-[10px] bg-[#232B38] text-lg text-[#B0B8C1] ">
+          <div
+            className="border-1 flex h-[60px] w-full items-center rounded-[10px]
+          border-solid border-grey-800 bg-[#232B38] text-lg text-[#B0B8C1]">
             <input
               className="input mr-3 flex-1 border-none bg-transparent placeholder:text-[#4E5968]"
               type="text"
@@ -90,7 +93,7 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
               onKeyPress={e => onKeyPress(e)}
             />
             <button
-              className="flex-0 p-x-[10px] mr-3 h-[40px] w-[52px] rounded-[10px] bg-[#333D4B] text-lg font-medium"
+              className="flex-0 p-x-[10px] mr-3 h-[40px] w-[52px] rounded-[6px] bg-primary text-lg font-medium text-grey-200"
               type="button"
               onClick={insertTag}>
               추가
@@ -108,43 +111,75 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
 }
 
 // eslint-disable-next-line react/display-name
-TimerInputBox.TargetTimeSet = ({ timerName }: { timerName: string }) => {
-  const hour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-  const min = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; startTime: Date }) => {
+  const hourList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  const minutesList = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+  const { register, setValue } = useFormContext()
+
+  const [hour, setHour] = useState('1')
+  const [minute, setMinute] = useState('0')
+
+  const handleHourSelect = (e: any) => {
+    setHour(e.target.value)
+  }
+
+  const handleMinuteSelect = (e: any) => {
+    setMinute(e.target.value)
+  }
+
+  useEffect(() => {
+    const endTime = new Date(startTime)
+
+    console.log(startTime)
+    endTime.setHours(endTime.getHours() + parseInt(hour))
+    endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
+    setValue('endTime', endTime)
+  }, [hour, minute])
+
   return (
-    <div className="mb-8 h-min">
-      <label className="label">
-        <span className="label-text text-sm font-bold text-gray-400 ">{timerName}*</span>
-      </label>
-      <div className="flex h-[60px] w-full">
-        <select className="select mr-[10px] h-full w-full flex-1 bg-[#232B38]">
-          {hour.map((time, index) => {
-            return (
-              <option key={index} value={time}>
-                {time}시간
-              </option>
-            )
-          })}
-        </select>
-        <select className="select h-full w-full flex-1 bg-[#232B38]">
-          {min.map((time, index) => {
-            return (
-              <option key={index} value={time}>
-                {String(time).padStart(2, '0')}분
-              </option>
-            )
-          })}
-        </select>
+    <>
+      <input type="hidden" {...register('endTime')} />
+      <div className="mb-8 h-min">
+        <label className="label">
+          <span className="label-text text-sm font-bold text-gray-300 ">{timerName}*</span>
+        </label>
+        <div className="flex h-[60px] w-full">
+          <select
+            className="select mr-[10px] h-full w-full flex-1 border-grey-800 bg-[#232B38]"
+            onChange={handleHourSelect}>
+            {hourList.map((time, index) => {
+              return (
+                <option key={index} value={time}>
+                  {time}시간
+                </option>
+              )
+            })}
+          </select>
+          <select className="select h-full w-full flex-1 border-grey-800 bg-[#232B38]" onChange={handleMinuteSelect}>
+            {minutesList.map((time, index) => {
+              return (
+                <option key={index} value={time}>
+                  {String(time).padStart(2, '0')}분
+                </option>
+              )
+            })}
+          </select>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
+interface StartTimeSetProps {
+  timerName: string
+  startTime: Date
+  setStartTime: React.Dispatch<React.SetStateAction<Date>>
+}
+
 // eslint-disable-next-line react/display-name
-TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
+TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeSetProps) => {
   const [modalState, setModalState] = useState<'date' | 'time'>('date')
   const [modalVisible, setModalVisible] = useState(false)
-  const [startTime, setStartTime] = useState(new Date())
 
   const { register, setValue } = useFormContext()
 
@@ -165,20 +200,21 @@ TimerInputBox.StartTimeSet = ({ timerName }: { timerName: string }) => {
     if (timeIndex === 0) {
       startTime.setHours(startTime.getHours() + 1)
     }
+    console.log('nt',nowTime)
     startTime.setMinutes(minutes[Math.ceil(nowMinute / 5)])
   }, [])
 
   useEffect(() => {
-    setValue('setTime', startTime)
+    setValue('startTime', startTime)
   }, [startTime])
 
   return (
     <>
-      <input type="hidden" {...register('setTime')} />
+      <input type="hidden" {...register('startTime')} />
       <div id="root-modal" className="absolute left-0 top-0"></div>
       <div className="mb-8 mb-[6.25rem] h-min">
         <label className="label">
-          <span className="label-text text-sm font-bold text-gray-400">{timerName}*</span>
+          <span className="label-text text-sm font-bold text-gray-300">{timerName}*</span>
         </label>
         <div className="h-[7.5rem] overflow-hidden rounded-[10px] bg-grey-900 text-lg font-medium">
           <input
