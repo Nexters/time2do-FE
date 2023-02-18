@@ -39,7 +39,7 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
   const { register, setValue } = useFormContext()
 
   const insertTag = async () => {
-    if (tags.length >= 2 || !input) {
+    if (tags.length >= 1 || !input) {
       setInput('')
     } else {
       setTags([...tags, input.trim()])
@@ -74,18 +74,16 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
     <>
       <input type="hidden" {...register('tags')} />
       <div className="mb-8 h-min">
-        <div className="">
+        <div>
           <label className="label">
             <span className="label-text text-sm font-bold text-gray-300 ">
               {timerName}
               {required && '*'}
             </span>
           </label>
-          <div
-            className="border-1 flex h-[60px] w-full items-center rounded-[10px]
-          border-solid border-grey-800 bg-[#232B38] text-lg text-[#B0B8C1]">
+          <div className="flex h-[60px] w-full items-center rounded-[10px] border-[1px] border-grey-800 bg-grey-900 text-grey-300">
             <input
-              className="input mr-3 flex-1 border-none bg-transparent placeholder:text-[#4E5968]"
+              className="input mr-3 flex-1 bg-grey-900 text-display6 font-medium placeholder:text-grey-700"
               type="text"
               placeholder={placeHolder}
               value={input}
@@ -129,8 +127,6 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
 
   useEffect(() => {
     const endTime = new Date(startTime)
-
-    console.log(startTime)
     endTime.setHours(endTime.getHours() + parseInt(hour))
     endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
     setValue('endTime', endTime)
@@ -145,7 +141,7 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
         </label>
         <div className="flex h-[60px] w-full">
           <select
-            className="select mr-[10px] h-full w-full flex-1 border-grey-800 bg-[#232B38]"
+            className="select mr-[10px] h-full w-full flex-1 border-grey-800 bg-grey-900 text-display6 font-medium"
             onChange={handleHourSelect}>
             {hourList.map((time, index) => {
               return (
@@ -155,7 +151,9 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
               )
             })}
           </select>
-          <select className="select h-full w-full flex-1 border-grey-800 bg-[#232B38]" onChange={handleMinuteSelect}>
+          <select
+            className="select h-full w-full flex-1 border-grey-800 bg-grey-900 text-display6 font-medium"
+            onChange={handleMinuteSelect}>
             {minutesList.map((time, index) => {
               return (
                 <option key={index} value={time}>
@@ -196,14 +194,12 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
     const nowTime = new Date()
     const nowMinute = nowTime.getMinutes()
     const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
-    const timeIndex = Math.ceil(nowMinute / 5) > minutes.length ? 0 : Math.ceil(nowMinute / 5)
+    const timeIndex = Math.ceil(nowMinute / 5) >= minutes.length ? 0 : Math.ceil(nowMinute / 5)
     if (timeIndex === 0) {
-      startTime.setHours(startTime.getHours() + 1)
+      startTime.setHours(nowTime.getHours() + 1)
     }
-    console.log('nt',nowTime)
-    startTime.setMinutes(minutes[Math.ceil(nowMinute / 5)])
+    startTime.setMinutes(minutes[timeIndex])
   }, [])
-
   useEffect(() => {
     setValue('startTime', startTime)
   }, [startTime])
@@ -218,7 +214,7 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
         </label>
         <div className="h-[7.5rem] overflow-hidden rounded-[10px] bg-grey-900 text-lg font-medium">
           <input
-            className="focus-visible:none input h-1/2 w-full rounded-none bg-grey-900 focus:outline-none"
+            className="focus-visible:none input h-1/2 w-full rounded-none border-grey-800 bg-grey-900 text-display6 focus:outline-none"
             value={`${startTime.getFullYear()}년 ${startTime.getMonth() + 1}월 ${startTime.getDate()}일 ${
               WEEKDAY[startTime.getDay()]
             }요일`}
@@ -230,7 +226,7 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
           />
           <label>
             <input
-              className="focus-visible:none input h-1/2 w-full rounded-[0] bg-[#232B38] focus:outline-none"
+              className="focus-visible:none input h-1/2 w-full rounded-[0] border-grey-800 bg-grey-900 text-display6 focus:outline-none"
               value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
                 startTime.getHours() < 12
                   ? `${String(startTime.getHours()).padStart(2, '0')}`
