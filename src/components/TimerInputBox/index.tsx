@@ -214,7 +214,7 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
         </label>
         <div className="h-[7.5rem] overflow-hidden rounded-[10px] bg-grey-900 text-lg font-medium">
           <input
-            className="focus-visible:none input h-1/2 w-full rounded-none border-grey-800 bg-grey-900 text-display6 focus:outline-none"
+            className="focus-visible:none input h-1/2 w-full rounded-[10px] border-grey-800 bg-grey-900 text-display6 focus:outline-none"
             value={`${startTime.getFullYear()}년 ${startTime.getMonth() + 1}월 ${startTime.getDate()}일 ${
               WEEKDAY[startTime.getDay()]
             }요일`}
@@ -226,7 +226,7 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
           />
           <label>
             <input
-              className="focus-visible:none input h-1/2 w-full rounded-[0] border-grey-800 bg-grey-900 text-display6 focus:outline-none"
+              className="focus-visible:none input h-1/2 w-full rounded-[10px] border-grey-800 bg-grey-900 text-display6 focus:outline-none"
               value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
                 startTime.getHours() < 12
                   ? `${String(startTime.getHours()).padStart(2, '0')}`
