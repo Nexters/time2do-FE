@@ -33,7 +33,7 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
 
   if (modalRef.current && mounted) {
     return createPortal(
-      <div className="h-full w-full bg-gray-700">
+      <div>
         <div className="absolute h-screen w-screen bg-black opacity-80" role="presentation" onClick={closePortal} />
         {children}
       </div>,
@@ -113,7 +113,7 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
   }
 
   return (
-    <div className="fixed right-1/2 bottom-1/2  w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-1000 px-[1.375rem] pb-[1.125rem] pt-[25px]">
+    <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-1000 px-[1.375rem] pb-[1.125rem] pt-[25px]">
       <div className="mb-6 mt-[0.0625rem]">
         <label>
           <span className="text-[1.375rem] font-bold">시작 날짜</span>
