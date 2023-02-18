@@ -1,7 +1,7 @@
 import TimerInputBox from '../components/TimerInputBox'
 import Header from '../components/Header'
 import { FormProvider, useForm } from 'react-hook-form'
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import TimerMakeModal from '../components/TimerMakeModal'
 
 export function CountDownNew() {
