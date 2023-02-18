@@ -281,7 +281,7 @@ TimerMakeModal.CompleteModal = () => {
         <span className="text-title1 font-semibold text-grey-300">{`#${groupCode}`}</span>
       </div>
       <div className="flex">
-        <button className={'mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-grey-800'}>닫기</button>
+        <button className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-grey-800">닫기</button>
         <button>
           <div className="flex">
             <img src={LinkShareIcon} alt="링크 공유하기 버튼" />

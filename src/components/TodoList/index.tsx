@@ -31,7 +31,7 @@ export const TodoList = ({ title, readonly = false, todos = [], onChange }: Prop
     return todos.map((todo, i) => (
       <li
         key={todo.id}
-        className={`mb-2 flex items-center justify-between rounded-md border border-solid border-grey-800 bg-grey-900 p-3 text-grey-400 ${cx(
+        className={`mb-2 flex items-center justify-between rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 p-3 text-grey-400 ${cx(
           {
             'ignore-dnd': readonly,
             'cursor-grab': !readonly,
@@ -79,7 +79,7 @@ export const TodoList = ({ title, readonly = false, todos = [], onChange }: Prop
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem]">{title}</h1>
+        <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{title}</h1>
         <div>
           {!readonly && (
             <button
