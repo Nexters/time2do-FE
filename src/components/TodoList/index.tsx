@@ -1,14 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import Plus from '../../assets/svg/Plus'
 import XMark from '../../assets/svg/XMark'
 import { ReactSortable } from 'react-sortablejs'
+import cx from 'classnames'
 
 interface Props {
+  title?: string
+  readonly?: boolean
   todos: any[]
-  onChange: (todos: any[]) => void
+  onChange?: (todos: any[]) => void
 }
 
-export const TodoList = ({ todos = [], onChange }: Props) => {
+export const TodoList = ({ title, readonly = false, todos = [], onChange }: Props) => {
   const [newTodoText, setNewTodoText] = useState('')
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [showNewTodoInput, setShowNewTodoInput] = useState(false)
@@ -20,7 +23,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
   const addTodo = (value: string) => {
     if (!value.trim()) return
     setNewTodoText('')
-    onChange([{ text: value, id: Date.now(), completed: false }, ...todos])
+    onChange?.([{ text: value, id: Date.now(), completed: false }, ...todos])
     newTodoInputRef.current?.focus()
   }
 
@@ -28,13 +31,20 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
     return todos.map((todo, i) => (
       <li
         key={todo.id}
-        className="mb-2 flex cursor-grab items-center justify-between rounded-md border border-grey-800 bg-grey-900 p-3 text-grey-300">
-        <div className="flex items-center">
+        className={`mb-2 flex items-center justify-between rounded-md border border-solid border-grey-800 bg-grey-900 p-3 text-grey-400 ${cx(
+          {
+            'ignore-dnd': readonly,
+            'cursor-grab': !readonly,
+          },
+        )}`}>
+        <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
           <input
             type="checkbox"
             checked={todo.completed}
             onChange={e => {
-              onChange(
+              if (readonly) return
+
+              onChange?.(
                 todos.map((todo, j) => {
                   if (i === j) {
                     return {
@@ -46,37 +56,44 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
                 }),
               )
             }}
-            className="ignore-dnd checkbox-primary checkbox mr-2 focus:border-lime-300 focus:outline-none focus:ring-lime-300"
+            className={`ignore-dnd checkbox-primary checkbox mr-2 focus:border-lime-300 focus:outline-none focus:ring-lime-300 ${cx(
+              { 'cursor-default': readonly },
+            )}`}
           />
           {todo.text}
         </div>
-        <button
-          className="ignore-dnd"
-          onClick={e => {
-            e.preventDefault()
-            onChange(todos.filter((_, j) => i !== j))
-          }}>
-          <XMark />
-        </button>
+        {!readonly && (
+          <button
+            className="ignore-dnd"
+            onClick={e => {
+              e.preventDefault()
+              onChange?.(todos.filter((_, j) => i !== j))
+            }}>
+            <XMark />
+          </button>
+        )}
       </li>
     ))
   }
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-start gap-2">
-        <h1 className="font-pretendard text-lg">할 일 목록 </h1>
-        <button className="btn-primary btn-xs btn-circle btn" onClick={() => setShowNewTodoInput(true)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-6 w-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-        </button>
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem]">{title}</h1>
+        <div>
+          {!readonly && (
+            <button
+              onClick={() => {
+                setShowNewTodoInput(!showNewTodoInput)
+                setTimeout(() => {
+                  newTodoInputRef.current?.focus()
+                }, 0)
+              }}
+              className="btn-primary btn-sm btn text-white">
+              <Plus />할 일 추가
+            </button>
+          )}
+        </div>
       </div>
       <div>
         {showNewTodoInput && (
@@ -84,7 +101,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
             <input
               ref={newTodoInputRef}
               type="text"
-              className="focus:border-primary-300 input mb-2 w-full rounded-r-none border-grey-900 bg-grey-1000 p-3 focus:outline-none focus:ring-primary"
+              className="focus:border-primary-300 focus:ring-primary-300 input mb-2 w-full rounded-r-none border-grey-900 bg-grey-1000 py-[1.125rem] pl-[0.9375rem] pr-[0.75rem] focus:outline-none"
               placeholder="할 일을 입력해주세요."
               value={newTodoText}
               onChange={e => setNewTodoText(e.target.value)}
