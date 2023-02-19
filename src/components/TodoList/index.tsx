@@ -1,26 +1,32 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import Plus from '../../assets/svg/Plus'
+import { useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
 import { ReactSortable } from 'react-sortablejs'
+import { useRecoilState } from 'recoil'
+import { todosAtom } from '../../recoil/atoms'
+import { defaultTodo } from '../../consts'
 
-interface Props {
-  todos: any[]
-  onChange: (todos: any[]) => void
-}
-
-export const TodoList = ({ todos = [], onChange }: Props) => {
+export const TodoList = () => {
+  const [todos, setTodos] = useRecoilState(todosAtom)
   const [newTodoText, setNewTodoText] = useState('')
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [showNewTodoInput, setShowNewTodoInput] = useState(false)
+
+  console.log(todos, '@')
 
   let hasFocus = document.activeElement
   if (!hasFocus || hasFocus == document.body) hasFocus = null
   else if (document.querySelector) hasFocus = document.querySelector(':focus')
 
-  const addTodo = (value: string) => {
+  const addTodo = async (value: string) => {
     if (!value.trim()) return
     setNewTodoText('')
-    onChange([{ text: value, id: Date.now(), completed: false }, ...todos])
+    const newTodo = {
+      ...defaultTodo,
+      id: new Date().getTime(),
+      content: value,
+    }
+    setTodos(prev => [newTodo, ...prev])
+
     newTodoInputRef.current?.focus()
   }
 
@@ -34,7 +40,7 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
             type="checkbox"
             checked={todo.completed}
             onChange={e => {
-              onChange(
+              setTodos(
                 todos.map((todo, j) => {
                   if (i === j) {
                     return {
@@ -46,15 +52,15 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
                 }),
               )
             }}
-            className="ignore-dnd checkbox-primary checkbox mr-2 focus:border-lime-300 focus:outline-none focus:ring-lime-300"
+            className="ignore-dnd checkbox-primary checkbox mr-2 bg-grey-800"
           />
-          {todo.text}
+          {todo.content}
         </div>
         <button
           className="ignore-dnd"
           onClick={e => {
             e.preventDefault()
-            onChange(todos.filter((_, j) => i !== j))
+            setTodos(todos.filter((_, j) => i !== j))
           }}>
           <XMark />
         </button>
@@ -101,7 +107,13 @@ export const TodoList = ({ todos = [], onChange }: Props) => {
             </button>
           </div>
         )}
-        <ReactSortable list={todos} setList={onChange} filter=".ignore-dnd" animation={200}>
+        <ReactSortable
+          tag="ul"
+          // ReactSortable 이 chosen 필드가 추가되기를 원해서 강제 추가
+          list={todos.map(todo => ({ ...todo, chosen: true }))}
+          setList={setTodos}
+          filter=".ignore-dnd"
+          animation={200}>
           {renderTodos()}
         </ReactSortable>
       </div>
