@@ -35,7 +35,7 @@ export function CountDownNew() {
       <div className="m-auto w-11/12">
         <Header title="다운 타이머 만들기" />
         <FormProvider {...methods}>
-          <form>
+          <form onSubmit={methods.handleSubmit(onSubmit)}>
             <TimerInputBox timerName="타이머 이름" placeHolder="타이머 이름을 입력해주세요. (15자 이내)" />
             <TimerInputBox.TagSelect
               timerName="관련 태그"
@@ -48,16 +48,12 @@ export function CountDownNew() {
               startTime={startTime}
               setStartTime={setStartTime}
             />
-            <button
-              className="btn-primary btn h-[60px] w-full border-0 bg-[#786DFF] text-xl"
-              onSubmit={methods.handleSubmit(onSubmit)}>
-              그룹 생성하기
-            </button>
+            <button className="btn-primary btn h-[60px] w-full border-0 bg-[#786DFF] text-xl">그룹 생성하기</button>
           </form>
         </FormProvider>
         {modalVisible && (
           <TimerMakeModal closePortal={modalClose}>
-            <TimerMakeModal.CompleteModal />
+            <TimerMakeModal.CompleteModal closePortal={modalClose} />
           </TimerMakeModal>
         )}
       </div>
