@@ -52,7 +52,7 @@ module.exports = {
         10.5: '2.265rem',
         11.5: '2.875rem',
 
-        display1:'3.75rem',
+        display1: '3.75rem',
         display2: '2.5rem',
         display3: '1.875rem',
         display4: '1.75rem',
@@ -63,7 +63,7 @@ module.exports = {
         body1: '1.1875rem',
         body2: '1.0625rem',
         body3: '0.9375rem',
-        body4: '0.875rem'
+        body4: '0.875rem',
       },
     },
   },

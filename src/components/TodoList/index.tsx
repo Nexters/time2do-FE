@@ -5,13 +5,14 @@ import { useRecoilState } from 'recoil'
 import { todosAtom } from '../../recoil/atoms'
 import { defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
+import cx from 'classnames'
 
 interface Props {
   title?: string
   readonly?: boolean
 }
 
-export const TodoList = ({ title, readonly }: Props) => {
+export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
   const [todos, setTodos] = useRecoilState(todosAtom)
   const [newTodoText, setNewTodoText] = useState('')
   const newTodoInputRef = useRef<HTMLInputElement>(null)
@@ -64,9 +65,7 @@ export const TodoList = ({ title, readonly }: Props) => {
                 }),
               )
             }}
-            className={`ignore-dnd checkbox-primary checkbox mr-2 focus:border-lime-300 focus:outline-none focus:ring-lime-300 ${cx(
-              { 'cursor-default': readonly },
-            )}`}
+            className={`ignore-dnd checkbox-primary checkbox mr-2 bg-grey-800 ${cx({ 'cursor-default': readonly })}`}
           />
           {todo.content}
         </div>
@@ -86,7 +85,7 @@ export const TodoList = ({ title, readonly }: Props) => {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-start gap-2">
         <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{title}</h1>
         <div>
           {!readonly && (
@@ -97,8 +96,8 @@ export const TodoList = ({ title, readonly }: Props) => {
                   newTodoInputRef.current?.focus()
                 }, 0)
               }}
-              className="btn-primary btn-sm btn text-white">
-              <Plus />할 일 추가
+              className="btn-primary btn-xs btn-circle btn text-white">
+              <Plus />
             </button>
           )}
         </div>
