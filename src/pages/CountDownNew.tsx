@@ -1,7 +1,7 @@
 import TimerInputBox from '../components/TimerInputBox'
 import Header from '../components/Header'
 import { FormProvider, useForm } from 'react-hook-form'
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import TimerMakeModal from '../components/TimerMakeModal'
 
 export function CountDownNew() {
@@ -15,9 +15,6 @@ export function CountDownNew() {
     return setModalVisible(false)
   }
 
-  useEffect(() => {
-    console.log('st', startTime)
-  })
   const methods = useForm({
     defaultValues: {
       id: 0,
@@ -31,6 +28,7 @@ export function CountDownNew() {
   })
   const onSubmit = (data: any) => {
     console.log(data)
+    modalOpen()
   }
   return (
     <div className="h-screen bg-[#0F1214] text-center">
@@ -50,14 +48,12 @@ export function CountDownNew() {
               startTime={startTime}
               setStartTime={setStartTime}
             />
-            <button className="btn-primary btn h-[60px] w-full border-0 bg-[#786DFF] text-xl" onClick={modalOpen}>
-              그룹 생성하기
-            </button>
+            <button className="btn-primary btn h-[60px] w-full border-0 bg-[#786DFF] text-xl">그룹 생성하기</button>
           </form>
         </FormProvider>
         {modalVisible && (
           <TimerMakeModal closePortal={modalClose}>
-            <TimerMakeModal.CompleteModal />
+            <TimerMakeModal.CompleteModal closePortal={modalClose} />
           </TimerMakeModal>
         )}
       </div>

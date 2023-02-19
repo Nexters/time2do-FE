@@ -15,6 +15,7 @@ import {
   addDays,
   subDays,
 } from 'date-fns'
+import useCopyClipBoard from '../../hooks/useCopyClipBoard'
 
 interface TimerMakeModalProps {
   children: React.ReactNode
@@ -33,7 +34,7 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
 
   if (modalRef.current && mounted) {
     return createPortal(
-      <div className="h-full w-full bg-gray-700">
+      <div>
         <div className="absolute h-screen w-screen bg-black opacity-80" role="presentation" onClick={closePortal} />
         {children}
       </div>,
@@ -113,7 +114,7 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
   }
 
   return (
-    <div className="fixed right-1/2 bottom-1/2  w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-1000 px-[1.375rem] pb-[1.125rem] pt-[25px]">
+    <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-1000 px-[1.375rem] pb-[1.125rem] pt-[25px]">
       <div className="mb-6 mt-[0.0625rem]">
         <label>
           <span className="text-[1.375rem] font-bold">시작 날짜</span>
@@ -259,8 +260,10 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
 }
 
 // eslint-disable-next-line react/display-name
-TimerMakeModal.CompleteModal = () => {
+TimerMakeModal.CompleteModal = ({ closePortal }: { closePortal: any }) => {
   const [groupCode, setGroupCode] = useState<string>('')
+  const [isCopy, onCopy] = useCopyClipBoard()
+
   const getGroupCode = () => {
     return '123456'
   }
@@ -270,21 +273,27 @@ TimerMakeModal.CompleteModal = () => {
   }, [])
 
   return (
-    <div className="fixed right-1/2 bottom-1/2 h-[277px] w-[388px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-[#191F28] px-[22px] pb-4.5 pt-6 text-left">
+    <div className="fixed right-1/2 bottom-1/2 h-[277px] w-[388px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[22px] pb-4.5 pt-[25px] text-left">
       <div className="mb-4">
         <span className="text-[22px] font-bold text-grey-200">그룹이 생성되었어요!</span>
       </div>
       <div className="mb-5.5">
         <span>코드를 공유해 친구들을 초대해봐요</span>
       </div>
-      <div className="mb-[22px] h-14 w-full rounded-[10px] bg-grey-900">
-        <span className="text-title1 font-semibold text-grey-300">{`#${groupCode}`}</span>
+      <div className="mb-[22px] h-[60px] w-full items-center rounded-[10px] bg-grey-1000 text-center">
+        <span className="align-middle text-title1 font-semibold leading-[60px] text-grey-300">{`#${groupCode}`}</span>
       </div>
-      <div className="flex">
-        <button className={'mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-grey-800'}>닫기</button>
-        <button>
-          <div className="flex">
-            <img src={LinkShareIcon} alt="링크 공유하기 버튼" />
+      <div className="flex text-title2 font-semibold text-white">
+        <button className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-grey-800" onClick={closePortal}>
+          닫기
+        </button>
+        <button
+          className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-primary"
+          onClick={() => {
+            onCopy(groupCode)
+          }}>
+          <div className="flex justify-center">
+            <img className="mr-[4px]" src={LinkShareIcon} alt="링크 공유하기 버튼" />
             <span>코드 공유</span>
           </div>
         </button>
