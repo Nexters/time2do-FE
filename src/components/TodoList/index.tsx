@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
 import { ReactSortable } from 'react-sortablejs'
 import { useRecoilState } from 'recoil'
@@ -13,12 +13,24 @@ interface Props {
 }
 
 export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
-  const [todos, setTodos] = useRecoilState(todosAtom)
+  const [todos = [], setTodos] = useRecoilState(todosAtom)
   const [newTodoText, setNewTodoText] = useState('')
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [showNewTodoInput, setShowNewTodoInput] = useState(false)
 
+  const [test, setTest] = useState()
+
   console.log(todos, '@')
+  console.log()
+  useEffect(() => {
+    async function getStore() {
+      const todo2 = await chrome.storage?.local.get(['todos']).then(result => result?.todos)
+      setTest(todo2 ?? [])
+    }
+    getStore()
+  }, [todos])
+
+  console.log('@@', test)
 
   let hasFocus = document.activeElement
   if (!hasFocus || hasFocus == document.body) hasFocus = null

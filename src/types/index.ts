@@ -11,3 +11,10 @@ export type Todo = {
   modifiedTime?: Date | undefined
   deletedTime?: Date | undefined
 }
+
+export type Timer = {
+  title: string
+  isRunning: boolean
+  startTimestamp: number
+  endTimestamp?: number
+}
