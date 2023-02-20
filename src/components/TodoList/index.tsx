@@ -6,6 +6,7 @@ import { todosAtom } from '../../recoil/atoms'
 import { defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
 import cx from 'classnames'
+import { Todo } from '../../types'
 
 interface Props {
   title?: string
@@ -47,52 +48,6 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
     setTodos(prev => [newTodo, ...prev])
 
     newTodoInputRef.current?.focus()
-  }
-
-  const renderTodos = () => {
-    return todos.map((todo, i) => (
-      <li
-        key={todo.id}
-        className={`mb-2 flex items-center justify-between rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 p-3 text-grey-400 ${cx(
-          {
-            'ignore-dnd': readonly,
-            'cursor-grab': !readonly,
-          },
-        )}`}>
-        <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
-          <input
-            type="checkbox"
-            checked={todo.completed}
-            onChange={e => {
-              if (readonly) return
-              setTodos(
-                todos.map((todo, j) => {
-                  if (i === j) {
-                    return {
-                      ...todo,
-                      completed: e.target.checked,
-                    }
-                  }
-                  return todo
-                }),
-              )
-            }}
-            className={`ignore-dnd checkbox-primary checkbox mr-2 bg-grey-800 ${cx({ 'cursor-default': readonly })}`}
-          />
-          {todo.content}
-        </div>
-        {!readonly && (
-          <button
-            className="ignore-dnd"
-            onClick={e => {
-              e.preventDefault()
-              setTodos(todos.filter((_, j) => i !== j))
-            }}>
-            <XMark />
-          </button>
-        )}
-      </li>
-    ))
   }
 
   return (
@@ -144,9 +99,72 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
           setList={setTodos}
           filter=".ignore-dnd"
           animation={200}>
-          {renderTodos()}
+          {todos.map((todo, i) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              readonly={Boolean(readonly)}
+              onRemoveItem={id => setTodos(todos.filter(todo => todo.id !== id))}
+              onToggleComplete={(id, isChecked) =>
+                setTodos(
+                  todos.map(todo => {
+                    if (id === todo.id) {
+                      return {
+                        ...todo,
+                        completed: isChecked,
+                      }
+                    }
+                    return todo
+                  }),
+                )
+              }
+            />
+          ))}
         </ReactSortable>
       </div>
     </>
+  )
+}
+
+interface TodoItemProps {
+  todo: Todo
+  readonly: boolean
+  onToggleComplete: (id: number, isChecked: boolean) => void
+  onRemoveItem: (id: number) => void
+}
+
+const TodoItem = ({ todo, readonly, onToggleComplete, onRemoveItem }: TodoItemProps) => {
+  return (
+    <li
+      key={todo.id}
+      className={`mb-2 flex items-center justify-between rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 p-3 text-grey-400 ${cx(
+        {
+          'ignore-dnd': readonly,
+          'cursor-grab': !readonly,
+        },
+      )}`}>
+      <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={e => {
+            if (readonly) return
+            onToggleComplete(todo.id, e.target.checked)
+          }}
+          className={`ignore-dnd checkbox-primary checkbox mr-2 bg-grey-800 ${cx({ 'cursor-default': readonly })}`}
+        />
+        {todo.content}
+      </div>
+      {!readonly && (
+        <button
+          className="ignore-dnd"
+          onClick={e => {
+            e.preventDefault()
+            onRemoveItem(todo.id)
+          }}>
+          <XMark />
+        </button>
+      )}
+    </li>
   )
 }
