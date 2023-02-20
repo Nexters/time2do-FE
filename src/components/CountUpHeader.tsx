@@ -1,25 +1,54 @@
 import { useStopwatch } from 'react-timer-hook'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRecoilState } from 'recoil'
+import { timerAtom } from '../recoil/atoms'
+import Switch from '../assets/svg/Switch'
+import Report from '../assets/svg/ReportIcon'
 
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
 
 export const CountUpHeader = () => {
-  const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({ autoStart: false })
-  const [hasStarted, setHasStarted] = useState(false)
+  const [timer, setTimer] = useRecoilState(timerAtom)
+  const { isRunning: isTimerRunning, startTimestamp } = timer
+
+  const stopwatchOffset = new Date()
+  const diff = stopwatchOffset.setSeconds(stopwatchOffset.getTime() - startTimestamp) / 1000
+
+  console.log(diff, 'diff')
+  const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
+    autoStart: false,
+    offsetTimestamp: stopwatchOffset,
+  })
+
+  useEffect(() => {
+    if (!isRunning && isTimerRunning) {
+      start()
+    }
+  }, [isTimerRunning])
 
   const startTimer = () => {
-    setHasStarted(true)
+    setTimer({ isRunning: true, startTimestamp: new Date().getTime() })
     start()
   }
 
   const resetTimer = () => {
-    setHasStarted(false)
+    setTimer(prev => ({ ...prev, endTimestamp: new Date().getTime(), isRunning: false }))
     reset(undefined, false)
   }
 
   return (
     <div className="grid h-full w-full items-end justify-center bg-[url('/img/character.png')] bg-cover bg-center text-white">
+      <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
+        <button className="btn-primary btn-sm btn h-10 border-0 bg-opacity-50 text-lg font-bold">
+          개인모드
+          <Switch classNames="ml-2" />
+        </button>
+
+        <button className="">
+          <Report />
+        </button>
+      </div>
       <div className="col-span-full row-span-full mb-9 min-w-full text-center">
         <div className="mb-3">
           <div className="mb-3">
@@ -32,7 +61,7 @@ export const CountUpHeader = () => {
         </div>
         <div className="mb-4 text-lg font-semibold">오늘 무조건 다 끝내본다!!</div>
         <TimerButtons
-          hasStarted={hasStarted}
+          hasStarted={isTimerRunning}
           isRunning={isRunning}
           onStartClick={startTimer}
           onResetClick={resetTimer}
