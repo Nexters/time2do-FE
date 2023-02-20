@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
-import { ReactSortable } from 'react-sortablejs'
 import { useRecoilState } from 'recoil'
 import { todosAtom } from '../../recoil/atoms'
 import { defaultTodo } from '../../consts'
@@ -92,35 +91,40 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
             </button>
           </div>
         )}
-        <ReactSortable
-          tag="ul"
-          // ReactSortable 이 chosen 필드가 추가되기를 원해서 강제 추가
-          list={todos.map(todo => ({ ...todo, chosen: true }))}
-          setList={setTodos}
-          filter=".ignore-dnd"
-          animation={200}>
-          {todos.map((todo, i) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              readonly={Boolean(readonly)}
-              onRemoveItem={id => setTodos(todos.filter(todo => todo.id !== id))}
-              onToggleComplete={(id, isChecked) =>
-                setTodos(
-                  todos.map(todo => {
-                    if (id === todo.id) {
-                      return {
-                        ...todo,
-                        completed: isChecked,
-                      }
+        {todos.map(todo => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            readonly={Boolean(readonly)}
+            onContentChange={value => {
+              setTodos(
+                todos.map(oldTodo => {
+                  if (oldTodo.id === todo.id) {
+                    return {
+                      ...todo,
+                      content: value,
                     }
-                    return todo
-                  }),
-                )
-              }
-            />
-          ))}
-        </ReactSortable>
+                  }
+                  return todo
+                }),
+              )
+            }}
+            onRemoveItem={id => setTodos(todos.filter(todo => todo.id !== id))}
+            onToggleComplete={(id, isChecked) =>
+              setTodos(
+                todos.map(todo => {
+                  if (id === todo.id) {
+                    return {
+                      ...todo,
+                      completed: isChecked,
+                    }
+                  }
+                  return todo
+                }),
+              )
+            }
+          />
+        ))}
       </div>
     </>
   )
@@ -131,18 +135,14 @@ interface TodoItemProps {
   readonly: boolean
   onToggleComplete: (id: number, isChecked: boolean) => void
   onRemoveItem: (id: number) => void
+  onContentChange: (value: string) => void
 }
 
-const TodoItem = ({ todo, readonly, onToggleComplete, onRemoveItem }: TodoItemProps) => {
+const TodoItem = ({ todo, readonly, onToggleComplete, onRemoveItem, onContentChange }: TodoItemProps) => {
   return (
     <li
       key={todo.id}
-      className={`mb-2 flex items-center justify-between rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 p-3 text-grey-400 ${cx(
-        {
-          'ignore-dnd': readonly,
-          'cursor-grab': !readonly,
-        },
-      )}`}>
+      className="mb-2 flex items-center justify-between rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 p-2 text-grey-400">
       <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
         <input
           type="checkbox"
@@ -151,9 +151,14 @@ const TodoItem = ({ todo, readonly, onToggleComplete, onRemoveItem }: TodoItemPr
             if (readonly) return
             onToggleComplete(todo.id, e.target.checked)
           }}
-          className={`ignore-dnd checkbox-primary checkbox mr-2 bg-grey-800 ${cx({ 'cursor-default': readonly })}`}
+          className={`checkbox-primary checkbox ml-4 mr-3 bg-grey-800 ${cx({ 'cursor-default': readonly })}`}
         />
-        {todo.content}
+        <input
+          type="text"
+          className="border-0 bg-grey-900 text-lg font-medium text-grey-300 focus:outline-none focus:ring-0"
+          value={todo.content}
+          onChange={e => onContentChange(e.target.value)}
+        />
       </div>
       {!readonly && (
         <button
