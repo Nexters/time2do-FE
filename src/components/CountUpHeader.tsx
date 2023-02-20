@@ -4,6 +4,7 @@ import { useRecoilState } from 'recoil'
 import { timerAtom } from '../recoil/atoms'
 import Switch from '../assets/svg/Switch'
 import Report from '../assets/svg/ReportIcon'
+import EditIcon from '../assets/svg/EditIcon'
 
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
@@ -59,7 +60,12 @@ export const CountUpHeader = () => {
             </span>
           </div>
         </div>
-        <div className="mb-4 text-lg font-semibold">오늘 무조건 다 끝내본다!!</div>
+        <div className="mb-4 flex items-center justify-center text-xl font-semibold">
+          <h1 className="mr-1">오늘 무조건 다 끝내본다!!</h1>
+          <button>
+            <EditIcon />
+          </button>
+        </div>
         <TimerButtons
           hasStarted={isTimerRunning}
           isRunning={isRunning}
