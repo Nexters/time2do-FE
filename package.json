@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && rsync -ar src/public/* dist/",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vite --host 0.0.0.0 --port 3000"
   },
   "dependencies": {
     "@formkit/auto-animate": "^1.0.0-beta.5",
