@@ -5,9 +5,9 @@ const syncStorageEffect =
   (targetKey: string): AtomEffect<any> =>
   ({ setSelf, onSet, trigger }) => {
     console.log('TEST')
-    if (!chrome?.storage) return
+    if (!window?.chrome?.storage) return
     const loadStorage = async () => {
-      const savedValue = await chrome.storage.local.get([targetKey]).then(result => result?.[targetKey])
+      const savedValue = await chrome?.storage.local.get([targetKey]).then(result => result?.[targetKey])
       console.log(savedValue, targetKey)
       if (savedValue != null) {
         setSelf(savedValue)
@@ -20,7 +20,8 @@ const syncStorageEffect =
 
     onSet((newValue, _, _isReset) => {
       console.log(newValue, '***', targetKey)
-      chrome.storage.local.set({
+      if (!window?.chrome?.storage) return
+      window?.chrome?.storage.local.set({
         [targetKey]: newValue,
       })
     })

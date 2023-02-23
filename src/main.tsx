@@ -8,7 +8,7 @@ import './index.css'
 // 정확한 원인과 해결방법은 아직 모르지만 일단 MemoryRouter 로 했을 때 익스텐션에서 동작함을 확인
 
 const WrapperRouter = ({ children }: { children: ReactNode }) => {
-  if (chrome.storage) {
+  if (window?.chrome?.storage) {
     return <MemoryRouter>{children}</MemoryRouter>
   }
   return <BrowserRouter>{children}</BrowserRouter>

@@ -53,7 +53,7 @@ export const CountUpHeader = () => {
 
   return (
     <>
-      <div className="grid h-full w-full items-end justify-center bg-[url('/img/character.png')] bg-cover bg-center text-white">
+      <div className="relative h-full w-full bg-[url('/img/character.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
           <button className="btn-primary btn-sm btn h-10 border-0 bg-opacity-50 text-lg font-bold">
             개인모드
@@ -64,7 +64,7 @@ export const CountUpHeader = () => {
             <Report />
           </button>
         </div>
-        <div className="col-span-full row-span-full mb-9 min-w-full text-center">
+        <div className="absolute bottom-0 mb-9 min-w-full text-center ">
           <div className="mb-3">
             <div className="mb-3">
               <span className="countdown font-montserrat text-6xl font-bold">
