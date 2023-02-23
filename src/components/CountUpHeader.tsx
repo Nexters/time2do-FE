@@ -55,7 +55,7 @@ export const CountUpHeader = () => {
     <>
       <div className="relative h-full w-full bg-[url('/img/character.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button className="btn-primary btn-sm btn h-10 border-0 bg-opacity-50 text-lg font-bold">
+          <button className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
             개인모드
             <Switch classNames="ml-2" />
           </button>
@@ -64,10 +64,10 @@ export const CountUpHeader = () => {
             <Report />
           </button>
         </div>
-        <div className="absolute bottom-0 mb-9 min-w-full text-center ">
+        <div className="absolute bottom-0 mb-9 min-w-full text-center text-grey-850">
           <div className="mb-3">
             <div className="mb-3">
-              <span className="countdown font-montserrat text-6xl font-bold">
+              <span className="countdown font-montserrat text-[4rem] font-bold">
                 {/* @ts-ignore */}
                 <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:
                 {/* @ts-ignore */}
@@ -158,7 +158,7 @@ export const TimerButtons = ({
               clipRule="evenodd"
             />
           </svg>
-          시작하기
+          재시작
         </button>
       )}
 
