@@ -35,7 +35,7 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
   if (modalRef.current && mounted) {
     return createPortal(
       <div>
-        <div className="absolute h-screen w-screen bg-black opacity-80" role="presentation" onClick={closePortal} />
+        <div className="fixed h-screen w-screen bg-black opacity-80" role="presentation" onClick={closePortal} />
         {children}
       </div>,
       modalRef.current,

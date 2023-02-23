@@ -56,7 +56,7 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
           )}
         </div>
       </div>
-      <div>
+      <div className="relative w-full">
         {todos.map((todo, index) => (
           <TodoItem
             ref={index === 0 ? newTodoInputRef : null}
@@ -97,7 +97,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
       <li
         key={todo.id}
         className={cls(
-          'mb-[0.625rem] flex items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
+          'mb-[0.625rem] flex w-full items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
           isFocused ? 'bg-primary bg-opacity-10 ring-2 ring-primary' : '',
         )}>
         {/* <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
