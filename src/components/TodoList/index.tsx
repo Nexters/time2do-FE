@@ -1,127 +1,151 @@
-import { useRef, useState } from 'react'
-import Plus from '../../assets/svg/Plus'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
-import { ReactSortable } from 'react-sortablejs'
-import cx from 'classnames'
+import { useRecoilState } from 'recoil'
+import { todosAtom } from '../../recoil/atoms'
+import { defaultTodo } from '../../consts'
+import Plus from '../../assets/svg/Plus'
+import { Todo } from '../../types'
+import { v4 as uuid } from 'uuid'
+import { cls } from '../../utils/cls'
+import { usePrevious } from 'react-use'
 
 interface Props {
   title?: string
   readonly?: boolean
-  todos: any[]
-  onChange?: (todos: any[]) => void
 }
 
-export const TodoList = ({ title, readonly = false, todos = [], onChange }: Props) => {
-  const [newTodoText, setNewTodoText] = useState('')
+export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
+  const [todos = [], setTodos] = useRecoilState(todosAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
-  const [showNewTodoInput, setShowNewTodoInput] = useState(false)
-
-  let hasFocus = document.activeElement
-  if (!hasFocus || hasFocus == document.body) hasFocus = null
-  else if (document.querySelector) hasFocus = document.querySelector(':focus')
+  console.log(todos)
 
   const addTodo = (value: string) => {
-    if (!value.trim()) return
-    setNewTodoText('')
-    onChange?.([{ text: value, id: Date.now(), completed: false }, ...todos])
-    newTodoInputRef.current?.focus()
+    const id = uuid()
+    const newTodo = {
+      ...defaultTodo,
+      id,
+      content: value,
+    }
+    setTodos(prev => [newTodo, ...prev])
   }
 
-  const renderTodos = () => {
-    return todos.map((todo, i) => (
-      <li
-        key={todo.id}
-        className={`mb-2 flex items-center justify-between rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 p-3 text-grey-400 ${cx(
-          {
-            'ignore-dnd': readonly,
-            'cursor-grab': !readonly,
-          },
-        )}`}>
-        <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
-          <input
-            type="checkbox"
-            checked={todo.completed}
-            onChange={e => {
-              if (readonly) return
+  const prevLength = usePrevious(todos.length)
+  useEffect(() => {
+    if (todos.length > (prevLength ?? 0)) {
+      newTodoInputRef.current?.focus()
+    }
+  }, [todos.length])
 
-              onChange?.(
-                todos.map((todo, j) => {
-                  if (i === j) {
-                    return {
-                      ...todo,
-                      completed: e.target.checked,
-                    }
-                  }
-                  return todo
-                }),
-              )
-            }}
-            className={`ignore-dnd checkbox-primary checkbox mr-2 focus:border-lime-300 focus:outline-none focus:ring-lime-300 ${cx(
-              { 'cursor-default': readonly },
-            )}`}
-          />
-          {todo.text}
-        </div>
-        {!readonly && (
-          <button
-            className="ignore-dnd"
-            onClick={e => {
-              e.preventDefault()
-              onChange?.(todos.filter((_, j) => i !== j))
-            }}>
-            <XMark />
-          </button>
-        )}
-      </li>
-    ))
+  const updateTodo = (newTodo: Todo) => {
+    setTodos(prev => prev.map(todo => (todo.id === newTodo.id ? newTodo : todo)))
   }
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-start gap-2">
         <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{title}</h1>
         <div>
           {!readonly && (
             <button
               onClick={() => {
-                setShowNewTodoInput(!showNewTodoInput)
-                setTimeout(() => {
-                  newTodoInputRef.current?.focus()
-                }, 0)
+                addTodo('')
               }}
-              className="btn-primary btn-sm btn text-white">
-              <Plus />할 일 추가
+              className="btn-primary btn-xs btn-circle btn text-white">
+              <Plus />
             </button>
           )}
         </div>
       </div>
       <div>
-        {showNewTodoInput && (
-          <div className="flex">
-            <input
-              ref={newTodoInputRef}
-              type="text"
-              className="focus:border-primary-300 focus:ring-primary-300 input mb-2 w-full rounded-r-none border-grey-900 bg-grey-1000 py-[1.125rem] pl-[0.9375rem] pr-[0.75rem] focus:outline-none"
-              placeholder="할 일을 입력해주세요."
-              value={newTodoText}
-              onChange={e => setNewTodoText(e.target.value)}
-              onKeyPress={e => {
-                e.key === 'Enter' && addTodo(newTodoText)
-              }}
-            />
-            <button
-              onClick={() => {
-                addTodo(newTodoText)
-              }}
-              className="btn-primary btn rounded-l-none">
-              추가
-            </button>
-          </div>
-        )}
-        <ReactSortable list={todos} setList={onChange} filter=".ignore-dnd" animation={200}>
-          {renderTodos()}
-        </ReactSortable>
+        {todos.map((todo, index) => (
+          <TodoItem
+            ref={index === 0 ? newTodoInputRef : null}
+            key={todo.id}
+            todo={todo}
+            readonly={Boolean(readonly)}
+            onRemoveTodo={deletedTodo => setTodos(todos.filter(todo => todo.id !== deletedTodo.id))}
+            onUpdateTodo={updateTodo}
+            onAddTodo={() => addTodo('')}
+          />
+        ))}
       </div>
     </>
   )
 }
+
+interface TodoItemProps {
+  todo: Todo
+  readonly: boolean
+  onAddTodo: () => void
+  onRemoveTodo: (deletedTodo: Todo) => void
+  onUpdateTodo: (newTodo: Todo) => void
+}
+
+const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
+  ({ todo, readonly, onRemoveTodo, onUpdateTodo, onAddTodo }, ref) => {
+    const [isFocused, setIsFocused] = useState(false)
+    const handleFocus = () => {
+      setIsFocused(true)
+    }
+
+    const handleBlur = () => {
+      if (!todo.content) onRemoveTodo(todo)
+      setIsFocused(false)
+    }
+
+    return (
+      <li
+        key={todo.id}
+        className={cls(
+          'mb-[0.625rem] flex items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
+          isFocused ? 'bg-primary bg-opacity-10 ring-2 ring-primary' : '',
+        )}>
+        {/* <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
+      </div> */}
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={e => {
+            if (readonly) return
+            onUpdateTodo({
+              ...todo,
+              completed: e.target.checked,
+            })
+          }}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          className="checkbox-primary checkbox rounded-sm border-0 bg-grey-800"
+        />
+        <input
+          type="text"
+          className="flex-1 border-0 bg-grey-900 p-0 text-lg font-medium text-grey-300 caret-primary focus:outline-none focus:ring-0"
+          value={todo.content}
+          spellCheck={false}
+          onChange={e => onUpdateTodo({ ...todo, content: e.target.value })}
+          placeholder="오늘의 할 일을 작성해주세요"
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          ref={ref}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              onAddTodo()
+            }
+          }}
+        />
+        {!readonly && (
+          <button
+            className="ignore-dnd"
+            onClick={e => {
+              e.preventDefault()
+              onRemoveTodo(todo)
+            }}>
+            <XMark />
+          </button>
+        )}
+      </li>
+    )
+  },
+)
+
+TodoItem.displayName = 'TodoItem'

@@ -6,7 +6,6 @@ import profileImageUrl from '../assets/svg/Profile.svg'
 import profileIconUrl from '../assets/svg/ProfileIcon.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
 import TimerMakeModal from '../components/TimerMakeModal'
-import XMark from '../assets/svg/XMark'
 import closeIconUrl from '../assets/svg/Close.svg'
 
 export function Profile() {
@@ -19,14 +18,6 @@ export function Profile() {
   const closeModal = () => {
     setModalVisible(false)
   }
-
-  const [todos, setTodos] = useState([
-    { id: 1, text: '운동하기1', completed: true },
-    { id: 2, text: '운동하기2', completed: true },
-    { id: 3, text: '운동하기3', completed: true },
-    { id: 4, text: '운동하기4', completed: true },
-    { id: 5, text: '운동하기5', completed: true },
-  ])
 
   const nicknameSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -50,7 +41,7 @@ export function Profile() {
           <ReportCalendar />
         </div>
         <div className="py-7 px-6">
-          <TodoList title="완료한 할 일 목록" todos={todos} readonly onChange={todos => setTodos(todos)} />
+          <TodoList title="완료한 할 일 목록" readonly />
         </div>
         <div className="py-7 px-6">
           <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
