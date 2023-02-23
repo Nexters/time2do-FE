@@ -76,7 +76,9 @@ export const CountUpHeader = () => {
             </div>
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
-            <h1 className="mr-1">{timer.title}</h1>
+            <h1 onClick={openModal} className="mr-1">
+              {timer.title}
+            </h1>
             <button onClick={openModal}>
               <EditIcon />
             </button>
