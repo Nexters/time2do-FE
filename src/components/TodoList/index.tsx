@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
 import { useRecoilState } from 'recoil'
 import { todosAtom } from '../../recoil/atoms'
 import { defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
 import { Todo } from '../../types'
+import { v4 as uuid } from 'uuid'
+import { cls } from '../../utils/cls'
+import { usePrevious } from 'react-use'
 
 interface Props {
   title?: string
@@ -14,32 +17,27 @@ interface Props {
 export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
   const [todos = [], setTodos] = useRecoilState(todosAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
-
-  const [test, setTest] = useState()
   console.log(todos)
 
-  useEffect(() => {
-    async function getStore() {
-      const todo2 = await chrome.storage?.local.get(['todos']).then(result => result?.todos)
-      setTest(todo2 ?? [])
-    }
-    getStore()
-  }, [todos])
-
-  let hasFocus = document.activeElement
-  if (!hasFocus || hasFocus == document.body) hasFocus = null
-  else if (document.querySelector) hasFocus = document.querySelector(':focus')
-
   const addTodo = (value: string) => {
-    const tempId = new Date().getTime()
+    const id = uuid()
     const newTodo = {
       ...defaultTodo,
-      id: tempId,
+      id,
       content: value,
     }
     setTodos(prev => [newTodo, ...prev])
+  }
 
-    newTodoInputRef.current?.focus()
+  const prevLength = usePrevious(todos.length)
+  useEffect(() => {
+    if (todos.length > (prevLength ?? 0)) {
+      newTodoInputRef.current?.focus()
+    }
+  }, [todos.length])
+
+  const updateTodo = (newTodo: Todo) => {
+    setTodos(prev => prev.map(todo => (todo.id === newTodo.id ? newTodo : todo)))
   }
 
   return (
@@ -59,38 +57,15 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
         </div>
       </div>
       <div>
-        {todos.map(todo => (
+        {todos.map((todo, index) => (
           <TodoItem
+            ref={index === 0 ? newTodoInputRef : null}
             key={todo.id}
             todo={todo}
             readonly={Boolean(readonly)}
-            onContentChange={value => {
-              setTodos(
-                todos.map(oldTodo => {
-                  if (oldTodo.id === todo.id) {
-                    return {
-                      ...todo,
-                      content: value,
-                    }
-                  }
-                  return todo
-                }),
-              )
-            }}
-            onRemoveItem={id => setTodos(todos.filter(todo => todo.id !== id))}
-            onToggleComplete={(id, isChecked) =>
-              setTodos(
-                todos.map(todo => {
-                  if (id === todo.id) {
-                    return {
-                      ...todo,
-                      completed: isChecked,
-                    }
-                  }
-                  return todo
-                }),
-              )
-            }
+            onRemoveTodo={deletedTodo => setTodos(todos.filter(todo => todo.id !== deletedTodo.id))}
+            onUpdateTodo={updateTodo}
+            onAddTodo={() => addTodo('')}
           />
         ))}
       </div>
@@ -101,44 +76,76 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
 interface TodoItemProps {
   todo: Todo
   readonly: boolean
-  onToggleComplete: (id: number, isChecked: boolean) => void
-  onRemoveItem: (id: number) => void
-  onContentChange: (value: string) => void
+  onAddTodo: () => void
+  onRemoveTodo: (deletedTodo: Todo) => void
+  onUpdateTodo: (newTodo: Todo) => void
 }
 
-const TodoItem = ({ todo, readonly, onToggleComplete, onRemoveItem, onContentChange }: TodoItemProps) => {
-  return (
-    <li
-      key={todo.id}
-      className="mb-[0.625rem] flex items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400">
-      {/* <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
+const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
+  ({ todo, readonly, onRemoveTodo, onUpdateTodo, onAddTodo }, ref) => {
+    const [isFocused, setIsFocused] = useState(false)
+    const handleFocus = () => {
+      setIsFocused(true)
+    }
+
+    const handleBlur = () => {
+      if (!todo.content) onRemoveTodo(todo)
+      setIsFocused(false)
+    }
+
+    return (
+      <li
+        key={todo.id}
+        className={cls(
+          'mb-[0.625rem] flex items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
+          isFocused ? 'bg-primary bg-opacity-10 ring-2 ring-primary' : '',
+        )}>
+        {/* <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
       </div> */}
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={e => {
-          if (readonly) return
-          onToggleComplete(todo.id, e.target.checked)
-        }}
-        className="checkbox-primary checkbox rounded-sm border-0 bg-grey-800"
-      />
-      <input
-        type="text"
-        className="flex-1 border-0 bg-grey-900 p-0 text-lg font-medium text-grey-300 caret-primary focus:outline-none focus:ring-0"
-        value={todo.content}
-        spellCheck={false}
-        onChange={e => onContentChange(e.target.value)}
-      />
-      {!readonly && (
-        <button
-          className="ignore-dnd"
-          onClick={e => {
-            e.preventDefault()
-            onRemoveItem(todo.id)
-          }}>
-          <XMark />
-        </button>
-      )}
-    </li>
-  )
-}
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={e => {
+            if (readonly) return
+            onUpdateTodo({
+              ...todo,
+              completed: e.target.checked,
+            })
+          }}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          className="checkbox-primary checkbox rounded-sm border-0 bg-grey-800"
+        />
+        <input
+          type="text"
+          className="flex-1 border-0 bg-grey-900 p-0 text-lg font-medium text-grey-300 caret-primary focus:outline-none focus:ring-0"
+          value={todo.content}
+          spellCheck={false}
+          onChange={e => onUpdateTodo({ ...todo, content: e.target.value })}
+          placeholder="오늘의 할 일을 작성해주세요"
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          ref={ref}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              onAddTodo()
+            }
+          }}
+        />
+        {!readonly && (
+          <button
+            className="ignore-dnd"
+            onClick={e => {
+              e.preventDefault()
+              onRemoveTodo(todo)
+            }}>
+            <XMark />
+          </button>
+        )}
+      </li>
+    )
+  },
+)
+
+TodoItem.displayName = 'TodoItem'

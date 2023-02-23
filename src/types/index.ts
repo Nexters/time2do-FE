@@ -1,7 +1,7 @@
 export * from './DOMMessages'
 
 export type Todo = {
-  id: number
+  id: number | string
   userId: number
   content: string
   completed: boolean
