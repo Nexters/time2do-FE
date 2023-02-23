@@ -4,7 +4,6 @@ import { useRecoilState } from 'recoil'
 import { todosAtom } from '../../recoil/atoms'
 import { defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
-import cx from 'classnames'
 import { Todo } from '../../types'
 
 interface Props {
@@ -14,14 +13,11 @@ interface Props {
 
 export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
   const [todos = [], setTodos] = useRecoilState(todosAtom)
-  const [newTodoText, setNewTodoText] = useState('')
   const newTodoInputRef = useRef<HTMLInputElement>(null)
-  const [showNewTodoInput, setShowNewTodoInput] = useState(false)
 
   const [test, setTest] = useState()
+  console.log(todos)
 
-  console.log(todos, '@')
-  console.log()
   useEffect(() => {
     async function getStore() {
       const todo2 = await chrome.storage?.local.get(['todos']).then(result => result?.todos)
@@ -30,18 +26,15 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
     getStore()
   }, [todos])
 
-  console.log('@@', test)
-
   let hasFocus = document.activeElement
   if (!hasFocus || hasFocus == document.body) hasFocus = null
   else if (document.querySelector) hasFocus = document.querySelector(':focus')
 
-  const addTodo = async (value: string) => {
-    if (!value.trim()) return
-    setNewTodoText('')
+  const addTodo = (value: string) => {
+    const tempId = new Date().getTime()
     const newTodo = {
       ...defaultTodo,
-      id: new Date().getTime(),
+      id: tempId,
       content: value,
     }
     setTodos(prev => [newTodo, ...prev])
@@ -57,10 +50,7 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
           {!readonly && (
             <button
               onClick={() => {
-                setShowNewTodoInput(!showNewTodoInput)
-                setTimeout(() => {
-                  newTodoInputRef.current?.focus()
-                }, 0)
+                addTodo('')
               }}
               className="btn-primary btn-xs btn-circle btn text-white">
               <Plus />
@@ -69,28 +59,6 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
         </div>
       </div>
       <div>
-        {showNewTodoInput && (
-          <div className="flex">
-            <input
-              ref={newTodoInputRef}
-              type="text"
-              className="focus:border-primary-300 focus:ring-primary-300 input mb-2 w-full rounded-r-none border-grey-900 bg-grey-1000 py-[1.125rem] pl-[0.9375rem] pr-[0.75rem] focus:outline-none"
-              placeholder="할 일을 입력해주세요."
-              value={newTodoText}
-              onChange={e => setNewTodoText(e.target.value)}
-              onKeyPress={e => {
-                e.key === 'Enter' && addTodo(newTodoText)
-              }}
-            />
-            <button
-              onClick={() => {
-                addTodo(newTodoText)
-              }}
-              className="btn-primary btn rounded-l-none">
-              추가
-            </button>
-          </div>
-        )}
         {todos.map(todo => (
           <TodoItem
             key={todo.id}
@@ -142,24 +110,25 @@ const TodoItem = ({ todo, readonly, onToggleComplete, onRemoveItem, onContentCha
   return (
     <li
       key={todo.id}
-      className="mb-2 flex items-center justify-between rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 p-2 text-grey-400">
-      <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
-        <input
-          type="checkbox"
-          checked={todo.completed}
-          onChange={e => {
-            if (readonly) return
-            onToggleComplete(todo.id, e.target.checked)
-          }}
-          className={`checkbox-primary checkbox ml-4 mr-3 bg-grey-800 ${cx({ 'cursor-default': readonly })}`}
-        />
-        <input
-          type="text"
-          className="border-0 bg-grey-900 text-lg font-medium text-grey-300 focus:outline-none focus:ring-0"
-          value={todo.content}
-          onChange={e => onContentChange(e.target.value)}
-        />
-      </div>
+      className="mb-[0.625rem] flex items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400">
+      {/* <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
+      </div> */}
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={e => {
+          if (readonly) return
+          onToggleComplete(todo.id, e.target.checked)
+        }}
+        className="checkbox-primary checkbox rounded-sm border-0 bg-grey-800"
+      />
+      <input
+        type="text"
+        className="flex-1 border-0 bg-grey-900 p-0 text-lg font-medium text-grey-300 caret-primary focus:outline-none focus:ring-0"
+        value={todo.content}
+        spellCheck={false}
+        onChange={e => onContentChange(e.target.value)}
+      />
       {!readonly && (
         <button
           className="ignore-dnd"
