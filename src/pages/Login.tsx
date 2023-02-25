@@ -3,10 +3,14 @@ import LoginPageImg from '../../public/img/tmpLoginImg.png'
 import { FormProvider, useForm } from 'react-hook-form'
 import Header from '../components/Header'
 import { postUser } from '../api/user'
+import { useNavigate } from 'react-router-dom'
 
 export function Login() {
+  const navigate = useNavigate()
   const onSubmit = async (data: any) => {
     const response = await postUser(data)
+
+    return response
   }
 
   const methods = useForm({
@@ -34,6 +38,16 @@ export function Login() {
             <button className="btn-primary btn mt-[100px] h-16 w-full border-0 bg-[#786DFF] text-xl">로그인하기</button>
           </form>
         </FormProvider>
+
+        <div className="mt-6 text-grey-400">
+          <p
+            className="cursor-pointer underline underline-offset-4"
+            onClick={() => {
+              navigate('/register')
+            }}>
+            계정이 없다면? 회원가입하기
+          </p>
+        </div>
       </div>
     </div>
   )
