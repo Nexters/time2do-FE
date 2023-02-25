@@ -16,7 +16,7 @@ import { BooleanNumberTypes } from '../consts'
 import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
 import { useRecoilValue } from 'recoil'
 import { userAtom } from '../recoil/atoms'
-import { Navigate, redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -115,7 +115,7 @@ export function Report() {
     <>
       <div className="bg-grey-1000">
         <div>
-          <Header title="레포트" />
+          <Header name="레포트" />
           <div className="flex items-center px-[1.25rem] pb-4">
             <img src={profileImageUrl} alt="프로필" />
             <p className="ml-[0.9375rem] mr-[0.625rem] text-[1.4375rem] font-semibold text-grey-200">
