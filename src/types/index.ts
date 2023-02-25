@@ -22,21 +22,25 @@ export type TimeRecord = {
   end_time: Date
 }
 
-export type CountDownTimer = {
+export type Timer = {
   name: string
   maker_id: string
   type: (typeof TimerTypes)[keyof typeof TimerTypes]
-  tags: string
-  start_time: Date
-  end_time: Date
+  tags?: string
+  start_time?: Date
+  end_time?: Date
 
   // 서버에서 받아오는 값
   id?: string
   link_url?: string
+
+  // 클라이언트에서만 사용하는 값
+  isRunning?: boolean
+  timeRecords?: TimeRecord[]
 }
 
 export type User = {
-  userId: string
-  userName: string
+  user_id: string
+  user_name: string
   password: string
 }
