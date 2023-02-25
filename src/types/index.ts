@@ -2,31 +2,31 @@ import { TimerTypes, BooleanNumberTypes } from '../consts'
 
 export type BooleanNumber = (typeof BooleanNumberTypes)[keyof typeof BooleanNumberTypes]
 
-export type DateTime = string // 'yyyy-MM-dd HH:mm:ss'
+export type DateTime = Date | string // 'yyyy-MM-dd HH:mm:ss'
 
 export type Todo = {
   id: number
-  user_id: string
+  userId: string
   content: string
   completed: BooleanNumber
   private: BooleanNumber
-  created_time: DateTime
-  completed_time?: DateTime
-  modified_time?: DateTime
-  deleted_time?: DateTime
+  createdTime: DateTime
+  completedTime?: DateTime
+  modifiedTime?: DateTime
+  deletedTime?: DateTime
 }
 
 export type TimeRecord = {
   id: number
-  user_id: string
-  timer_id: number
-  start_time: DateTime
-  end_time: DateTime
+  userId: string
+  timerId: number
+  startTime: DateTime
+  endTime: DateTime
 }
 
 export type Timer = {
   name: string
-  maker_id: string
+  makerId: string
   type: (typeof TimerTypes)[keyof typeof TimerTypes]
   tag?: string
   startTime?: DateTime
@@ -41,8 +41,15 @@ export type Timer = {
   timeRecords?: TimeRecord[]
 }
 
+// 서버에서 계산해서 내려준 값을 포함한 타이머 타입
+export type GroupTimer = Timer & {
+  participantsCount: number
+  displayTime: string
+  duration: number
+}
+
 export type User = {
-  user_id: string
-  user_name: string
+  userId: string
+  userName: string
   password: string
 }

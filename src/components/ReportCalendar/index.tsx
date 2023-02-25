@@ -6,7 +6,7 @@ import cx from 'classnames'
 import ChevronRight from '../../assets/svg/ChevronRight'
 import ChevronLeft from '../../assets/svg/ChevronLeft'
 import GreenDot from '../../assets/svg/GreenDot'
-import { TimeBlock } from '../../api/profile'
+import { TimeBlock } from '../../api/report'
 
 const getDayColorClassName = (hour: number) => {
   if (hour > 0 && hour < 4) {
