@@ -55,15 +55,6 @@ export type User = {
   onboarding: boolean
 }
 
-export type GroupTimer = {
-  name: string
-  makerId: number
-  tag: string
-  startTime: string
-  endTime: string
-  type: 1 | 2
-}
-
 export type RegisterUser = {
   username: string
   password: string

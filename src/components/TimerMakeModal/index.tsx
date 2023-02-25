@@ -152,9 +152,11 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
             {createDays().map(weeks => {
               return (
                 <div key={weeks.toString()} className="mb-2  flex gap-2">
-                  {weeks.map(days => {
+                  {weeks.map((days, index) => {
                     return (
-                      <div key={days.toString()} className="h-[2.625rem] w-[2.625rem] text-[1.375rem] font-semibold">
+                      <div
+                        key={`${days.toString()}${index}`}
+                        className="h-[2.625rem] w-[2.625rem] text-[1.375rem] font-semibold">
                         <ModalSelectElement.CalenderElement
                           content={days[2]}
                           data={date}
