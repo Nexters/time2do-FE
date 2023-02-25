@@ -53,12 +53,3 @@ export type User = {
   userName: string
   password: string
 }
-
-export type GroupTimer = {
-  name: string
-  makerId: number
-  tag: string
-  startTime: string
-  endTime: string
-  type: 1 | 2
-}
