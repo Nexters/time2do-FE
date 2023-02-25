@@ -11,9 +11,17 @@ interface Props {
   required?: boolean
   type?: string
   registerName?: string
+  changeEvent?: any
 }
 
-const InputBox = ({ required = true, type = 'text', registerName = 'name', InputBoxName, placeHolder }: Props) => {
+const InputBox = ({
+  required = true,
+  type = 'text',
+  registerName = 'name',
+  InputBoxName,
+  placeHolder,
+  changeEvent,
+}: Props) => {
   const { register } = useFormContext()
 
   return (
