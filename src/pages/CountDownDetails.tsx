@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import { addCheerUp, getCheerUps, getParticipants, participate } from '../api/countDownTimer'
 import { CountDownHeader } from '../components/CountDownHeader'
@@ -33,6 +34,19 @@ export function CountDownDetails() {
     // 90초마다 참여자 refetch
     refetchInterval: 5000,
     refetchIntervalInBackground: false,
+    onSuccess: data => {
+      const cheerUps = data ?? []
+      const filteredCheerUps = cheerUps.filter(cheerUp => {
+        const timeDiff = new Date().getTime() - new Date(cheerUp.createdTime).getTime()
+        if (timeDiff < 5000) return true
+        return false
+      })
+      console.log(filteredCheerUps, '$$$')
+      filteredCheerUps.forEach((cheerUp: any) => {
+        toast(`${cheerUp.userName}님이 응원을 보냈습니다. :)`)
+      })
+      console.log(data, '@')
+    },
   })
 
   const addCheerUpMutation = useMutation({
