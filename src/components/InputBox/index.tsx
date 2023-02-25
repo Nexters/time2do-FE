@@ -2,38 +2,42 @@ import { useEffect, useState } from 'react'
 import TimerMakeModal from '../TimerMakeModal'
 import { useFormContext } from 'react-hook-form'
 import TagBox from './_fragment/TagBox'
+import { format } from 'date-fns'
 
 interface Props {
-  timerName: string
+  InputBoxName: string
   placeHolder: string
   required?: boolean
+  type?: string
+  registerName?: string
 }
 
-const TimerInputBox = ({ required = true, timerName, placeHolder }: Props) => {
+const InputBox = ({ required = true, type = 'text', registerName = 'name', InputBoxName, placeHolder }: Props) => {
   const { register } = useFormContext()
+
   return (
-    <div className="h-min">
+    <div className="h-min text-grey-300 focus-within:text-primary">
       <label className="label">
-        <span className="label-text text-sm font-bold text-gray-300">
-          {timerName}
-          {required && '*'}
+        <span className="text-sm font-bold">
+          {InputBoxName}
+          <span className="text-primary">{required && '*'}</span>
         </span>
       </label>
       <input
         className="input mb-8 h-[60px] w-full border-grey-800 bg-grey-900 text-lg text-grey-300
-        placeholder:text-grey-700"
-        type="text"
+        ring-0 placeholder:text-grey-700 focus:border-primary focus:bg-[#786DFF1A] focus:outline-none focus:ring-0"
+        type={type}
         placeholder={placeHolder}
         required={required}
         maxLength={15}
-        {...register('name')}
+        {...register(registerName)}
       />
     </div>
   )
 }
 
 // eslint-disable-next-line react/display-name
-TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) => {
+InputBox.TagSelect = ({ required = true, InputBoxName, placeHolder }: Props) => {
   const [tags, setTags] = useState<string[]>([])
   const [input, setInput] = useState<string>('')
   const { register, setValue } = useFormContext()
@@ -74,16 +78,17 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
     <>
       <input type="hidden" {...register('tags')} />
       <div className="mb-8 h-min">
-        <div>
+        <div className="text-grey-300 focus-within:text-primary">
           <label className="label">
-            <span className="label-text text-sm font-bold text-gray-300 ">
-              {timerName}
-              {required && '*'}
+            <span className="text-sm font-bold">
+              {InputBoxName}
+              <span className="text-primary">{required && '*'}</span>
             </span>
           </label>
-          <div className="flex h-[60px] w-full items-center rounded-[10px] border-[1px] border-grey-800 bg-grey-900 text-grey-300">
+          <div className="flex h-[60px] w-full items-center rounded-[10px] border-[1px] border-grey-800 bg-grey-900 text-grey-300 focus-within:border-primary focus-within:bg-[#786DFF1A] focus:ring-0">
             <input
-              className="input mr-3 flex-1 bg-grey-900 text-display6 font-medium placeholder:text-grey-700"
+              className="input mr-3 flex-1 bg-grey-900 bg-transparent text-display6 font-medium outline-0
+              ring-0 placeholder:text-grey-700 focus:border-none focus:outline-0 focus:ring-0"
               type="text"
               placeholder={placeHolder}
               value={input}
@@ -109,7 +114,7 @@ TimerInputBox.TagSelect = ({ required = true, timerName, placeHolder }: Props) =
 }
 
 // eslint-disable-next-line react/display-name
-TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; startTime: Date }) => {
+InputBox.TargetTimeSet = ({ InputBoxName, startTime }: { InputBoxName: string; startTime: Date }) => {
   const hourList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const minutesList = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
   const { register, setValue } = useFormContext()
@@ -129,15 +134,17 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
     const endTime = new Date(startTime)
     endTime.setHours(endTime.getHours() + parseInt(hour))
     endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
-    setValue('endTime', endTime)
+    setValue('end_time', format(endTime, 'yyyy-MM-dd HH:mm:ss'))
   }, [hour, minute])
 
   return (
     <>
-      <input type="hidden" {...register('endTime')} />
+      <input type="hidden" {...register('end_time')} />
       <div className="mb-8 h-min">
         <label className="label">
-          <span className="label-text text-sm font-bold text-gray-300 ">{timerName}*</span>
+          <span className="label-text text-sm font-bold text-gray-300 ">
+            {InputBoxName} <span className="text-primary">*</span>
+          </span>
         </label>
         <div className="flex h-[60px] w-full">
           <select
@@ -169,13 +176,13 @@ TimerInputBox.TargetTimeSet = ({ timerName, startTime }: { timerName: string; st
 }
 
 interface StartTimeSetProps {
-  timerName: string
+  InputBoxName: string
   startTime: Date
   setStartTime: React.Dispatch<React.SetStateAction<Date>>
 }
 
 // eslint-disable-next-line react/display-name
-TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeSetProps) => {
+InputBox.StartTimeSet = ({ InputBoxName, startTime, setStartTime }: StartTimeSetProps) => {
   const [modalState, setModalState] = useState<'date' | 'time'>('date')
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -201,16 +208,19 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
     startTime.setMinutes(minutes[timeIndex])
   }, [])
   useEffect(() => {
-    setValue('startTime', startTime)
+    setValue('start_time', format(startTime, 'yyyy-MM-dd HH:mm:ss'))
   }, [startTime])
 
   return (
     <>
-      <input type="hidden" {...register('startTime')} />
+      <input type="hidden" {...register('start_time')} />
       <div id="root-modal" className="absolute left-0 top-0"></div>
       <div className="mb-8 mb-[6.25rem] h-min">
         <label className="label">
-          <span className="label-text text-sm font-bold text-gray-300">{timerName}*</span>
+          <span className="label-text text-sm font-bold text-gray-300">
+            {InputBoxName}
+            <span className="text-primary">*</span>
+          </span>
         </label>
         <div className="h-[7.5rem] overflow-hidden rounded-[10px] bg-grey-900 text-lg font-medium">
           <input
@@ -262,4 +272,4 @@ TimerInputBox.StartTimeSet = ({ timerName, startTime, setStartTime }: StartTimeS
   )
 }
 
-export default TimerInputBox
+export default InputBox
