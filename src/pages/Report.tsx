@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useCalendar } from '@h6s/calendar'
 import { format } from 'date-fns'
 import Header from '../components/Header'
@@ -8,9 +8,8 @@ import { TodoList } from '../components/TodoList'
 import profileImageUrl from '../assets/svg/Profile.svg'
 import profileIconUrl from '../assets/svg/ProfileIcon.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
-import TimerMakeModal from '../components/TimerMakeModal'
 import closeIconUrl from '../assets/svg/Close.svg'
-import { getReportData } from '../api/profile'
+import { getReportData, putUserNickname } from '../api/report'
 import { ko } from 'date-fns/locale'
 import ModalPortal from '../components/ModalPortal'
 
@@ -23,17 +22,29 @@ const formatTotalDuration = (totalDuration: string) => {
 
 const userId = 1
 
+const today = new Date(new Date().toDateString())
+
 export function Report() {
   const calendarHook = useCalendar()
   const { cursorDate } = calendarHook
 
   const [modalVisible, setModalVisible] = useState(false)
+  const [nickname, setNickname] = useState('')
 
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(today)
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
+  const nicknameMutation = useMutation({
+    mutationFn: () => putUserNickname({ userId, nickname }),
+    onSuccess: () => {
+      setNickname('')
+    },
+    onError: () => {
+      alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    },
+  })
   const { data: reportData } = useQuery({
     queryKey: ['getReportData'],
     queryFn: () => getReportData({ userId, date: cursorDate }),
@@ -65,8 +76,14 @@ export function Report() {
     setModalVisible(false)
   }
 
+  const nicknameChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNickname(event.target.value)
+  }
+
   const nicknameSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    nicknameMutation.mutate()
   }
 
   const dateMouseEnterHandler = (date: Date) => {
@@ -97,8 +114,8 @@ export function Report() {
           </div>
         </div>
         <div className="h-2 bg-grey-900" />
-        <div className="py-[1.625rem]">
-          {reportData && (
+        {reportData && (
+          <div className="py-[1.625rem]">
             <ReportCalendar
               useCalendarHook={calendarHook}
               timeBlocks={reportData?.timeBlocks ?? {}}
@@ -109,13 +126,16 @@ export function Report() {
               onMouseLeaveDate={dateMouseLeaveHandler}
               onClickDate={dateClickHandler}
             />
-          )}
-        </div>
+          </div>
+        )}
+
         {todos.length > 0 && (
           <div className="py-7 px-6">
             <TodoList title="완료한 할 일 목록" todos={todos} readonly />
+            {todos.length === 0 && <div className="py-12" />}
           </div>
         )}
+
         {groupTimers.length > 0 && (
           <div className="py-7 px-6">
             <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
@@ -141,6 +161,7 @@ export function Report() {
                 </div>
               </div>
             ))}
+            {groupTimers.length === 0 && <div className="py-12" />}
           </div>
         )}
       </div>
@@ -162,6 +183,8 @@ export function Report() {
                 type="text"
                 id="nickname"
                 className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pt-[1.1875rem] pb-[1.25rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300"
+                value={nickname}
+                onChange={nicknameChangeHandler}
                 autoFocus
               />
               <button className="width-full rounded-[0.625rem] bg-primary py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white">

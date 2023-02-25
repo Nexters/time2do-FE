@@ -42,3 +42,9 @@ export const getReportData = async ({ userId, date }: { userId: number; date: Da
 
   return response.data
 }
+
+export const putUserNickname = async ({ userId, nickname }: { userId: number; nickname: string }) => {
+  const response = await api.put(`/users/${userId}`, { userName: nickname })
+
+  return response.data
+}
