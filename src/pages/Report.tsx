@@ -14,6 +14,9 @@ import { ko } from 'date-fns/locale'
 import ModalPortal from '../components/ModalPortal'
 import { BooleanNumberTypes } from '../consts'
 import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
+import { useRecoilValue } from 'recoil'
+import { userAtom } from '../recoil/atoms'
+import { Navigate, redirect } from 'react-router-dom'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -22,13 +25,18 @@ const formatTotalDuration = (totalDuration: string) => {
   return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
 }
 
-const userId = 1
-
 const today = new Date(new Date().toDateString())
 
 export function Report() {
   const calendarHook = useCalendar()
   const { cursorDate } = calendarHook
+
+  const user = useRecoilValue(userAtom)
+  const userId = user?.userId
+
+  if (!userId) {
+    return <Navigate to="/" replace />
+  }
 
   const [modalVisible, setModalVisible] = useState(false)
   const [nickname, setNickname] = useState('')
@@ -105,7 +113,7 @@ export function Report() {
 
   return (
     <>
-      <div className=" bg-grey-1000">
+      <div className="bg-grey-1000">
         <div>
           <Header title="레포트" />
           <div className="flex items-center px-[1.25rem] pb-4">
@@ -134,7 +142,7 @@ export function Report() {
           </div>
         )}
 
-        {todos.length === 0 && groupTimers.length === 0 && (
+        {reportData && todos.length === 0 && groupTimers.length === 0 && (
           <div className="py-10 px-6 text-center">
             <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
             <p className="mt-[1.875rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>
