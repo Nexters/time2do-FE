@@ -5,7 +5,7 @@ export const postUser = async (userInfo: RegisterUser) => {
   try {
     const response = await api.post(`/users`, userInfo)
     return response.status
-  } catch (e) {
+  } catch (e: any) {
     const status = e.response.status
     return status
   }
