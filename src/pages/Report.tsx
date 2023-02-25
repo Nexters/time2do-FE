@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useCalendar } from '@h6s/calendar'
 import { format } from 'date-fns'
 import Header from '../components/Header'
@@ -8,9 +8,8 @@ import { TodoList } from '../components/TodoList'
 import profileImageUrl from '../assets/svg/Profile.svg'
 import profileIconUrl from '../assets/svg/ProfileIcon.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
-import TimerMakeModal from '../components/TimerMakeModal'
 import closeIconUrl from '../assets/svg/Close.svg'
-import { getReportData } from '../api/profile'
+import { getReportData, putUserNickname } from '../api/report'
 import { ko } from 'date-fns/locale'
 import ModalPortal from '../components/ModalPortal'
 
@@ -23,26 +22,51 @@ const formatTotalDuration = (totalDuration: string) => {
 
 const userId = 1
 
+const today = new Date(new Date().toDateString())
+
 export function Report() {
   const calendarHook = useCalendar()
   const { cursorDate } = calendarHook
 
   const [modalVisible, setModalVisible] = useState(false)
+  const [nickname, setNickname] = useState('')
 
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(today)
 
-  const hoveredDateString = hoveredDate ? format(hoveredDate, 'yyyy-MM-dd') : null
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
+  const nicknameMutation = useMutation({
+    mutationFn: () => putUserNickname({ userId, nickname }),
+    onSuccess: () => {
+      setNickname('')
+    },
+    onError: () => {
+      alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    },
+  })
   const { data: reportData } = useQuery({
     queryKey: ['getReportData'],
     queryFn: () => getReportData({ userId, date: cursorDate }),
   })
 
   const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
-
-  const groupTimers = reportData?.groupTimers ? reportData.groupTimers : []
+  const todos =
+    reportData?.timeBlocks && selectedDateString
+      ? reportData.timeBlocks[selectedDateString].toDos.map(toDo => ({
+          id: toDo.id,
+          userId: toDo.userId,
+          content: toDo.content,
+          completed: true,
+          private: false,
+          createdTime: new Date(toDo.createdTime),
+          completedTime: new Date(toDo.completedTime),
+          modifiedTime: new Date(toDo.modifiedTime),
+          deletedTime: new Date(toDo.deletedTime),
+        }))
+      : []
+  const groupTimers =
+    reportData?.timeBlocks && selectedDateString ? reportData.timeBlocks[selectedDateString].groupTimers : []
 
   const openModal = () => {
     setModalVisible(true)
@@ -52,8 +76,14 @@ export function Report() {
     setModalVisible(false)
   }
 
+  const nicknameChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNickname(event.target.value)
+  }
+
   const nicknameSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    nicknameMutation.mutate()
   }
 
   const dateMouseEnterHandler = (date: Date) => {
@@ -84,8 +114,8 @@ export function Report() {
           </div>
         </div>
         <div className="h-2 bg-grey-900" />
-        <div className="py-[1.625rem]">
-          {reportData && (
+        {reportData && (
+          <div className="py-[1.625rem]">
             <ReportCalendar
               useCalendarHook={calendarHook}
               timeBlocks={reportData?.timeBlocks ?? {}}
@@ -96,36 +126,44 @@ export function Report() {
               onMouseLeaveDate={dateMouseLeaveHandler}
               onClickDate={dateClickHandler}
             />
-          )}
-        </div>
-        <div className="py-7 px-6">
-          <TodoList title="완료한 할 일 목록" readonly />
-        </div>
-        <div className="py-7 px-6">
-          <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
-          {groupTimers.map(groupTimer => (
-            <div key={groupTimer.name} className="rounded-[0.625rem] bg-grey-900 px-4 py-4">
-              <div className="mb-1 flex items-center">
-                <div className="rounded-3xl bg-grey-1000 px-2 py-[0.3125rem] text-[0.9375rem] font-semibold leading-[1.125rem] text-grey-200 backdrop-blur-[7.5px]">
-                  #{groupTimer.tag}
+          </div>
+        )}
+
+        {todos.length > 0 && (
+          <div className="py-7 px-6">
+            <TodoList title="완료한 할 일 목록" todos={todos} readonly />
+            {todos.length === 0 && <div className="py-12" />}
+          </div>
+        )}
+
+        {groupTimers.length > 0 && (
+          <div className="py-7 px-6">
+            <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
+            {groupTimers.map(groupTimer => (
+              <div key={groupTimer.name} className="rounded-[0.625rem] bg-grey-900 px-4 py-4">
+                <div className="mb-1 flex items-center">
+                  <div className="rounded-3xl bg-grey-1000 px-2 py-[0.3125rem] text-[0.9375rem] font-semibold leading-[1.125rem] text-grey-200 backdrop-blur-[7.5px]">
+                    #{groupTimer.tag}
+                  </div>
+                  <p className="pl-[0.375rem] text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">
+                    {groupTimer.name}
+                  </p>
                 </div>
-                <p className="pl-[0.375rem] text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">
-                  {groupTimer.name}
-                </p>
+                <div className="flex items-center text-[1.0625rem] font-bold leading-[1.25rem] text-grey-400">
+                  <img src={profileIconUrl} alt="인원수" />
+                  <span className="pl-[0.125rem]">{groupTimer.participantsCount}</span>
+                  <span className="pl-[0.375rem]">
+                    {format(new Date(groupTimer.displayTime), 'a h시 m분', { locale: ko })}
+                  </span>
+                </div>
+                <div className="pr-[0.625rem] text-right text-[1.875rem] font-bold leading-[2.25rem] text-grey-200">
+                  <span>3시간</span>
+                </div>
               </div>
-              <div className="flex items-center text-[1.0625rem] font-bold leading-[1.25rem] text-grey-400">
-                <img src={profileIconUrl} alt="인원수" />
-                <span className="pl-[0.125rem]">{groupTimer.participantsCount}</span>
-                <span className="pl-[0.375rem]">
-                  {format(new Date(groupTimer.displayTime), 'a h시 m분', { locale: ko })}
-                </span>
-              </div>
-              <div className="pr-[0.625rem] text-right text-[1.875rem] font-bold leading-[2.25rem] text-grey-200">
-                <span>3시간</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+            {groupTimers.length === 0 && <div className="py-12" />}
+          </div>
+        )}
       </div>
       {modalVisible && (
         <ModalPortal closePortal={closeModal} isOpened={modalVisible}>
@@ -145,6 +183,8 @@ export function Report() {
                 type="text"
                 id="nickname"
                 className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pt-[1.1875rem] pb-[1.25rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300"
+                value={nickname}
+                onChange={nicknameChangeHandler}
                 autoFocus
               />
               <button className="width-full rounded-[0.625rem] bg-primary py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white">

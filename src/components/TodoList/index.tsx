@@ -30,7 +30,7 @@ export const TodoList = ({ title = '할 일 목록', readonly, todos = [] }: Pro
     }
     setTodos(prev => [newTodo, ...prev])
   }
-  console.log(todos)
+
   const prevLength = usePrevious(todos.length)
   useEffect(() => {
     if (todos.length > (prevLength ?? 0)) {
@@ -87,10 +87,14 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
   ({ todo, readonly, onRemoveTodo, onUpdateTodo, onAddTodo }, ref) => {
     const [isFocused, setIsFocused] = useState(false)
     const handleFocus = () => {
+      if (readonly) return
+
       setIsFocused(true)
     }
 
     const handleBlur = () => {
+      if (readonly) return
+
       if (!todo.content) onRemoveTodo(todo)
       setIsFocused(false)
     }
@@ -105,6 +109,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
         <input
           type="checkbox"
           checked={todo.completed}
+          disabled={readonly}
           onChange={e => {
             if (readonly) return
             onUpdateTodo({
@@ -124,6 +129,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
           spellCheck={false}
           onChange={e => onUpdateTodo({ ...todo, content: e.target.value })}
           placeholder="오늘의 할 일을 작성해주세요"
+          disabled={readonly}
           onFocus={handleFocus}
           onBlur={handleBlur}
           ref={ref}
