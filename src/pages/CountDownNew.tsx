@@ -5,6 +5,7 @@ import { useState } from 'react'
 import TimerMakeModal from '../components/TimerMakeModal'
 import { GroupTimer } from '../types'
 import { format } from 'date-fns'
+import ModalPortal from '../components/ModalPortal'
 
 export function CountDownNew() {
   const [startTime, setStartTime] = useState(new Date())
@@ -49,9 +50,9 @@ export function CountDownNew() {
           </form>
         </FormProvider>
         {modalVisible && (
-          <TimerMakeModal closePortal={modalClose}>
+          <ModalPortal closePortal={modalClose} isOpened={modalVisible}>
             <TimerMakeModal.CompleteModal closePortal={modalClose} />
-          </TimerMakeModal>
+          </ModalPortal>
         )}
       </div>
     </div>
