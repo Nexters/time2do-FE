@@ -49,7 +49,22 @@ export type GroupTimer = Timer & {
 }
 
 export type User = {
-  userId: string
-  userName: string
+  id: string
+  idToken: string
+  username: string
+  onboarding: boolean
+}
+
+export type GroupTimer = {
+  name: string
+  makerId: number
+  tag: string
+  startTime: string
+  endTime: string
+  type: 1 | 2
+}
+
+export type RegisterUser = {
+  username: string
   password: string
 }
