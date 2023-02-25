@@ -1,34 +1,42 @@
-import { useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
 import { useCalendar } from '@h6s/calendar'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import Header from '../components/Header'
-import ReportCalendar from '../components/ReportCalendar'
-import { TodoList } from '../components/TodoList'
+import { ko } from 'date-fns/locale'
+import { useEffect, useState } from 'react'
+import { Navigate } from 'react-router'
+import { useRecoilValue } from 'recoil'
+import { getReportData, putUserNickname } from '../api/report'
+import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
+import closeIconUrl from '../assets/svg/Close.svg'
+import editIconUrl from '../assets/svg/Edit.svg'
 import profileImageUrl from '../assets/svg/Profile.svg'
 import profileIconUrl from '../assets/svg/ProfileIcon.svg'
-import editIconUrl from '../assets/svg/Edit.svg'
-import closeIconUrl from '../assets/svg/Close.svg'
-import { getReportData, putUserNickname } from '../api/report'
-import { ko } from 'date-fns/locale'
+import Header from '../components/Header'
 import ModalPortal from '../components/ModalPortal'
+import ReportCalendar from '../components/ReportCalendar'
+import { TodoList } from '../components/TodoList'
 import { BooleanNumberTypes } from '../consts'
-import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
+import { userAtom } from '../recoil/atoms'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
   const [hour, minute, second] = totalDuration.slice(0, -1).replaceAll(/h|m/g, ':').split(':')
 
-  return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
+  return `${hour.trim().padStart(2, '0')}:${minute.trim().padStart(2, '0')}:${second.trim().padStart(2, '0')}`
 }
-
-const userId = 1
 
 const today = new Date(new Date().toDateString())
 
 export function Report() {
   const calendarHook = useCalendar()
   const { cursorDate } = calendarHook
+
+  const user = useRecoilValue(userAtom)
+  const userId = user?.userId
+
+  if (!userId) {
+    return <Navigate to="/" replace />
+  }
 
   const [modalVisible, setModalVisible] = useState(false)
   const [nickname, setNickname] = useState('')
@@ -38,7 +46,7 @@ export function Report() {
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
-  const { data: reportData, refetch } = useQuery({
+  const { data: reportData, refetch: refetchReportData } = useQuery({
     queryKey: ['getReportData'],
     queryFn: () => getReportData({ userId, date: cursorDate }),
   })
@@ -48,7 +56,7 @@ export function Report() {
     onSuccess: () => {
       setNickname('')
       closeModal()
-      refetch()
+      refetchReportData()
     },
     onError: () => {
       alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
@@ -57,7 +65,7 @@ export function Report() {
 
   const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
   const todos =
-    reportData?.timeBlocks && selectedDateString
+    reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
       ? reportData.timeBlocks[selectedDateString].toDos.map(toDo => ({
           id: toDo.id,
           userId: toDo.userId,
@@ -71,7 +79,9 @@ export function Report() {
         }))
       : []
   const groupTimers =
-    reportData?.timeBlocks && selectedDateString ? reportData.timeBlocks[selectedDateString].groupTimers : []
+    reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
+      ? reportData.timeBlocks[selectedDateString].groupTimers
+      : []
 
   const openModal = () => {
     setModalVisible(true)
@@ -103,11 +113,15 @@ export function Report() {
     setSelectedDate(date)
   }
 
+  useEffect(() => {
+    refetchReportData()
+  }, [cursorDate])
+
   return (
     <>
-      <div className=" bg-grey-1000">
+      <div className="bg-grey-1000">
         <div>
-          <Header title="레포트" />
+          <Header name="레포트" />
           <div className="flex items-center px-[1.25rem] pb-4">
             <img src={profileImageUrl} alt="프로필" />
             <p className="ml-[0.9375rem] mr-[0.625rem] text-[1.4375rem] font-semibold text-grey-200">
@@ -118,7 +132,9 @@ export function Report() {
             </button>
           </div>
         </div>
+
         <div className="h-2 bg-grey-900" />
+
         {reportData && (
           <div className="py-[1.625rem]">
             <ReportCalendar
@@ -134,7 +150,7 @@ export function Report() {
           </div>
         )}
 
-        {todos.length === 0 && groupTimers.length === 0 && (
+        {reportData && todos.length === 0 && groupTimers.length === 0 && (
           <div className="py-10 px-6 text-center">
             <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
             <p className="mt-[1.875rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>

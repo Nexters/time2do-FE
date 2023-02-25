@@ -3,14 +3,15 @@ import Header from '../components/Header'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useState } from 'react'
 import TimerMakeModal from '../components/TimerMakeModal'
-import { Timer } from '../types'
-import { format } from 'date-fns'
+import { GroupTimer, Timer } from '../types'
+import { format, formatISO } from 'date-fns'
 import ModalPortal from '../components/ModalPortal'
-import { TimerTypes } from '../consts'
+import { postNewGroup } from '../api/countDownTimer'
 
 export function CountDownNew() {
   const [startTime, setStartTime] = useState(new Date())
   const [modalVisible, setModalVisible] = useState(false)
+  const [invitationCode, setInvitationCode] = useState('')
 
   const modalOpen = () => {
     return setModalVisible(true)
@@ -22,14 +23,16 @@ export function CountDownNew() {
   const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      makerId: '0',
-      type: TimerTypes['COUNT_DOWN'],
+      makerId: 0,
+      type: 2,
       tag: '',
-      startTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+      startTime: formatISO(new Date()),
+      endTime: formatISO(new Date()),
     },
   })
-  const onSubmit = (data: any) => {
-    console.log(data)
+  const onSubmit = async (data: any) => {
+    const response = await postNewGroup(data)
+    setInvitationCode(response.invitationCode)
     modalOpen()
   }
   return (
@@ -51,7 +54,7 @@ export function CountDownNew() {
         </FormProvider>
         {modalVisible && (
           <ModalPortal closePortal={modalClose} isOpened={modalVisible}>
-            <TimerMakeModal.CompleteModal closePortal={modalClose} />
+            <TimerMakeModal.CompleteModal closePortal={modalClose} invitationCode={invitationCode} />
           </ModalPortal>
         )}
       </div>
