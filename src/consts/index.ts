@@ -10,8 +10,6 @@ export const defaultTodo: Todo = {
   createdTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
 }
 
-export const defaultTimer = {}
-
 export const TimerTypes = {
   COUNT_UP: 1,
   COUNT_DOWN: 2,

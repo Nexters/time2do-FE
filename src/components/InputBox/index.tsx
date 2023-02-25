@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import TimerMakeModal from '../TimerMakeModal'
 import { useFormContext } from 'react-hook-form'
 import TagBox from './_fragment/TagBox'
-import { format } from 'date-fns'
+import { format, formatISO } from 'date-fns'
 import ModalPortal from '../ModalPortal'
 
 interface Props {
@@ -54,7 +54,7 @@ InputBox.TagSelect = ({ required = true, InputBoxName, placeHolder }: Props) => 
   }
 
   useEffect(() => {
-    setValue('tags', tags.join('.'))
+    setValue('tag', tags.join('.'))
   }, [tags])
 
   const deleteTag = (target: string) => {
@@ -77,7 +77,7 @@ InputBox.TagSelect = ({ required = true, InputBoxName, placeHolder }: Props) => 
 
   return (
     <>
-      <input type="hidden" {...register('tags')} />
+      <input type="hidden" {...register('tag')} />
       <div className="mb-8 h-min">
         <div className="text-grey-300 focus-within:text-primary">
           <label className="label">
@@ -135,12 +135,12 @@ InputBox.TargetTimeSet = ({ InputBoxName, startTime }: { InputBoxName: string; s
     const endTime = new Date(startTime)
     endTime.setHours(endTime.getHours() + parseInt(hour))
     endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
-    setValue('end_time', format(endTime, 'yyyy-MM-dd HH:mm:ss'))
+    setValue('endTime', formatISO(endTime))
   }, [hour, minute])
 
   return (
     <>
-      <input type="hidden" {...register('end_time')} />
+      <input type="hidden" {...register('endTime')} />
       <div className="mb-8 h-min">
         <label className="label">
           <span className="label-text text-sm font-bold text-gray-300 ">
@@ -209,12 +209,12 @@ InputBox.StartTimeSet = ({ InputBoxName, startTime, setStartTime }: StartTimeSet
     startTime.setMinutes(minutes[timeIndex])
   }, [])
   useEffect(() => {
-    setValue('start_time', format(startTime, 'yyyy-MM-dd HH:mm:ss'))
+    setValue('startTime', formatISO(startTime))
   }, [startTime])
 
   return (
     <>
-      <input type="hidden" {...register('start_time')} />
+      <input type="hidden" {...register('startTime')} />
       <div id="root-modal" className="absolute left-0 top-0"></div>
       <div className="mb-8 mb-[6.25rem] h-min">
         <label className="label">

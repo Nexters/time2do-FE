@@ -108,7 +108,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
         )}>
         <input
           type="checkbox"
-          checked={Boolean(todo.completed)}
+          checked={todo.completed}
           disabled={readonly}
           onChange={e => {
             if (readonly) return
