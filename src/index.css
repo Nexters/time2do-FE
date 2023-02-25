@@ -97,6 +97,7 @@ body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
   overflow-x: hidden;
+  min-width: 430px;
 }
 html {
   height: -webkit-fill-available;

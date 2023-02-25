@@ -6,11 +6,13 @@ import Switch from '../assets/svg/Switch'
 import Report from '../assets/svg/ReportIcon'
 import EditIcon from '../assets/svg/EditIcon'
 import ModalPortal from './ModalPortal'
+import { useNavigate } from 'react-router-dom'
 
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
 
 export const CountUpHeader = () => {
+  const navigate = useNavigate()
   const [timer, setTimer] = useRecoilState(timerAtom)
   const { isRunning: isTimerRunning, startTimestamp } = timer
 
@@ -51,9 +53,11 @@ export const CountUpHeader = () => {
 
   return (
     <>
-      <div className="relative h-full w-full bg-[url('/img/character.png')] bg-cover bg-center text-white">
+      <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
+          <button
+            onClick={() => navigate('/countdown')}
+            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
             개인모드
             <Switch classNames="ml-2" />
           </button>
@@ -62,7 +66,7 @@ export const CountUpHeader = () => {
             <Report />
           </button>
         </div>
-        <div className="absolute bottom-0 mb-9 min-w-full text-center text-grey-850">
+        <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
             <div className="mb-3">
               <span className="countdown font-montserrat text-[4rem] font-bold">
