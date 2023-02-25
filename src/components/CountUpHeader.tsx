@@ -40,6 +40,16 @@ export const CountUpHeader = () => {
     setReportLoginModalVisible(false)
   }
 
+  const modeButtonClickHandler = () => {
+    if (user) {
+      navigate('/countdown')
+
+      return
+    }
+
+    openReportLoginModal()
+  }
+
   const reportButtonClickHandler = () => {
     if (user) {
       navigate('/report')
@@ -75,9 +85,7 @@ export const CountUpHeader = () => {
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button
-            onClick={() => navigate('/countdown')}
-            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
+          <button onClick={modeButtonClickHandler} className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
             개인모드
             <Switch classNames="ml-2" />
           </button>
@@ -131,7 +139,7 @@ export const CountUpHeader = () => {
             <div className="flex flex-col">
               <p className="mb-4 text-[1.375rem] font-bold leading-[140%] text-grey-200">로그인이 필요해요</p>
               <p className="mb-[1.375rem] text-[1rem] font-semibold leading-[1.4375rem]">
-                레포트를 이용하려면 내 정보가 필요해요
+                기능을 이용하려면 내 정보가 필요해요
               </p>
               <div className="flex gap-[0.625rem]">
                 <button
