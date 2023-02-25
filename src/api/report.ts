@@ -5,9 +5,7 @@ import { GroupTimer, Todo } from '../types'
 export interface TimeBlock {
   hour: number
   minute: number
-
   toDos: Todo[]
-
   groupTimers: GroupTimer[]
   inGroupTimer: boolean
 }
