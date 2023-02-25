@@ -94,7 +94,10 @@
 }
 
 body {
-  min-width: 428px;
-  min-height: 700px;
-  overflow: overlay;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+}
+html {
+  height: -webkit-fill-available;
 }
