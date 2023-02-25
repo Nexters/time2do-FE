@@ -1,25 +1,30 @@
-import { useStopwatch } from 'react-timer-hook'
-import { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { countUpTimerAtom } from '../recoil/atoms'
-import Switch from '../assets/svg/Switch'
-import Report from '../assets/svg/ReportIcon'
-import EditIcon from '../assets/svg/EditIcon'
-import ModalPortal from './ModalPortal'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useStopwatch } from 'react-timer-hook'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import EditIcon from '../assets/svg/EditIcon'
+import Report from '../assets/svg/ReportIcon'
+import Switch from '../assets/svg/Switch'
+import { countUpTimerAtom, userAtom } from '../recoil/atoms'
+import ModalPortal from './ModalPortal'
 
-const now = new Date()
-now.setSeconds(now.getSeconds() + 100)
+const SECOUNDS_IN_ONE_MINUTE = 60
+const SECOUNDS_IN_ONE_HOUR = 3600
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
-  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const { isRunning: isTimerRunning, startTime } = timer
-  console.log(timer)
+  const user = useRecoilValue(userAtom)
 
-  const stopwatchOffset = new Date()
+  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
+  const { isRunning: isTimerRunning, startTime, endTime } = timer
 
   const [modalVisible, setModalVisible] = useState(false)
+  const [isTriggered, setIsTriggered] = useState(false)
+  const [timeOffset, setTimeOffset] = useState<{ hours: number; minutes: number; seconds: number }>({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
 
   const openModal = () => {
     setModalVisible(true)
@@ -29,24 +34,89 @@ export const CountUpHeader = () => {
     setModalVisible(false)
   }
 
+  const [reportLoginModalVisible, setReportLoginModalVisible] = useState(false)
+
+  const openReportLoginModal = () => {
+    setReportLoginModalVisible(true)
+  }
+
+  const closeReportLoginModal = () => {
+    setReportLoginModalVisible(false)
+  }
+
+  const modeButtonClickHandler = () => {
+    if (user) {
+      navigate('/countdown')
+
+      return
+    }
+
+    openReportLoginModal()
+  }
+
+  const reportButtonClickHandler = () => {
+    if (user) {
+      navigate('/report')
+
+      return
+    }
+
+    openReportLoginModal()
+  }
+
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
     autoStart: false,
-    offsetTimestamp: stopwatchOffset,
   })
 
+  let newHours = hours + timeOffset.hours
+  let newMinutes = minutes + timeOffset.minutes
+  let newSeconds = seconds + timeOffset.seconds
+  if (newSeconds >= SECOUNDS_IN_ONE_MINUTE) {
+    newMinutes += 1
+    newSeconds -= SECOUNDS_IN_ONE_MINUTE
+  }
+  if (newMinutes >= SECOUNDS_IN_ONE_HOUR) {
+    newHours += 1
+    newMinutes -= SECOUNDS_IN_ONE_HOUR
+  }
+
+  useLayoutEffect(() => {
+    if (!startTime) return
+
+    const startedTimeInMilliSeconds =
+      typeof startTime === 'string' ? new Date(startTime).getTime() : startTime.getTime()
+    const timeDiff = new Date().getTime() - startedTimeInMilliSeconds
+    console.log(timeDiff)
+    if (timeDiff) {
+      const date = new Date(timeDiff)
+      const hours = date.getUTCHours()
+      const minutes = date.getUTCMinutes()
+      const seconds = date.getUTCSeconds()
+      setTimeOffset({ hours, minutes, seconds })
+
+      setIsTriggered(true)
+    }
+  }, [startTime, endTime])
+
   useEffect(() => {
-    if (!isRunning && isTimerRunning) {
+    if (isTriggered && !isRunning && isTimerRunning) {
       start()
     }
-  }, [isTimerRunning])
+  }, [isTriggered])
+
+  useEffect(() => {
+    if (endTime && isRunning) {
+      pause()
+    }
+  }, [endTime])
 
   const startTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true, startTimestamp: new Date().getTime() }))
+    setTimer(prev => ({ ...prev, isRunning: true, startTime: new Date() }))
     start()
   }
 
   const resetTimer = () => {
-    setTimer(prev => ({ ...prev, endTimestamp: new Date().getTime(), isRunning: false }))
+    setTimer(prev => ({ ...prev, endTime: new Date(), isRunning: false }))
     reset(undefined, false)
   }
 
@@ -54,26 +124,19 @@ export const CountUpHeader = () => {
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button
-            onClick={() => navigate('/countdown')}
-            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
+          <button onClick={modeButtonClickHandler} className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
             개인모드
             <Switch classNames="ml-2" />
           </button>
 
-          <button className="">
+          <button onClick={reportButtonClickHandler}>
             <Report />
           </button>
         </div>
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
             <div className="mb-3">
-              <span className="countdown font-montserrat text-[4rem] font-bold">
-                {/* @ts-ignore */}
-                <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:
-                {/* @ts-ignore */}
-                <span style={{ '--value': seconds }}></span>
-              </span>
+              <TimerDisplayedNumbers hours={newHours} minutes={newMinutes} seconds={newSeconds} />
             </div>
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
@@ -101,6 +164,31 @@ export const CountUpHeader = () => {
             onClose={closeModal}
             onSubmit={newTitle => setTimer(prev => ({ ...prev, name: newTitle }))}
           />
+        </ModalPortal>
+      )}
+
+      {reportLoginModalVisible && (
+        <ModalPortal closePortal={closeReportLoginModal} isOpened={reportLoginModalVisible}>
+          <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
+            <div className="flex flex-col">
+              <p className="mb-4 text-[1.375rem] font-bold leading-[140%] text-grey-200">로그인이 필요해요</p>
+              <p className="mb-[1.375rem] text-[1rem] font-semibold leading-[1.4375rem]">
+                기능을 이용하려면 내 정보가 필요해요
+              </p>
+              <div className="flex gap-[0.625rem]">
+                <button
+                  className="width-full flex-1 rounded-[0.625rem] bg-grey-800 py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white"
+                  onClick={closeReportLoginModal}>
+                  끝내기
+                </button>
+                <button
+                  className="width-full flex-1 rounded-[0.625rem] bg-primary py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white"
+                  onClick={() => navigate('/login')}>
+                  로그인
+                </button>
+              </div>
+            </div>
+          </div>
         </ModalPortal>
       )}
     </>
@@ -222,5 +310,21 @@ export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleCha
         </div>
       </form>
     </div>
+  )
+}
+
+interface TimerDisplayedNumbersProps {
+  hours: number
+  minutes: number
+  seconds: number
+}
+
+const TimerDisplayedNumbers = ({ hours, minutes, seconds }: TimerDisplayedNumbersProps) => {
+  return (
+    <span className="countdown font-montserrat text-[4rem] font-bold">
+      {/* @ts-ignore */}
+      <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:{/* @ts-ignore */}
+      <span style={{ '--value': seconds }}></span>
+    </span>
   )
 }

@@ -18,14 +18,14 @@ interface ReportDataResponse {
 
 export type ReportData = ReportDataResponse
 
-export const getReportData = async ({ userId, date }: { userId: number; date: Date }) => {
+export const getReportData = async ({ userId, date }: { userId: string; date: Date }) => {
   const yearMonth = format(date, 'yyyy-MM')
   const response = await api.get<ReportDataResponse>(`/users/${userId}/reports?yearMonth=${yearMonth}`)
 
   return response.data
 }
 
-export const putUserNickname = async ({ userId, nickname }: { userId: number; nickname: string }) => {
+export const putUserNickname = async ({ userId, nickname }: { userId: string; nickname: string }) => {
   const response = await api.put(`/users/${userId}`, { userName: nickname })
 
   return response.data

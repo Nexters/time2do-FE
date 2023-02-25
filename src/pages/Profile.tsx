@@ -21,7 +21,7 @@ const formatTotalDuration = (totalDuration: string) => {
   return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
 }
 
-const userId = 1
+const userId = '1'
 
 const today = new Date(new Date().toDateString())
 
@@ -103,7 +103,7 @@ export function Report() {
     <>
       <div className="bg-grey-1000">
         <div>
-          <Header title="레포트" />
+          <Header name="레포트" />
           <div className="flex items-center px-[1.25rem] pb-4">
             <img src={profileImageUrl} alt="프로필" />
             <p className="ml-[0.9375rem] mr-[0.625rem] text-[1.4375rem] font-semibold text-grey-200">

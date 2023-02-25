@@ -8,8 +8,8 @@ import ChevronLeft from '../../assets/svg/ChevronLeft'
 import GreenDot from '../../assets/svg/GreenDot'
 import { TimeBlock } from '../../api/report'
 
-const getDayColorClassName = (hour: number) => {
-  if (hour > 0 && hour < 4) {
+const getDayColorClassName = (hour: number, minute: number) => {
+  if ((hour > 0 && hour < 4) || (hour === 0 && minute > 0)) {
     return 'bg-[#282651]'
   }
 
@@ -160,6 +160,7 @@ const ReportCalendar: React.FC<ReportCalendarProps> = ({
                     key={key}
                     className={`h-[3.25rem] w-[3.25rem] rounded-[0.625rem] ${getDayColorClassName(
                       timeBlockHour,
+                      timeBlockMinute,
                     )} relative flex cursor-pointer items-center justify-center text-[0.9375rem] font-semibold leading-[1.125rem] ${
                       isCursorMonth ? 'text-grey-200' : 'text-grey-800'
                     }`}
@@ -187,7 +188,7 @@ const ReportCalendar: React.FC<ReportCalendarProps> = ({
                 <div
                   key={key}
                   className={`h-[3.25rem] w-[3.25rem] rounded-[0.625rem] ${cx({
-                    [getDayColorClassName(timeBlockHour)]: isCursorMonth,
+                    [getDayColorClassName(timeBlockHour, timeBlockMinute)]: isCursorMonth,
                   })} relative flex items-center justify-center text-[1.5625rem] font-semibold ${
                     isCursorMonth ? 'text-grey-300' : 'text-grey-800'
                   }`}
