@@ -53,7 +53,6 @@ export type User = {
   userName: string
   password: string
 }
-<<<<<<< HEAD
 
 export type GroupTimer = {
   name: string
@@ -63,5 +62,3 @@ export type GroupTimer = {
   endTime: string
   type: 1 | 2
 }
-=======
->>>>>>> main

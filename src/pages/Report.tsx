@@ -38,26 +38,11 @@ export function Report() {
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
-<<<<<<< HEAD
-  const nicknameMutation = useMutation({
-    mutationFn: () => putUserNickname({ userId, nickname }),
-    onSuccess: () => {
-      setNickname('')
-    },
-    onError: () => {
-      alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
-    },
-  })
-  const { data: reportData } = useQuery({
-=======
   const { data: reportData, refetch } = useQuery({
->>>>>>> main
     queryKey: ['getReportData'],
     queryFn: () => getReportData({ userId, date: cursorDate }),
   })
 
-<<<<<<< HEAD
-=======
   const nicknameMutation = useMutation({
     mutationFn: () => putUserNickname({ userId, nickname }),
     onSuccess: () => {
@@ -70,7 +55,6 @@ export function Report() {
     },
   })
 
->>>>>>> main
   const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
   const todos =
     reportData?.timeBlocks && selectedDateString
@@ -78,21 +62,12 @@ export function Report() {
           id: toDo.id,
           userId: toDo.userId,
           content: toDo.content,
-<<<<<<< HEAD
-          completed: true,
-          private: false,
-          createdTime: new Date(toDo.createdTime),
-          completedTime: new Date(toDo.completedTime),
-          modifiedTime: new Date(toDo.modifiedTime),
-          deletedTime: new Date(toDo.deletedTime),
-=======
           completed: BooleanNumberTypes['TRUE'],
           private: BooleanNumberTypes['FALSE'],
           createdTime: new Date(toDo.createdTime),
           completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
           modifiedTime: toDo.modifiedTime ? new Date(toDo.modifiedTime) : undefined,
           deletedTime: toDo.deletedTime ? new Date(toDo.deletedTime) : undefined,
->>>>>>> main
         }))
       : []
   const groupTimers =
@@ -159,11 +134,6 @@ export function Report() {
           </div>
         )}
 
-<<<<<<< HEAD
-        {todos.length > 0 && (
-          <div className="py-7 px-6">
-            <TodoList title="완료한 할 일 목록" todos={todos} readonly />
-=======
         {todos.length === 0 && groupTimers.length === 0 && (
           <div className="py-10 px-6 text-center">
             <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
@@ -174,7 +144,6 @@ export function Report() {
         {todos.length > 0 && (
           <div className="py-7 px-6">
             <TodoList name="완료한 할 일 목록" todos={todos} readonly />
->>>>>>> main
             {todos.length === 0 && <div className="py-12" />}
           </div>
         )}
