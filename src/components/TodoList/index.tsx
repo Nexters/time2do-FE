@@ -20,7 +20,6 @@ export const TodoList = ({ title = '할 일 목록', readonly, todos = [] }: Pro
   const setTodos = useSetRecoilState(todosAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
-  console.log(todos)
 
   const addTodo = (value: string) => {
     const id = uuid()
