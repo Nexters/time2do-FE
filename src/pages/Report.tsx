@@ -12,6 +12,7 @@ import TimerMakeModal from '../components/TimerMakeModal'
 import closeIconUrl from '../assets/svg/Close.svg'
 import { getReportData } from '../api/profile'
 import { ko } from 'date-fns/locale'
+import ModalPortal from '../components/ModalPortal'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -127,7 +128,7 @@ export function Report() {
         </div>
       </div>
       {modalVisible && (
-        <TimerMakeModal closePortal={closeModal}>
+        <ModalPortal closePortal={closeModal} isOpened={modalVisible}>
           <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[0.875rem] pb-[1.125rem] pt-[2.9375rem]">
             <div className="absolute right-[0.875rem] top-[0.875rem]">
               <button>
@@ -151,7 +152,7 @@ export function Report() {
               </button>
             </form>
           </div>
-        </TimerMakeModal>
+        </ModalPortal>
       )}
       <div id="root-modal" className="absolute left-0 top-0" />
     </>
