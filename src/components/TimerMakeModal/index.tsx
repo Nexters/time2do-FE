@@ -28,7 +28,7 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
   useEffect(() => {
     setMounted(true)
     if (document) {
-      modalRef.current = document.getElementById('root-modal')
+      modalRef.current = document.getElementById('modal-portal')
     }
   }, [])
 
@@ -36,7 +36,7 @@ const TimerMakeModal = ({ children, closePortal }: TimerMakeModalProps) => {
     return createPortal(
       <>
         <div
-          className="fixed z-40 h-screen w-screen overflow-hidden bg-black opacity-80"
+          className="absolute h-screen w-screen overflow-hidden bg-black opacity-80"
           role="presentation"
           onClick={closePortal}
         />
