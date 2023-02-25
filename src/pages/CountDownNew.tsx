@@ -22,10 +22,10 @@ export function CountDownNew() {
   const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      maker_id: '0',
+      makerId: '0',
       type: TimerTypes['COUNT_DOWN'],
-      tags: '',
-      start_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+      tag: '',
+      startTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
     },
   })
   const onSubmit = (data: any) => {

@@ -5,9 +5,9 @@ export const defaultTodo: Todo = {
   content: '',
   id: new Date().getTime(),
   completed: 0,
-  user_id: 'LOCAL',
+  userId: 'LOCAL',
   private: 0,
-  created_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+  createdTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
 }
 
 export const defaultTimer = {}

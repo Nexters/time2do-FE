@@ -14,7 +14,7 @@ now.setSeconds(now.getSeconds() + 100)
 export const CountUpHeader = () => {
   const navigate = useNavigate()
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const { isRunning: isTimerRunning, start_time } = timer
+  const { isRunning: isTimerRunning, startTime } = timer
   console.log(timer)
 
   const stopwatchOffset = new Date()

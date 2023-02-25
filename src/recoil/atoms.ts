@@ -78,7 +78,7 @@ export const countUpTimerAtom = atom<Timer>({
     // 클라이언트에서만 사용하거나 서버에 동기화할 때 비뀔 수 있는 필드들
     isRunning: false,
     id: uuid(),
-    maker_id: 'LOCAL',
+    makerId: 'LOCAL',
   },
   effects: [localStorageEffect('timer')],
 })
@@ -92,7 +92,7 @@ export const countDownTimerAtom = atom<Timer>({
     // 클라이언트에서만 사용하거나 서버에 동기화할 때 비뀔 수 있는 필드들
     id: uuid(),
     isRunning: false,
-    maker_id: 'LOCAL',
+    makerId: 'LOCAL',
   },
   effects: [localStorageEffect('timer')],
 })
