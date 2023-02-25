@@ -15,10 +15,9 @@ now.setSeconds(now.getSeconds() + 100)
 export const CountDownHeader = () => {
   const navigate = useNavigate()
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const { isRunning: isTimerRunning, startTimestamp } = timer
+  const { isRunning: isTimerRunning, start_time } = timer
 
   const stopwatchOffset = new Date()
-  const diff = stopwatchOffset.setSeconds(stopwatchOffset.getTime() - startTimestamp) / 1000
 
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -30,7 +29,6 @@ export const CountDownHeader = () => {
     setModalVisible(false)
   }
 
-  console.log(diff, 'diff')
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
     autoStart: false,
     offsetTimestamp: stopwatchOffset,
@@ -78,7 +76,7 @@ export const CountDownHeader = () => {
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
-              {timer.title}
+              {timer.name}
             </h1>
             <button onClick={openModal}>
               <EditIcon />
@@ -94,7 +92,7 @@ export const CountDownHeader = () => {
       {modalVisible && (
         <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
-            title={timer.title}
+            title={timer.name}
             onClose={closeModal}
             onSubmit={newTitle => setTimer(prev => ({ ...prev, title: newTitle }))}
           />
@@ -118,7 +116,6 @@ export const TimerTitleChangeModal = ({ title, onClose, onSubmit }: TimerTitleCh
         className="flex flex-col"
         onSubmit={e => {
           e.preventDefault()
-          console.log(e)
           onSubmit(timerTitle)
           onClose()
         }}>

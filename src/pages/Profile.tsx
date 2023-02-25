@@ -5,11 +5,13 @@ import { TodoList } from '../components/TodoList'
 import profileImageUrl from '../assets/svg/Profile.svg'
 import profileIconUrl from '../assets/svg/ProfileIcon.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
-import TimerMakeModal from '../components/TimerMakeModal'
 import closeIconUrl from '../assets/svg/Close.svg'
 import ModalPortal from '../components/ModalPortal'
+import { useRecoilValue } from 'recoil'
+import { todosAtom } from '../recoil/atoms'
 
 export function Profile() {
+  const todos = useRecoilValue(todosAtom)
   const [modalVisible, setModalVisible] = useState(false)
 
   const openModal = () => {
@@ -42,7 +44,7 @@ export function Profile() {
           <ReportCalendar />
         </div>
         <div className="py-7 px-6">
-          <TodoList title="완료한 할 일 목록" readonly />
+          <TodoList todos={todos} name="완료한 할 일 목록" readonly />
         </div>
         <div className="py-7 px-6">
           <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>

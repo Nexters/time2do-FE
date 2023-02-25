@@ -2,27 +2,26 @@ import { forwardRef, useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
 import { useSetRecoilState } from 'recoil'
 import { todosAtom } from '../../recoil/atoms'
-import { defaultTodo } from '../../consts'
+import { BooleanNumberTypes, defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
 import { Todo } from '../../types'
-import { v4 as uuid } from 'uuid'
 import { cls } from '../../utils/cls'
 import { usePrevious } from 'react-use'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 interface Props {
-  title?: string
+  name?: string
   readonly?: boolean
   todos: Todo[]
 }
 
-export const TodoList = ({ title = '할 일 목록', readonly, todos = [] }: Props) => {
+export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Props) => {
   const setTodos = useSetRecoilState(todosAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
 
   const addTodo = (value: string) => {
-    const id = uuid()
+    const id = new Date().getTime()
     const newTodo = {
       ...defaultTodo,
       id,
@@ -30,7 +29,7 @@ export const TodoList = ({ title = '할 일 목록', readonly, todos = [] }: Pro
     }
     setTodos(prev => [newTodo, ...prev])
   }
-  console.log(todos)
+
   const prevLength = usePrevious(todos.length)
   useEffect(() => {
     if (typeof prevLength === 'undefined') return
@@ -46,7 +45,7 @@ export const TodoList = ({ title = '할 일 목록', readonly, todos = [] }: Pro
   return (
     <div className="relative w-full">
       <div className="mb-4 flex items-center justify-start gap-2">
-        <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{title}</h1>
+        <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{name}</h1>
         <div>
           {!readonly && (
             <button
@@ -105,12 +104,12 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
         )}>
         <input
           type="checkbox"
-          checked={todo.completed}
+          checked={Boolean(todo.completed)}
           onChange={e => {
             if (readonly) return
             onUpdateTodo({
               ...todo,
-              completed: e.target.checked,
+              completed: e.target.checked ? BooleanNumberTypes.TRUE : BooleanNumberTypes.FALSE,
             })
           }}
           onFocus={handleFocus}

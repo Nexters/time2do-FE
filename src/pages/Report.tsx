@@ -13,6 +13,8 @@ import closeIconUrl from '../assets/svg/Close.svg'
 import { getReportData } from '../api/profile'
 import { ko } from 'date-fns/locale'
 import ModalPortal from '../components/ModalPortal'
+import { useRecoilValue } from 'recoil'
+import { todosAtom } from '../recoil/atoms'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -31,6 +33,8 @@ export function Report() {
 
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
+  const todos = useRecoilValue(todosAtom)
 
   const hoveredDateString = hoveredDate ? format(hoveredDate, 'yyyy-MM-dd') : null
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
@@ -99,7 +103,7 @@ export function Report() {
           )}
         </div>
         <div className="py-7 px-6">
-          <TodoList title="완료한 할 일 목록" readonly />
+          <TodoList todos={todos} name="완료한 할 일 목록" readonly />
         </div>
         <div className="py-7 px-6">
           <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>

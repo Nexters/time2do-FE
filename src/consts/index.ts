@@ -1,10 +1,13 @@
-export const defaultTodo = {
+import { format } from 'date-fns'
+import { Todo } from '../types'
+
+export const defaultTodo: Todo = {
   content: '',
   id: new Date().getTime(),
-  completed: false,
-  userId: 1,
-  private: false,
-  createdTime: new Date(),
+  completed: 0,
+  user_id: 'LOCAL',
+  private: 0,
+  created_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
 }
 
 export const defaultTimer = {}

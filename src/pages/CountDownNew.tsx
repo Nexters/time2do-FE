@@ -3,9 +3,10 @@ import Header from '../components/Header'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useState } from 'react'
 import TimerMakeModal from '../components/TimerMakeModal'
-import { GroupTimer } from '../types'
+import { Timer } from '../types'
 import { format } from 'date-fns'
 import ModalPortal from '../components/ModalPortal'
+import { TimerTypes } from '../consts'
 
 export function CountDownNew() {
   const [startTime, setStartTime] = useState(new Date())
@@ -18,14 +19,13 @@ export function CountDownNew() {
     return setModalVisible(false)
   }
 
-  const methods = useForm<GroupTimer>({
+  const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      maker_id: 0,
-      type: 2,
+      maker_id: '0',
+      type: TimerTypes['COUNT_DOWN'],
       tags: '',
       start_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-      end_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
     },
   })
   const onSubmit = (data: any) => {
