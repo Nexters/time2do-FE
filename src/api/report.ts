@@ -1,29 +1,15 @@
 import { format } from 'date-fns'
 import api from '.'
-
-interface ToDo {
-  id: number
-  userId: number
-  content: string
-  completed: boolean
-  createdTime: string
-  completedTime: string
-  modifiedTime: string
-  deletedTime: string
-}
-
-interface GroupTimer {
-  name: string
-  displayTime: string
-  duration: number
-  participantsCount: number
-  tag: string
-}
+import { GroupTimer, Todo } from '../types'
 
 export interface TimeBlock {
   hour: number
   minute: number
+<<<<<<< HEAD
   toDos: ToDo[]
+=======
+  toDos: Todo[]
+>>>>>>> main
   groupTimers: GroupTimer[]
   inGroupTimer: boolean
 }

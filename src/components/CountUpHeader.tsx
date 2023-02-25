@@ -1,7 +1,7 @@
 import { useStopwatch } from 'react-timer-hook'
 import { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
-import { timerAtom } from '../recoil/atoms'
+import { countUpTimerAtom } from '../recoil/atoms'
 import Switch from '../assets/svg/Switch'
 import Report from '../assets/svg/ReportIcon'
 import EditIcon from '../assets/svg/EditIcon'
@@ -13,11 +13,11 @@ now.setSeconds(now.getSeconds() + 100)
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
-  const [timer, setTimer] = useRecoilState(timerAtom)
-  const { isRunning: isTimerRunning, startTimestamp } = timer
+  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
+  const { isRunning: isTimerRunning, startTime } = timer
+  console.log(timer)
 
   const stopwatchOffset = new Date()
-  const diff = stopwatchOffset.setSeconds(stopwatchOffset.getTime() - startTimestamp) / 1000
 
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -29,7 +29,6 @@ export const CountUpHeader = () => {
     setModalVisible(false)
   }
 
-  console.log(diff, 'diff')
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
     autoStart: false,
     offsetTimestamp: stopwatchOffset,
@@ -79,14 +78,14 @@ export const CountUpHeader = () => {
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
-              {timer.title}
+              {timer.name}
             </h1>
             <button onClick={openModal}>
               <EditIcon />
             </button>
           </div>
           <TimerButtons
-            hasStarted={isTimerRunning}
+            hasStarted={Boolean(isTimerRunning)}
             isRunning={isRunning}
             onStartClick={startTimer}
             onResetClick={resetTimer}
@@ -98,9 +97,9 @@ export const CountUpHeader = () => {
       {modalVisible && (
         <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
-            title={timer.title}
+            name={timer.name}
             onClose={closeModal}
-            onSubmit={newTitle => setTimer(prev => ({ ...prev, title: newTitle }))}
+            onSubmit={newTitle => setTimer(prev => ({ ...prev, name: newTitle }))}
           />
         </ModalPortal>
       )}
@@ -181,20 +180,19 @@ export const TimerButtons = ({
 }
 
 interface TimerTitleChangeModalProps {
-  title: string
+  name: string
   onClose: () => void
-  onSubmit: (title: string) => void
+  onSubmit: (name: string) => void
 }
 
-export const TimerTitleChangeModal = ({ title, onClose, onSubmit }: TimerTitleChangeModalProps) => {
-  const [timerTitle, setTimerTitle] = useState(title)
+export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleChangeModalProps) => {
+  const [timerTitle, setTimerTitle] = useState(name)
   return (
     <div className="w-[24.25rem] rounded-2xl bg-grey-850 px-5 pb-[1.125rem] pt-6">
       <form
         className="flex flex-col"
         onSubmit={e => {
           e.preventDefault()
-          console.log(e)
           onSubmit(timerTitle)
           onClose()
         }}>
