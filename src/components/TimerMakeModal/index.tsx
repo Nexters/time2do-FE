@@ -264,16 +264,12 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
 }
 
 // eslint-disable-next-line react/display-name
-TimerMakeModal.CompleteModal = ({ closePortal }: { closePortal: any }) => {
+TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: any; invitationCode: string }) => {
   const [groupCode, setGroupCode] = useState<string>('')
   const [isCopy, onCopy] = useCopyClipBoard()
 
-  const getGroupCode = () => {
-    return '123456'
-  }
-
   useEffect(() => {
-    setGroupCode(getGroupCode())
+    setGroupCode(invitationCode)
   }, [])
 
   return (
