@@ -1,21 +1,22 @@
-import { useStopwatch } from 'react-timer-hook'
 import { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { countUpTimerAtom } from '../recoil/atoms'
-import Switch from '../assets/svg/Switch'
-import Report from '../assets/svg/ReportIcon'
-import EditIcon from '../assets/svg/EditIcon'
-import ModalPortal from './ModalPortal'
 import { useNavigate } from 'react-router-dom'
+import { useStopwatch } from 'react-timer-hook'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import EditIcon from '../assets/svg/EditIcon'
+import Report from '../assets/svg/ReportIcon'
+import Switch from '../assets/svg/Switch'
+import { countUpTimerAtom, userAtom } from '../recoil/atoms'
+import ModalPortal from './ModalPortal'
 
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
+  const user = useRecoilValue(userAtom)
+
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
   const { isRunning: isTimerRunning, startTime } = timer
-  console.log(timer)
 
   const stopwatchOffset = new Date()
 
@@ -27,6 +28,26 @@ export const CountUpHeader = () => {
 
   const closeModal = () => {
     setModalVisible(false)
+  }
+
+  const [reportLoginModalVisible, setReportLoginModalVisible] = useState(false)
+
+  const openReportLoginModal = () => {
+    setReportLoginModalVisible(true)
+  }
+
+  const closeReportLoginModal = () => {
+    setReportLoginModalVisible(false)
+  }
+
+  const reportButtonClickHandler = () => {
+    if (user) {
+      navigate('/report')
+
+      return
+    }
+
+    openReportLoginModal()
   }
 
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
@@ -61,7 +82,7 @@ export const CountUpHeader = () => {
             <Switch classNames="ml-2" />
           </button>
 
-          <button className="">
+          <button onClick={reportButtonClickHandler}>
             <Report />
           </button>
         </div>
@@ -101,6 +122,31 @@ export const CountUpHeader = () => {
             onClose={closeModal}
             onSubmit={newTitle => setTimer(prev => ({ ...prev, name: newTitle }))}
           />
+        </ModalPortal>
+      )}
+
+      {reportLoginModalVisible && (
+        <ModalPortal closePortal={closeReportLoginModal} isOpened={reportLoginModalVisible}>
+          <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
+            <div className="flex flex-col">
+              <p className="mb-4 text-[1.375rem] font-bold leading-[140%] text-grey-200">로그인이 필요해요</p>
+              <p className="mb-[1.375rem] text-[1rem] font-semibold leading-[1.4375rem]">
+                레포트를 이용하려면 내 정보가 필요해요
+              </p>
+              <div className="flex gap-[0.625rem]">
+                <button
+                  className="width-full flex-1 rounded-[0.625rem] bg-grey-800 py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white"
+                  onClick={closeReportLoginModal}>
+                  끝내기
+                </button>
+                <button
+                  className="width-full flex-1 rounded-[0.625rem] bg-primary py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white"
+                  onClick={() => navigate('/login')}>
+                  로그인
+                </button>
+              </div>
+            </div>
+          </div>
         </ModalPortal>
       )}
     </>
