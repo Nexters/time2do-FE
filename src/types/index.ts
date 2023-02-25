@@ -18,3 +18,9 @@ export type Timer = {
   startTimestamp: number
   endTimestamp?: number
 }
+
+export type User = {
+  userId: string
+  userName: string
+  password: string
+}

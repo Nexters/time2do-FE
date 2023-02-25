@@ -1,5 +1,18 @@
 import { atom, AtomEffect } from 'recoil'
-import type { Timer, Todo } from '../types'
+import type { Timer, Todo, User } from '../types'
+
+const localStorageEffect =
+  (key: string): AtomEffect<any> =>
+  ({ setSelf, onSet }) => {
+    const savedValue = localStorage.getItem(key)
+    if (savedValue != null) {
+      setSelf(JSON.parse(savedValue))
+    }
+
+    onSet((newValue, _, isReset) => {
+      isReset ? localStorage.removeItem(key) : localStorage.setItem(key, JSON.stringify(newValue))
+    })
+  }
 
 const syncStorageEffect =
   (targetKey: string): AtomEffect<any> =>
@@ -50,7 +63,7 @@ const syncStorageEffect =
 export const todosAtom = atom<Todo[]>({
   key: 'todosAtom',
   default: [],
-  effects: [syncStorageEffect('todos')],
+  effects: [syncStorageEffect('todos'), localStorageEffect('todos')],
 })
 
 export const timerAtom = atom<Timer>({
@@ -60,5 +73,11 @@ export const timerAtom = atom<Timer>({
     isRunning: false,
     startTimestamp: new Date().getTime(),
   },
-  effects: [syncStorageEffect('timer')],
+  effects: [syncStorageEffect('timer'), localStorageEffect('timer')],
+})
+
+export const userAtom = atom<User | null>({
+  key: 'userAtom',
+  default: null,
+  effects: [localStorageEffect('user')],
 })
