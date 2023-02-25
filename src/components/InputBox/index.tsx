@@ -3,6 +3,7 @@ import TimerMakeModal from '../TimerMakeModal'
 import { useFormContext } from 'react-hook-form'
 import TagBox from './_fragment/TagBox'
 import { format } from 'date-fns'
+import ModalPortal from '../ModalPortal'
 
 interface Props {
   InputBoxName: string
@@ -251,7 +252,7 @@ InputBox.StartTimeSet = ({ InputBoxName, startTime, setStartTime }: StartTimeSet
           </label>
         </div>
         {modalVisible && (
-          <TimerMakeModal closePortal={modalClose}>
+          <ModalPortal closePortal={modalClose} isOpened={modalVisible}>
             {modalState === 'date' ? (
               <TimerMakeModal.StartDatePicker
                 startTime={startTime}
@@ -265,7 +266,7 @@ InputBox.StartTimeSet = ({ InputBoxName, startTime, setStartTime }: StartTimeSet
                 modalClose={modalClose}
               />
             )}
-          </TimerMakeModal>
+          </ModalPortal>
         )}
       </div>
     </>
