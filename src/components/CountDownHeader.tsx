@@ -41,12 +41,12 @@ export const CountDownHeader = () => {
   }, [isTimerRunning])
 
   const startTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true, startTimestamp: new Date().getTime() }))
+    setTimer(prev => ({ ...prev, isRunning: true, startTime: new Date() }))
     start()
   }
 
   const resetTimer = () => {
-    setTimer(prev => ({ ...prev, endTimestamp: new Date().getTime(), isRunning: false }))
+    setTimer(prev => ({ ...prev, endTime: new Date(), isRunning: false }))
     reset(undefined, false)
   }
 

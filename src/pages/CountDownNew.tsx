@@ -23,7 +23,7 @@ export function CountDownNew() {
   const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      makerId: 0,
+      makerId: '0',
       type: 2,
       tag: '',
       startTime: formatISO(new Date()),
@@ -38,7 +38,7 @@ export function CountDownNew() {
   return (
     <div className="h-full bg-[#0F1214] text-center">
       <div className="m-auto w-11/12">
-        <Header title="다운 타이머 만들기" />
+        <Header name="다운 타이머 만들기" />
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <InputBox InputBoxName="타이머 이름" placeHolder="타이머 이름을 입력해주세요. (15자 이내)" />
