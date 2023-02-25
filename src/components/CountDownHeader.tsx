@@ -92,9 +92,9 @@ export const CountDownHeader = () => {
       {modalVisible && (
         <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
-            title={timer.name}
+            name={timer.name}
             onClose={closeModal}
-            onSubmit={newTitle => setTimer(prev => ({ ...prev, title: newTitle }))}
+            onSubmit={newName => setTimer(prev => ({ ...prev, name: newName }))}
           />
         </ModalPortal>
       )}
@@ -103,13 +103,13 @@ export const CountDownHeader = () => {
 }
 
 interface TimerTitleChangeModalProps {
-  title: string
+  name: string
   onClose: () => void
-  onSubmit: (title: string) => void
+  onSubmit: (name: string) => void
 }
 
-export const TimerTitleChangeModal = ({ title, onClose, onSubmit }: TimerTitleChangeModalProps) => {
-  const [timerTitle, setTimerTitle] = useState(title)
+export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleChangeModalProps) => {
+  const [timerTitle, setTimerTitle] = useState(name)
   return (
     <div className="w-[24.25rem] rounded-2xl bg-grey-850 px-5 pb-[1.125rem] pt-6">
       <form
