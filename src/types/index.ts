@@ -24,3 +24,12 @@ export type User = {
   userName: string
   password: string
 }
+
+export type GroupTimer = {
+  name: string
+  maker_id: number
+  tags: string
+  start_time: string
+  end_time: string
+  type: 1 | 2
+}
