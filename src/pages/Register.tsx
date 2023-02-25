@@ -1,17 +1,15 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import Header from '../components/Header'
-import LoginPageImg from '../../public/img/tmpLoginImg.png'
 import InputBox from '../components/InputBox'
-import { useState } from 'react'
 import { postUser } from '../api/user'
-import { RegisterUser } from '../types'
+import { useSetRecoilState } from 'recoil'
+import { userAtom } from '../recoil/atoms'
 
 const Register = () => {
-  const [password, setPassword] = useState<string>('')
-  const [confirmPassword, setConfirmPassword] = useState<string>('')
-
+  const setUser = useSetRecoilState(userAtom)
   const onSubmit = async (data: any) => {
     const response = await postUser(data)
+    setUser(response)
     console.log(response)
   }
 
