@@ -32,7 +32,7 @@ export function Report() {
   const { cursorDate } = calendarHook
 
   const user = useRecoilValue(userAtom)
-  const userId = user?.userId
+  const userId = user?.idToken
 
   if (!userId) {
     return <Navigate to="/" replace />
@@ -74,8 +74,6 @@ export function Report() {
           private: BooleanNumberTypes['FALSE'],
           createdTime: new Date(toDo.createdTime),
           completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
-          modifiedTime: toDo.modifiedTime ? new Date(toDo.modifiedTime) : undefined,
-          deletedTime: toDo.deletedTime ? new Date(toDo.deletedTime) : undefined,
         }))
       : []
   const groupTimers =

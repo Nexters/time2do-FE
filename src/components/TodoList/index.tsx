@@ -115,6 +115,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
             onUpdateTodo({
               ...todo,
               completed: e.target.checked ? BooleanNumberTypes.TRUE : BooleanNumberTypes.FALSE,
+              completedTime: new Date(),
             })
           }}
           onFocus={handleFocus}
