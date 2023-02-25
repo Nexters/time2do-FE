@@ -12,7 +12,7 @@ import WhiteHeart from '../assets/svg/WhiteHeart'
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
 
-export const CountDownHeader = () => {
+export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void }) => {
   const navigate = useNavigate()
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
   const { isRunning: isTimerRunning, startTime } = timer
@@ -82,7 +82,7 @@ export const CountDownHeader = () => {
               <EditIcon />
             </button>
           </div>
-          <button className="btn-primary btn h-14 gap-2 rounded-full px-5 text-xl">
+          <button onClick={onCheerUpClick} className="btn-primary btn h-14 gap-2 rounded-full px-5 text-xl">
             <WhiteHeart />
             <span className="">응원하기</span>
           </button>

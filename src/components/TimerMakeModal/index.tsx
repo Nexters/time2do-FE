@@ -16,6 +16,7 @@ import {
   subDays,
 } from 'date-fns'
 import useCopyClipBoard from '../../hooks/useCopyClipBoard'
+import { useNavigate } from 'react-router-dom'
 
 interface TimerMakeModalProps {
   children: React.ReactNode
@@ -152,9 +153,11 @@ TimerMakeModal.StartDatePicker = ({ startTime, setStartTime, modalClose }: Start
             {createDays().map(weeks => {
               return (
                 <div key={weeks.toString()} className="mb-2  flex gap-2">
-                  {weeks.map(days => {
+                  {weeks.map((days, index) => {
                     return (
-                      <div key={days.toString()} className="h-[2.625rem] w-[2.625rem] text-[1.375rem] font-semibold">
+                      <div
+                        key={`${days.toString()}${index}`}
+                        className="h-[2.625rem] w-[2.625rem] text-[1.375rem] font-semibold">
                         <ModalSelectElement.CalenderElement
                           content={days[2]}
                           data={date}
@@ -267,6 +270,12 @@ TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: Start
 TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: any; invitationCode: string }) => {
   const [groupCode, setGroupCode] = useState<string>('')
   const [isCopy, onCopy] = useCopyClipBoard()
+  const navigate = useNavigate()
+
+  const handleClickEvent = () => {
+    closePortal()
+    navigate(`/countdown/${groupCode}`)
+  }
 
   useEffect(() => {
     setGroupCode(invitationCode)
@@ -284,13 +293,14 @@ TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: 
         <span className="align-middle text-title1 font-semibold leading-[60px] text-grey-300">{`#${groupCode}`}</span>
       </div>
       <div className="flex text-title2 font-semibold text-white">
-        <button className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-grey-800" onClick={closePortal}>
+        <button className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-grey-800" onClick={handleClickEvent}>
           닫기
         </button>
         <button
           className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-primary"
           onClick={() => {
             onCopy(groupCode)
+            navigate(`/countdown/${groupCode}`)
           }}>
           <div className="flex justify-center">
             <img className="mr-[4px]" src={LinkShareIcon} alt="링크 공유하기 버튼" />

@@ -12,8 +12,6 @@ export type Todo = {
   private: BooleanNumber
   createdTime: DateTime
   completedTime?: DateTime
-  modifiedTime?: DateTime
-  deletedTime?: DateTime
 }
 
 export type TimeRecord = {
@@ -49,7 +47,13 @@ export type GroupTimer = Timer & {
 }
 
 export type User = {
-  userId: string
-  userName: string
+  id: string
+  idToken: string
+  username: string
+  onboarding: boolean
+}
+
+export type RegisterUser = {
+  username: string
   password: string
 }
