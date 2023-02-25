@@ -13,6 +13,7 @@ import { getReportData, putUserNickname } from '../api/report'
 import { ko } from 'date-fns/locale'
 import ModalPortal from '../components/ModalPortal'
 import { BooleanNumberTypes } from '../consts'
+import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -37,18 +38,21 @@ export function Report() {
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
+  const { data: reportData, refetch } = useQuery({
+    queryKey: ['getReportData'],
+    queryFn: () => getReportData({ userId, date: cursorDate }),
+  })
+
   const nicknameMutation = useMutation({
     mutationFn: () => putUserNickname({ userId, nickname }),
     onSuccess: () => {
       setNickname('')
+      closeModal()
+      refetch()
     },
     onError: () => {
       alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
     },
-  })
-  const { data: reportData } = useQuery({
-    queryKey: ['getReportData'],
-    queryFn: () => getReportData({ userId, date: cursorDate }),
   })
 
   const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
@@ -101,7 +105,7 @@ export function Report() {
 
   return (
     <>
-      <div className="bg-grey-1000">
+      <div className=" bg-grey-1000">
         <div>
           <Header title="레포트" />
           <div className="flex items-center px-[1.25rem] pb-4">
@@ -127,6 +131,13 @@ export function Report() {
               onMouseLeaveDate={dateMouseLeaveHandler}
               onClickDate={dateClickHandler}
             />
+          </div>
+        )}
+
+        {todos.length === 0 && groupTimers.length === 0 && (
+          <div className="py-10 px-6 text-center">
+            <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
+            <p className="mt-[1.875rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>
           </div>
         )}
 
@@ -166,6 +177,7 @@ export function Report() {
           </div>
         )}
       </div>
+
       {modalVisible && (
         <ModalPortal closePortal={closeModal} isOpened={modalVisible}>
           <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[0.875rem] pb-[1.125rem] pt-[2.9375rem]">
