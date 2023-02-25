@@ -24,13 +24,13 @@ export interface TimeBlock {
   hour: number
   minute: number
   toDos: ToDo[]
+  groupTimers: GroupTimer[]
   inGroupTimer: boolean
 }
 
 interface ReportDataResponse {
   userName: string
   timeBlocks: Record<string, TimeBlock>
-  groupTimers: GroupTimer[]
   totalDuration: string
 }
 

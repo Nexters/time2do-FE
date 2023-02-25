@@ -32,7 +32,6 @@ export function Report() {
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
-  const hoveredDateString = hoveredDate ? format(hoveredDate, 'yyyy-MM-dd') : null
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
   const { data: reportData } = useQuery({
@@ -41,8 +40,22 @@ export function Report() {
   })
 
   const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
-
-  const groupTimers = reportData?.groupTimers ? reportData.groupTimers : []
+  const todos =
+    reportData?.timeBlocks && selectedDateString
+      ? reportData.timeBlocks[selectedDateString].toDos.map(toDo => ({
+          id: toDo.id,
+          userId: toDo.userId,
+          content: toDo.content,
+          completed: true,
+          private: false,
+          createdTime: new Date(toDo.createdTime),
+          completedTime: new Date(toDo.completedTime),
+          modifiedTime: new Date(toDo.modifiedTime),
+          deletedTime: new Date(toDo.deletedTime),
+        }))
+      : []
+  const groupTimers =
+    reportData?.timeBlocks && selectedDateString ? reportData.timeBlocks[selectedDateString].groupTimers : []
 
   const openModal = () => {
     setModalVisible(true)
@@ -98,34 +111,38 @@ export function Report() {
             />
           )}
         </div>
-        <div className="py-7 px-6">
-          <TodoList title="완료한 할 일 목록" readonly />
-        </div>
-        <div className="py-7 px-6">
-          <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
-          {groupTimers.map(groupTimer => (
-            <div key={groupTimer.name} className="rounded-[0.625rem] bg-grey-900 px-4 py-4">
-              <div className="mb-1 flex items-center">
-                <div className="rounded-3xl bg-grey-1000 px-2 py-[0.3125rem] text-[0.9375rem] font-semibold leading-[1.125rem] text-grey-200 backdrop-blur-[7.5px]">
-                  #{groupTimer.tag}
+        {todos.length > 0 && (
+          <div className="py-7 px-6">
+            <TodoList title="완료한 할 일 목록" todos={todos} readonly />
+          </div>
+        )}
+        {groupTimers.length > 0 && (
+          <div className="py-7 px-6">
+            <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
+            {groupTimers.map(groupTimer => (
+              <div key={groupTimer.name} className="rounded-[0.625rem] bg-grey-900 px-4 py-4">
+                <div className="mb-1 flex items-center">
+                  <div className="rounded-3xl bg-grey-1000 px-2 py-[0.3125rem] text-[0.9375rem] font-semibold leading-[1.125rem] text-grey-200 backdrop-blur-[7.5px]">
+                    #{groupTimer.tag}
+                  </div>
+                  <p className="pl-[0.375rem] text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">
+                    {groupTimer.name}
+                  </p>
                 </div>
-                <p className="pl-[0.375rem] text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">
-                  {groupTimer.name}
-                </p>
+                <div className="flex items-center text-[1.0625rem] font-bold leading-[1.25rem] text-grey-400">
+                  <img src={profileIconUrl} alt="인원수" />
+                  <span className="pl-[0.125rem]">{groupTimer.participantsCount}</span>
+                  <span className="pl-[0.375rem]">
+                    {format(new Date(groupTimer.displayTime), 'a h시 m분', { locale: ko })}
+                  </span>
+                </div>
+                <div className="pr-[0.625rem] text-right text-[1.875rem] font-bold leading-[2.25rem] text-grey-200">
+                  <span>3시간</span>
+                </div>
               </div>
-              <div className="flex items-center text-[1.0625rem] font-bold leading-[1.25rem] text-grey-400">
-                <img src={profileIconUrl} alt="인원수" />
-                <span className="pl-[0.125rem]">{groupTimer.participantsCount}</span>
-                <span className="pl-[0.375rem]">
-                  {format(new Date(groupTimer.displayTime), 'a h시 m분', { locale: ko })}
-                </span>
-              </div>
-              <div className="pr-[0.625rem] text-right text-[1.875rem] font-bold leading-[2.25rem] text-grey-200">
-                <span>3시간</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
       {modalVisible && (
         <ModalPortal closePortal={closeModal} isOpened={modalVisible}>
