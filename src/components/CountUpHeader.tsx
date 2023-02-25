@@ -1,5 +1,5 @@
 import { useStopwatch } from 'react-timer-hook'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { countUpTimerAtom } from '../recoil/atoms'
 import Switch from '../assets/svg/Switch'
@@ -8,18 +8,21 @@ import EditIcon from '../assets/svg/EditIcon'
 import ModalPortal from './ModalPortal'
 import { useNavigate } from 'react-router-dom'
 
-const now = new Date()
-now.setSeconds(now.getSeconds() + 100)
+const SECOUNDS_IN_ONE_MINUTE = 60
+const SECOUNDS_IN_ONE_HOUR = 3600
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const { isRunning: isTimerRunning, startTime } = timer
-  console.log(timer)
-
-  const stopwatchOffset = new Date()
+  const { isRunning: isTimerRunning, startTime, endTime } = timer
 
   const [modalVisible, setModalVisible] = useState(false)
+  const [isTriggered, setIsTriggered] = useState(false)
+  const [timeOffset, setTimeOffset] = useState<{ hours: number; minutes: number; seconds: number }>({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
 
   const openModal = () => {
     setModalVisible(true)
@@ -31,22 +34,57 @@ export const CountUpHeader = () => {
 
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
     autoStart: false,
-    offsetTimestamp: stopwatchOffset,
   })
 
+  let newHours = hours + timeOffset.hours
+  let newMinutes = minutes + timeOffset.minutes
+  let newSeconds = seconds + timeOffset.seconds
+  if (newSeconds >= SECOUNDS_IN_ONE_MINUTE) {
+    newMinutes += 1
+    newSeconds -= SECOUNDS_IN_ONE_MINUTE
+  }
+  if (newMinutes >= SECOUNDS_IN_ONE_HOUR) {
+    newHours += 1
+    newMinutes -= SECOUNDS_IN_ONE_HOUR
+  }
+
+  useLayoutEffect(() => {
+    if (!startTime) return
+
+    const startedTimeInMilliSeconds =
+      typeof startTime === 'string' ? new Date(startTime).getTime() : startTime.getTime()
+    const timeDiff = new Date().getTime() - startedTimeInMilliSeconds
+    console.log(timeDiff)
+    if (timeDiff) {
+      const date = new Date(timeDiff)
+      const hours = date.getUTCHours()
+      const minutes = date.getUTCMinutes()
+      const seconds = date.getUTCSeconds()
+      setTimeOffset({ hours, minutes, seconds })
+
+      setIsTriggered(true)
+    }
+  }, [startTime, endTime])
+
   useEffect(() => {
-    if (!isRunning && isTimerRunning) {
+    if (isTriggered && !isRunning && isTimerRunning) {
       start()
     }
-  }, [isTimerRunning])
+  }, [isTriggered])
+
+  useEffect(() => {
+    if (endTime && isRunning) {
+      pause()
+    }
+  }, [endTime])
 
   const startTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true, startTimestamp: new Date().getTime() }))
+    setTimer(prev => ({ ...prev, isRunning: true, startTime: new Date() }))
     start()
   }
 
   const resetTimer = () => {
-    setTimer(prev => ({ ...prev, endTimestamp: new Date().getTime(), isRunning: false }))
+    setTimer(prev => ({ ...prev, endTime: new Date(), isRunning: false }))
     reset(undefined, false)
   }
 
@@ -68,12 +106,7 @@ export const CountUpHeader = () => {
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
             <div className="mb-3">
-              <span className="countdown font-montserrat text-[4rem] font-bold">
-                {/* @ts-ignore */}
-                <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:
-                {/* @ts-ignore */}
-                <span style={{ '--value': seconds }}></span>
-              </span>
+              <TimerDisplayedNumbers hours={newHours} minutes={newMinutes} seconds={newSeconds} />
             </div>
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
@@ -222,5 +255,21 @@ export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleCha
         </div>
       </form>
     </div>
+  )
+}
+
+interface TimerDisplayedNumbersProps {
+  hours: number
+  minutes: number
+  seconds: number
+}
+
+const TimerDisplayedNumbers = ({ hours, minutes, seconds }: TimerDisplayedNumbersProps) => {
+  return (
+    <span className="countdown font-montserrat text-[4rem] font-bold">
+      {/* @ts-ignore */}
+      <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:{/* @ts-ignore */}
+      <span style={{ '--value': seconds }}></span>
+    </span>
   )
 }
