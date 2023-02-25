@@ -8,6 +8,7 @@ import { Todo } from '../../types'
 import { v4 as uuid } from 'uuid'
 import { cls } from '../../utils/cls'
 import { usePrevious } from 'react-use'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 interface Props {
   title?: string
@@ -17,6 +18,7 @@ interface Props {
 export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
   const [todos = [], setTodos] = useRecoilState(todosAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
+  const [parent] = useAutoAnimate()
   console.log(todos)
 
   const addTodo = (value: string) => {
@@ -28,7 +30,7 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
     }
     setTodos(prev => [newTodo, ...prev])
   }
-
+  console.log(todos)
   const prevLength = usePrevious(todos.length)
   useEffect(() => {
     if (todos.length > (prevLength ?? 0)) {
@@ -41,7 +43,7 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
   }
 
   return (
-    <>
+    <div className="relative w-full">
       <div className="mb-4 flex items-center justify-start gap-2">
         <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{title}</h1>
         <div>
@@ -56,7 +58,7 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
           )}
         </div>
       </div>
-      <div>
+      <ul ref={parent} className="block">
         {todos.map((todo, index) => (
           <TodoItem
             ref={index === 0 ? newTodoInputRef : null}
@@ -68,8 +70,8 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
             onAddTodo={() => addTodo('')}
           />
         ))}
-      </div>
-    </>
+      </ul>
+    </div>
   )
 }
 
@@ -97,11 +99,9 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
       <li
         key={todo.id}
         className={cls(
-          'mb-[0.625rem] flex items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
+          'mb-[0.625rem] block flex items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
           isFocused ? 'bg-primary bg-opacity-10 ring-2 ring-primary' : '',
         )}>
-        {/* <div className="flex items-center text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-300">
-      </div> */}
         <input
           type="checkbox"
           checked={todo.completed}
@@ -118,7 +118,8 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
         />
         <input
           type="text"
-          className="flex-1 border-0 bg-grey-900 p-0 text-lg font-medium text-grey-300 caret-primary focus:outline-none focus:ring-0"
+          enterKeyHint="done"
+          className="w-full border-0 bg-grey-900 p-0 text-lg font-medium text-grey-300 caret-primary focus:outline-none focus:ring-0"
           value={todo.content}
           spellCheck={false}
           onChange={e => onUpdateTodo({ ...todo, content: e.target.value })}
