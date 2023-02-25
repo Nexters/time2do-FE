@@ -17,13 +17,12 @@ export function CountDownNew() {
 
   const methods = useForm({
     defaultValues: {
-      id: 0,
-      makerId: 0,
       name: '',
+      maker_id: 0,
+      type: 2,
       tags: '',
-      participants: '0',
-      startTime: new Date(),
-      endTime: new Date(),
+      start_time: new Date(),
+      end_time: new Date(),
     },
   })
   const onSubmit = (data: any) => {

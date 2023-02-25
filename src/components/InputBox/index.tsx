@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import TimerMakeModal from '../TimerMakeModal'
 import { useFormContext } from 'react-hook-form'
 import TagBox from './_fragment/TagBox'
+import { format } from 'date-fns'
 
 interface Props {
   InputBoxName: string
@@ -133,12 +134,12 @@ InputBox.TargetTimeSet = ({ InputBoxName, startTime }: { InputBoxName: string; s
     const endTime = new Date(startTime)
     endTime.setHours(endTime.getHours() + parseInt(hour))
     endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
-    setValue('endTime', endTime)
+    setValue('end_time', format(endTime, 'yyyy-MM-dd HH:mm:ss'))
   }, [hour, minute])
 
   return (
     <>
-      <input type="hidden" {...register('endTime')} />
+      <input type="hidden" {...register('end_time')} />
       <div className="mb-8 h-min">
         <label className="label">
           <span className="label-text text-sm font-bold text-gray-300 ">
@@ -207,12 +208,12 @@ InputBox.StartTimeSet = ({ InputBoxName, startTime, setStartTime }: StartTimeSet
     startTime.setMinutes(minutes[timeIndex])
   }, [])
   useEffect(() => {
-    setValue('startTime', startTime)
+    setValue('start_time', format(startTime, 'yyyy-MM-dd HH:mm:ss'))
   }, [startTime])
 
   return (
     <>
-      <input type="hidden" {...register('startTime')} />
+      <input type="hidden" {...register('start_time')} />
       <div id="root-modal" className="absolute left-0 top-0"></div>
       <div className="mb-8 mb-[6.25rem] h-min">
         <label className="label">
