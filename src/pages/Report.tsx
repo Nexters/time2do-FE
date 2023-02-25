@@ -2,7 +2,7 @@ import { useCalendar } from '@h6s/calendar'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router'
 import { useRecoilValue } from 'recoil'
 import { getReportData, putUserNickname } from '../api/report'
@@ -22,7 +22,7 @@ import { userAtom } from '../recoil/atoms'
 const formatTotalDuration = (totalDuration: string) => {
   const [hour, minute, second] = totalDuration.slice(0, -1).replaceAll(/h|m/g, ':').split(':')
 
-  return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
+  return `${hour.trim().padStart(2, '0')}:${minute.trim().padStart(2, '0')}:${second.trim().padStart(2, '0')}`
 }
 
 const today = new Date(new Date().toDateString())
@@ -46,7 +46,7 @@ export function Report() {
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
-  const { data: reportData, refetch } = useQuery({
+  const { data: reportData, refetch: refetchReportData } = useQuery({
     queryKey: ['getReportData'],
     queryFn: () => getReportData({ userId, date: cursorDate }),
   })
@@ -56,7 +56,7 @@ export function Report() {
     onSuccess: () => {
       setNickname('')
       closeModal()
-      refetch()
+      refetchReportData()
     },
     onError: () => {
       alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
@@ -112,6 +112,10 @@ export function Report() {
   const dateClickHandler = (date: Date) => {
     setSelectedDate(date)
   }
+
+  useEffect(() => {
+    refetchReportData()
+  }, [cursorDate])
 
   return (
     <>
