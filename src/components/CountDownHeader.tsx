@@ -84,9 +84,9 @@ export const CountDownHeader = () => {
               <EditIcon />
             </button>
           </div>
-          <button className="btn-primary btn text-xl">
+          <button className="btn-primary btn h-14 gap-2 rounded-full px-5 text-xl">
             <WhiteHeart />
-            <span className="ml-1">응원하기</span>
+            <span className="">응원하기</span>
           </button>
         </div>
       </div>
