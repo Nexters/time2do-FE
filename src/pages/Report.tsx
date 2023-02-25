@@ -1,22 +1,22 @@
-import { useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
 import { useCalendar } from '@h6s/calendar'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import Header from '../components/Header'
-import ReportCalendar from '../components/ReportCalendar'
-import { TodoList } from '../components/TodoList'
+import { ko } from 'date-fns/locale'
+import { useState } from 'react'
+import { Navigate } from 'react-router'
+import { useRecoilValue } from 'recoil'
+import { getReportData, putUserNickname } from '../api/report'
+import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
+import closeIconUrl from '../assets/svg/Close.svg'
+import editIconUrl from '../assets/svg/Edit.svg'
 import profileImageUrl from '../assets/svg/Profile.svg'
 import profileIconUrl from '../assets/svg/ProfileIcon.svg'
-import editIconUrl from '../assets/svg/Edit.svg'
-import closeIconUrl from '../assets/svg/Close.svg'
-import { getReportData, putUserNickname } from '../api/report'
-import { ko } from 'date-fns/locale'
+import Header from '../components/Header'
 import ModalPortal from '../components/ModalPortal'
+import ReportCalendar from '../components/ReportCalendar'
+import { TodoList } from '../components/TodoList'
 import { BooleanNumberTypes } from '../consts'
-import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
-import { useRecoilValue } from 'recoil'
 import { userAtom } from '../recoil/atoms'
-import { Navigate } from 'react-router-dom'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -65,7 +65,7 @@ export function Report() {
 
   const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
   const todos =
-    reportData?.timeBlocks && selectedDateString
+    reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
       ? reportData.timeBlocks[selectedDateString].toDos.map(toDo => ({
           id: toDo.id,
           userId: toDo.userId,
@@ -79,7 +79,9 @@ export function Report() {
         }))
       : []
   const groupTimers =
-    reportData?.timeBlocks && selectedDateString ? reportData.timeBlocks[selectedDateString].groupTimers : []
+    reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
+      ? reportData.timeBlocks[selectedDateString].groupTimers
+      : []
 
   const openModal = () => {
     setModalVisible(true)
@@ -126,7 +128,9 @@ export function Report() {
             </button>
           </div>
         </div>
+
         <div className="h-2 bg-grey-900" />
+
         {reportData && (
           <div className="py-[1.625rem]">
             <ReportCalendar
