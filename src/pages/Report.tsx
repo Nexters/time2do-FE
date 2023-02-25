@@ -12,6 +12,7 @@ import closeIconUrl from '../assets/svg/Close.svg'
 import { getReportData, putUserNickname } from '../api/report'
 import { ko } from 'date-fns/locale'
 import ModalPortal from '../components/ModalPortal'
+import { BooleanNumberTypes } from '../consts'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -57,12 +58,12 @@ export function Report() {
           id: toDo.id,
           userId: toDo.userId,
           content: toDo.content,
-          completed: true,
-          private: false,
+          completed: BooleanNumberTypes['TRUE'],
+          private: BooleanNumberTypes['FALSE'],
           createdTime: new Date(toDo.createdTime),
-          completedTime: new Date(toDo.completedTime),
-          modifiedTime: new Date(toDo.modifiedTime),
-          deletedTime: new Date(toDo.deletedTime),
+          completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
+          modifiedTime: toDo.modifiedTime ? new Date(toDo.modifiedTime) : undefined,
+          deletedTime: toDo.deletedTime ? new Date(toDo.deletedTime) : undefined,
         }))
       : []
   const groupTimers =
@@ -131,7 +132,7 @@ export function Report() {
 
         {todos.length > 0 && (
           <div className="py-7 px-6">
-            <TodoList title="완료한 할 일 목록" todos={todos} readonly />
+            <TodoList name="완료한 할 일 목록" todos={todos} readonly />
             {todos.length === 0 && <div className="py-12" />}
           </div>
         )}
