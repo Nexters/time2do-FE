@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
-import { useRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import { todosAtom } from '../../recoil/atoms'
 import { defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
@@ -13,13 +13,13 @@ import { useAutoAnimate } from '@formkit/auto-animate/react'
 interface Props {
   title?: string
   readonly?: boolean
+  todos: Todo[]
 }
 
-export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
-  const [todos = [], setTodos] = useRecoilState(todosAtom)
+export const TodoList = ({ title = '할 일 목록', readonly, todos = [] }: Props) => {
+  const setTodos = useSetRecoilState(todosAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
-  console.log(todos)
 
   const addTodo = (value: string) => {
     const id = uuid()
