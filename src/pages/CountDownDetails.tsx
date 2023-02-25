@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
@@ -10,11 +11,16 @@ import { todosAtom, userAtom } from '../recoil/atoms'
 
 export function CountDownDetails() {
   const user = useRecoilValue(userAtom)
+  const [usersParticipating, setUsersParticipating] = useState([])
   const { invitationCode } = useParams()
   console.log(invitationCode)
   const { data: countDownTimer } = useQuery({
     queryKey: ['getCountDownTimer'],
     queryFn: () => participate({ user, invitationCode }),
+    onSuccess: data => {
+      const users = data?.users ?? []
+      setUsersParticipating(users.map((user: any) => ({ userName: user.username, toDos: [] })))
+    },
   })
 
   const { data: participants } = useQuery({
@@ -23,6 +29,9 @@ export function CountDownDetails() {
     // 90초마다 참여자 refetch
     refetchInterval: 5000,
     refetchIntervalInBackground: false,
+    onSuccess: data => {
+      setUsersParticipating(data)
+    },
   })
   console.log(countDownTimer)
   console.log(participants)
@@ -36,7 +45,7 @@ export function CountDownDetails() {
     refetchIntervalInBackground: false,
     onSuccess: data => {
       const cheerUps = data ?? []
-      const filteredCheerUps = cheerUps.filter(cheerUp => {
+      const filteredCheerUps = cheerUps.filter((cheerUp: any) => {
         const timeDiff = new Date().getTime() - new Date(cheerUp.createdTime).getTime()
         if (timeDiff < 5000) return true
         return false
@@ -65,7 +74,7 @@ export function CountDownDetails() {
         <CountDownHeader onCheerUpClick={() => addCheerUpMutation.mutate()} />
       </header>
       <div className="min-h-[400px] bg-grey-1000">
-        <Participants participants={participants} />
+        <Participants participants={usersParticipating} />
         <div className="border-2 border-grey-850 opacity-50"></div>
         <div className=" py-7 px-6">
           <TodoList todos={todos} />
