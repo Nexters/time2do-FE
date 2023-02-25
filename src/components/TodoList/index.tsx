@@ -33,6 +33,7 @@ export const TodoList = ({ title = '할 일 목록', readonly }: Props) => {
   console.log(todos)
   const prevLength = usePrevious(todos.length)
   useEffect(() => {
+    if (typeof prevLength === 'undefined') return
     if (todos.length > (prevLength ?? 0)) {
       newTodoInputRef.current?.focus()
     }

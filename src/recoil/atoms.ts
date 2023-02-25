@@ -66,14 +66,24 @@ export const todosAtom = atom<Todo[]>({
   effects: [syncStorageEffect('todos'), localStorageEffect('todos')],
 })
 
-export const timerAtom = atom<Timer>({
-  key: 'timerAtom',
+export const countUpTimerAtom = atom<Timer>({
+  key: 'countUpTimerAtom',
   default: {
     title: '오늘 무조건 다 끝내본다!!',
     isRunning: false,
     startTimestamp: new Date().getTime(),
   },
   effects: [syncStorageEffect('timer'), localStorageEffect('timer')],
+})
+
+export const countDownTimerAtom = atom<Timer>({
+  key: 'countDownTimerAtom',
+  default: {
+    title: '오늘 무조건 다 끝내본다!!',
+    isRunning: false,
+    startTimestamp: new Date().getTime(),
+  },
+  effects: [localStorageEffect('timer')],
 })
 
 export const userAtom = atom<User | null>({

@@ -1,7 +1,7 @@
 import { useStopwatch } from 'react-timer-hook'
 import { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
-import { timerAtom } from '../recoil/atoms'
+import { countUpTimerAtom } from '../recoil/atoms'
 import Switch from '../assets/svg/Switch'
 import Report from '../assets/svg/ReportIcon'
 import EditIcon from '../assets/svg/EditIcon'
@@ -13,7 +13,7 @@ now.setSeconds(now.getSeconds() + 100)
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
-  const [timer, setTimer] = useRecoilState(timerAtom)
+  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
   const { isRunning: isTimerRunning, startTimestamp } = timer
 
   const stopwatchOffset = new Date()
