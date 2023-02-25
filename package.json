@@ -22,6 +22,7 @@
     "react-router-dom": "^6.8.0",
     "react-sortablejs": "^6.1.4",
     "react-timer-hook": "^3.0.5",
+    "react-toastify": "^9.1.1",
     "react-use": "^17.4.0",
     "recoil": "^0.7.6",
     "sortablejs": "^1.15.0",

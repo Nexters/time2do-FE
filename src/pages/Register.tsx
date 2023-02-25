@@ -5,8 +5,11 @@ import { postUser } from '../api/user'
 import { useState } from 'react'
 import ModalPortal from '../components/ModalPortal'
 import { useNavigate } from 'react-router-dom'
+import { useSetRecoilState } from 'recoil'
+import { userAtom } from '../recoil/atoms'
 
 const Register = () => {
+  const setUser = useSetRecoilState(userAtom)
   const navigate = useNavigate()
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [modalContent, setModalContent] = useState({
@@ -30,19 +33,22 @@ const Register = () => {
       setModalVisible(true)
       return null
     } else {
-      const statusCode = await postUser({
+      const response = await postUser({
         username: data.username,
         password: data.password,
       })
+      const statusCode = response.status
       switch (statusCode) {
-        case 200:
+        case 200: {
           setModalContent({
             modalTitle: '회원 가입을 완료했어요',
             modalContent: '이제 타임투두를 이용해보세요',
             buttonContent: '로그인',
             isSuccess: true,
           })
+          setUser(response.data)
           break
+        }
         case 409:
           setModalContent({
             modalTitle: '중복된 아이디입니다.',

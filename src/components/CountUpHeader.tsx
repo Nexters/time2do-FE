@@ -9,7 +9,7 @@ import { countUpTimerAtom, userAtom } from '../recoil/atoms'
 import ModalPortal from './ModalPortal'
 
 const SECOUNDS_IN_ONE_MINUTE = 60
-const SECOUNDS_IN_ONE_HOUR = 3600
+const MINUTES_IN_ONE_HOUR = 60
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
@@ -67,7 +67,7 @@ export const CountUpHeader = () => {
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
     autoStart: false,
   })
-
+  console.log(timeOffset)
   let newHours = hours + timeOffset.hours
   let newMinutes = minutes + timeOffset.minutes
   let newSeconds = seconds + timeOffset.seconds
@@ -75,9 +75,9 @@ export const CountUpHeader = () => {
     newMinutes += 1
     newSeconds -= SECOUNDS_IN_ONE_MINUTE
   }
-  if (newMinutes >= SECOUNDS_IN_ONE_HOUR) {
+  if (newMinutes >= MINUTES_IN_ONE_HOUR) {
     newHours += 1
-    newMinutes -= SECOUNDS_IN_ONE_HOUR
+    newMinutes -= MINUTES_IN_ONE_HOUR
   }
 
   useLayoutEffect(() => {

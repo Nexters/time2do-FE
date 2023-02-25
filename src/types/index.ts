@@ -12,8 +12,6 @@ export type Todo = {
   private: BooleanNumber
   createdTime: DateTime
   completedTime?: DateTime
-  modifiedTime?: DateTime
-  deletedTime?: DateTime
 }
 
 export type TimeRecord = {

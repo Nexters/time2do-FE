@@ -62,8 +62,6 @@ export function Report() {
           private: BooleanNumberTypes['FALSE'],
           createdTime: new Date(toDo.createdTime),
           completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
-          modifiedTime: toDo.modifiedTime ? new Date(toDo.modifiedTime) : undefined,
-          deletedTime: toDo.deletedTime ? new Date(toDo.deletedTime) : undefined,
         }))
       : []
   const groupTimers =
