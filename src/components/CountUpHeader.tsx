@@ -2,10 +2,12 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStopwatch } from 'react-timer-hook'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import { v4 as uuid } from 'uuid'
+
 import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
-import { countUpTimerAtom, userAtom } from '../recoil/atoms'
+import { countUpTimerAtom, countUpTimerRecordsAtom, userAtom } from '../recoil/atoms'
 import ModalPortal from './ModalPortal'
 
 const SECOUNDS_IN_ONE_MINUTE = 60
@@ -16,6 +18,8 @@ export const CountUpHeader = () => {
   const user = useRecoilValue(userAtom)
 
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
+  const [timerRecords, setTimerRecords] = useRecoilState(countUpTimerRecordsAtom)
+
   const { isRunning: isTimerRunning, startTime, endTime } = timer
 
   const [modalVisible, setModalVisible] = useState(false)
@@ -111,12 +115,12 @@ export const CountUpHeader = () => {
   }, [endTime])
 
   const startTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true, startTime: new Date() }))
+    setTimer(prev => ({ ...prev, id: new Date().getTime(), isRunning: true, startTime: new Date() }))
     start()
   }
 
   const resetTimer = () => {
-    setTimer(prev => ({ ...prev, endTime: new Date(), isRunning: false }))
+    setTimer(prev => ({ ...prev, id: 0, endTime: new Date(), isRunning: false }))
     reset(undefined, false)
   }
 

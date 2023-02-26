@@ -1,7 +1,7 @@
 import { atom, AtomEffect } from 'recoil'
-import type { Timer, Todo, User } from '../types'
+import type { Timer, TimeRecord, Todo, User } from '../types'
 import { v4 as uuid } from 'uuid'
-import { TimerTypes } from '../consts'
+import { defaultCountUpTimer, TimerTypes } from '../consts'
 
 const localStorageEffect =
   (key: string): AtomEffect<any> =>
@@ -69,18 +69,16 @@ export const todosAtom = atom<Todo[]>({
   effects: [localStorageEffect('todos')],
 })
 
+export const countUpTimerRecordsAtom = atom<TimeRecord[]>({
+  key: 'countUpTimerRecordsAtom',
+  default: [],
+  effects: [localStorageEffect('countUpTimerRecords')],
+})
+
 export const countUpTimerAtom = atom<Timer>({
   key: 'countUpTimerAtom',
-  default: {
-    name: '오늘 무조건 다 끝내본다!!',
-    type: TimerTypes['COUNT_UP'],
-
-    // 클라이언트에서만 사용하거나 서버에 동기화할 때 비뀔 수 있는 필드들
-    isRunning: false,
-    id: uuid(),
-    makerId: 'LOCAL',
-  },
-  effects: [localStorageEffect('timer')],
+  default: defaultCountUpTimer,
+  effects: [localStorageEffect('countUpTimer')],
 })
 
 export const countDownTimerAtom = atom<Timer>({
@@ -90,11 +88,11 @@ export const countDownTimerAtom = atom<Timer>({
     type: TimerTypes['COUNT_DOWN'],
 
     // 클라이언트에서만 사용하거나 서버에 동기화할 때 비뀔 수 있는 필드들
-    id: uuid(),
+    id: new Date().getTime(),
     isRunning: false,
     makerId: 'LOCAL',
   },
-  effects: [localStorageEffect('timer')],
+  effects: [localStorageEffect('countDownTimer')],
 })
 
 export const userAtom = atom<User | null>({
