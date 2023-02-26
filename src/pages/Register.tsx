@@ -104,7 +104,7 @@ const Register = () => {
                 <button
                   className="w-full rounded-[0.625rem] bg-primary py-[1.125rem] text-[1.25rem] font-semibold text-white"
                   onClick={() => {
-                    modalContent.isSuccess ? navigate('/login') : closeModal()
+                    modalContent.isSuccess ? navigate('/') : closeModal()
                   }}>
                   {modalContent.buttonContent}
                 </button>
