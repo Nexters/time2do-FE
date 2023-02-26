@@ -1,7 +1,5 @@
 import { useStopwatch } from 'react-timer-hook'
 import { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { countUpTimerAtom } from '../recoil/atoms'
 import Switch from '../assets/svg/Switch'
 import Report from '../assets/svg/ReportIcon'
 import EditIcon from '../assets/svg/EditIcon'
@@ -10,18 +8,19 @@ import { useNavigate } from 'react-router-dom'
 import WhiteHeart from '../assets/svg/WhiteHeart'
 import Lottie from 'react-lottie'
 import cheerupLottie from '../assets/lotties/time2do-cheerup.json'
+import { GroupTimer } from '../types'
 
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
 
 interface Props {
+  timer: GroupTimer
   onCheerUpClick: () => void
   showCheerUpAnimation: boolean
 }
 
-export const CountDownHeader = ({ onCheerUpClick, showCheerUpAnimation }: Props) => {
+export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }: Props) => {
   const navigate = useNavigate()
-  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
   const { isRunning: isTimerRunning, startTime } = timer
 
   const stopwatchOffset = new Date()
@@ -46,16 +45,6 @@ export const CountDownHeader = ({ onCheerUpClick, showCheerUpAnimation }: Props)
       start()
     }
   }, [isTimerRunning])
-
-  const startTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true, startTime: new Date() }))
-    start()
-  }
-
-  const resetTimer = () => {
-    setTimer(prev => ({ ...prev, endTime: new Date(), isRunning: false }))
-    reset(undefined, false)
-  }
 
   const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
 
@@ -95,6 +84,7 @@ export const CountDownHeader = ({ onCheerUpClick, showCheerUpAnimation }: Props)
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
+              {timer?.tag ?? ''}
               {timer.name}
             </h1>
             <button onClick={openModal}>
@@ -118,7 +108,9 @@ export const CountDownHeader = ({ onCheerUpClick, showCheerUpAnimation }: Props)
           <TimerTitleChangeModal
             name={timer.name}
             onClose={closeModal}
-            onSubmit={newName => setTimer(prev => ({ ...prev, name: newName }))}
+            onSubmit={() => {}}
+            // TODO: 타이머 이름 변경 기능 구현(백엔드)
+            // onSubmit={newName => setTimer(prev => ({ ...prev, name: newName }))}
           />
         </ModalPortal>
       )}

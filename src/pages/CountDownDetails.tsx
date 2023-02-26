@@ -79,7 +79,11 @@ export function CountDownDetails() {
   return (
     <>
       <header className="h-[32rem] w-full bg-grey-1000">
-        <CountDownHeader showCheerUpAnimation={showCheerUpAnimation} onCheerUpClick={handleCheerUpClick} />
+        <CountDownHeader
+          timer={countDownTimer}
+          showCheerUpAnimation={showCheerUpAnimation}
+          onCheerUpClick={handleCheerUpClick}
+        />
       </header>
       <div className="min-h-[400px] bg-grey-1000">
         <Participants participants={usersParticipating} />
