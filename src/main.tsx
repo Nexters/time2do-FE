@@ -19,7 +19,7 @@ const WrapperRouter = ({ children }: { children: ReactNode }) => {
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <WrapperRouter>
-      <ToastContainer position="top-center" autoClose={3000} pauseOnFocusLoss={false} limit={3} />
+      <ToastContainer position="top-center" autoClose={2000} pauseOnFocusLoss={false} limit={3} />
       <App />
     </WrapperRouter>
   </React.StrictMode>,

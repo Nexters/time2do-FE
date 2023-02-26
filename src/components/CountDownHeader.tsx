@@ -8,11 +8,18 @@ import EditIcon from '../assets/svg/EditIcon'
 import ModalPortal from './ModalPortal'
 import { useNavigate } from 'react-router-dom'
 import WhiteHeart from '../assets/svg/WhiteHeart'
+import Lottie from 'react-lottie'
+import cheerupLottie from '../assets/lotties/time2do-cheerup.json'
 
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
 
-export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void }) => {
+interface Props {
+  onCheerUpClick: () => void
+  showCheerUpAnimation: boolean
+}
+
+export const CountDownHeader = ({ onCheerUpClick, showCheerUpAnimation }: Props) => {
   const navigate = useNavigate()
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
   const { isRunning: isTimerRunning, startTime } = timer
@@ -52,9 +59,15 @@ export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void
 
   const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
 
+  const options = {
+    loop: true,
+    autoplay: true,
+    animationData: cheerupLottie,
+  }
+
   return (
     <>
-      <div className="relative h-full w-full bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">
+      <div className="relative h-full w-full overflow-hidden bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
           <button
             onPointerEnter={() => setIsHoveringModeButton(true)}
@@ -93,6 +106,11 @@ export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void
             <span className="">응원하기</span>
           </button>
         </div>
+        {showCheerUpAnimation && (
+          <div>
+            <Lottie options={options} />
+          </div>
+        )}
       </div>
 
       {modalVisible && (

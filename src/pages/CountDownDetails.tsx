@@ -13,7 +13,7 @@ export function CountDownDetails() {
   const user = useRecoilValue(userAtom)
   const [usersParticipating, setUsersParticipating] = useState([])
   const { invitationCode } = useParams()
-  console.log(invitationCode)
+  const [showCheerUpAnimation, setShowCheerUpAnimation] = useState(false)
   const { data: countDownTimer } = useQuery({
     queryKey: ['getCountDownTimer'],
     queryFn: () => participate({ user, invitationCode }),
@@ -50,28 +50,36 @@ export function CountDownDetails() {
         if (timeDiff < 5000) return true
         return false
       })
-      console.log(filteredCheerUps, '$$$')
+      if (filteredCheerUps.length === 0) return
+      setShowCheerUpAnimation(true)
       filteredCheerUps.forEach((cheerUp: any) => {
-        toast(`${cheerUp.userName}님이 응원을 보냈습니다. :)`)
+        toast(`${cheerUp.userName}님이 응원을 보냈습니다. :)`, {
+          delay: Math.floor(Math.random() * 1000),
+          onClose: () => setShowCheerUpAnimation(false),
+        })
       })
-      console.log(data, '@')
     },
   })
 
   const addCheerUpMutation = useMutation({
     mutationFn: () => addCheerUp({ user, invitationCode }),
     onSuccess: () => {
-      console.log('성공')
+      toast.success('응원을 보냈습니다!')
     },
     onError: () => {
-      alert('응원을 보내는 데 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
+      toast.error('응원을 보내는 데 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
     },
   })
+
+  const handleCheerUpClick = () => {
+    console.log('test')
+    addCheerUpMutation.mutate()
+  }
 
   return (
     <>
       <header className="h-[32rem] w-full bg-grey-1000">
-        <CountDownHeader onCheerUpClick={() => addCheerUpMutation.mutate()} />
+        <CountDownHeader showCheerUpAnimation={showCheerUpAnimation} onCheerUpClick={handleCheerUpClick} />
       </header>
       <div className="min-h-[400px] bg-grey-1000">
         <Participants participants={usersParticipating} />
