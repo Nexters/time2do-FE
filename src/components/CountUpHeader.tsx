@@ -120,13 +120,19 @@ export const CountUpHeader = () => {
     reset(undefined, false)
   }
 
+  const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
+
   return (
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button onClick={modeButtonClickHandler} className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
-            개인모드
-            <Switch classNames="ml-2" />
+          <button
+            onPointerEnter={() => setIsHoveringModeButton(true)}
+            onPointerLeave={() => setIsHoveringModeButton(false)}
+            onClick={modeButtonClickHandler}
+            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
+            <Switch classNames={isHoveringModeButton ? 'mr-2' : ''} />
+            {isHoveringModeButton ? '그룹모드' : ''}
           </button>
 
           <button onClick={reportButtonClickHandler}>
