@@ -19,7 +19,7 @@ const ModalPortal = ({ children, closePortal, isOpened }: Props) => {
   return createPortal(
     <div className="modal-container">
       <div
-        className="modal-background fixed top-0 left-0 z-40 min-h-screen w-screen overflow-hidden bg-black opacity-80"
+        className="modal-background fixed top-0 left-0 right-0 bottom-0 z-40  overflow-hidden bg-black opacity-80"
         role="presentation"
         onClick={closePortal}
       />

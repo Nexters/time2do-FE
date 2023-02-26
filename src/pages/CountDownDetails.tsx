@@ -27,10 +27,10 @@ export function CountDownDetails() {
     queryKey: ['getParticipants'],
     queryFn: () => getParticipants({ user, invitationCode }),
     // 90초마다 참여자 refetch
-    refetchInterval: 5000,
+    refetchInterval: 10000,
     refetchIntervalInBackground: false,
     onSuccess: data => {
-      setUsersParticipating(data)
+      setUsersParticipating(data ?? [])
     },
   })
   console.log(countDownTimer)
@@ -41,7 +41,7 @@ export function CountDownDetails() {
     queryKey: ['getCheerUps'],
     queryFn: () => getCheerUps({ user, invitationCode }),
     // 90초마다 참여자 refetch
-    refetchInterval: 5000,
+    refetchInterval: 10000,
     refetchIntervalInBackground: false,
     onSuccess: data => {
       const cheerUps = data ?? []
