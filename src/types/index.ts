@@ -31,7 +31,7 @@ export type Timer = {
   endTime?: DateTime
 
   // 서버에서 받아오는 값
-  id?: string
+  id: number
   linkUrl?: string
 
   // 클라이언트에서만 사용하는 값

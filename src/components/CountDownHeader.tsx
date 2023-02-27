@@ -1,21 +1,27 @@
 import { useStopwatch } from 'react-timer-hook'
 import { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { countUpTimerAtom } from '../recoil/atoms'
 import Switch from '../assets/svg/Switch'
 import Report from '../assets/svg/ReportIcon'
 import EditIcon from '../assets/svg/EditIcon'
 import ModalPortal from './ModalPortal'
 import { useNavigate } from 'react-router-dom'
 import WhiteHeart from '../assets/svg/WhiteHeart'
+import Lottie from 'react-lottie'
+import cheerupLottie from '../assets/lotties/time2do-cheerup.json'
+import { GroupTimer } from '../types'
 
 const now = new Date()
 now.setSeconds(now.getSeconds() + 100)
 
-export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void }) => {
+interface Props {
+  timer: GroupTimer
+  onCheerUpClick: () => void
+  showCheerUpAnimation: boolean
+}
+
+export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }: Props) => {
   const navigate = useNavigate()
-  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const { isRunning: isTimerRunning, startTime } = timer
+  const { isRunning: isTimerRunning, startTime } = timer ?? {}
 
   const stopwatchOffset = new Date()
 
@@ -40,23 +46,25 @@ export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void
     }
   }, [isTimerRunning])
 
-  const startTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true, startTime: new Date() }))
-    start()
-  }
+  const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
 
-  const resetTimer = () => {
-    setTimer(prev => ({ ...prev, endTime: new Date(), isRunning: false }))
-    reset(undefined, false)
+  const options = {
+    loop: true,
+    autoplay: true,
+    animationData: cheerupLottie,
   }
 
   return (
     <>
-      <div className="relative h-full w-full bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">
+      <div className="relative h-full w-full overflow-hidden bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button onClick={() => navigate('/')} className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
-            그룹모드
-            <Switch classNames="ml-2" />
+          <button
+            onPointerEnter={() => setIsHoveringModeButton(true)}
+            onPointerLeave={() => setIsHoveringModeButton(false)}
+            onClick={() => navigate('/')}
+            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
+            <Switch classNames={isHoveringModeButton ? 'mr-2' : ''} />
+            {isHoveringModeButton ? '개인모드' : ''}
           </button>
 
           <button className="">
@@ -76,7 +84,10 @@ export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
-              {timer.name}
+              <span className="mr-2 rounded-lg bg-white bg-opacity-50 py-1 px-2 text-xl text-primary">
+                {timer?.tag ? `#${timer.tag}` : ''}
+              </span>
+              {timer?.name ?? ''}
             </h1>
             <button onClick={openModal}>
               <EditIcon />
@@ -87,15 +98,15 @@ export const CountDownHeader = ({ onCheerUpClick }: { onCheerUpClick: () => void
             <span className="">응원하기</span>
           </button>
         </div>
+        {showCheerUpAnimation && (
+          <div>
+            <Lottie options={options} />
+          </div>
+        )}
       </div>
-
       {modalVisible && (
         <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
-          <TimerTitleChangeModal
-            name={timer.name}
-            onClose={closeModal}
-            onSubmit={newName => setTimer(prev => ({ ...prev, name: newName }))}
-          />
+          <TimerTitleChangeModal name={timer.name} onClose={closeModal} onSubmit={() => {}} />
         </ModalPortal>
       )}
     </>

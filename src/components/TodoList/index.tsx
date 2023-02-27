@@ -103,7 +103,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
       <li
         key={todo.id}
         className={cls(
-          'mb-[0.625rem] flex w-full items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
+          'mb-[0.625rem] flex w-full items-center justify-between gap-3 rounded-[0.625rem] border border-solid border-grey-850 bg-grey-900 px-4 py-[1.125rem] text-grey-400',
           isFocused ? 'bg-primary bg-opacity-10 ring-2 ring-primary' : '',
         )}>
         <input

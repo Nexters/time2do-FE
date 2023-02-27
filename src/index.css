@@ -91,14 +91,23 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --toastify-toast-background: #232b38;
 }
 
 body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
   overflow-x: hidden;
-  min-width: 430px;
+  /* min-width: 430px; */
+  width: 100vw;
+  max-width: 100vw;
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  height: -webkit-fill-available;
 }
+
 html {
   height: -webkit-fill-available;
 }
