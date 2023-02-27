@@ -4,6 +4,7 @@ import { RecoilRoot } from 'recoil'
 import { DefaultLayout } from './layouts/DefaultLayout'
 import { CountDownDetails, CountDownNew, History, Home, Login, NotFound, Report } from './pages'
 import Register from './pages/Register'
+import Onboarding from './pages/Onboarding'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +29,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/history" element={<History />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
