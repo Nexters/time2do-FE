@@ -299,7 +299,6 @@ TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: 
         <button
           className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-primary"
           onClick={() => {
-            onCopy(groupCode)
             navigate(`/countdown/${groupCode}`)
           }}>
           <div className="flex justify-center">

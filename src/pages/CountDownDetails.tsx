@@ -22,6 +22,7 @@ export function CountDownDetails() {
       setUsersParticipating(users.map((user: any) => ({ userName: user.username, toDos: [] })))
     },
   })
+  console.log(countDownTimer)
 
   const { data: participants } = useQuery({
     queryKey: ['getParticipants'],
@@ -41,7 +42,7 @@ export function CountDownDetails() {
     queryKey: ['getCheerUps'],
     queryFn: () => getCheerUps({ user, invitationCode }),
     // 90초마다 참여자 refetch
-    refetchInterval: 10000,
+    refetchInterval: 5000,
     refetchIntervalInBackground: false,
     onSuccess: data => {
       const cheerUps = data ?? []
@@ -55,7 +56,10 @@ export function CountDownDetails() {
       filteredCheerUps.forEach((cheerUp: any) => {
         toast(`${cheerUp.userName}님이 응원을 보냈습니다. :)`, {
           delay: Math.floor(Math.random() * 1000),
-          onClose: () => setShowCheerUpAnimation(false),
+          onClose: () =>
+            setTimeout(() => {
+              setShowCheerUpAnimation(false)
+            }, 4300),
         })
       })
     },
@@ -64,10 +68,10 @@ export function CountDownDetails() {
   const addCheerUpMutation = useMutation({
     mutationFn: () => addCheerUp({ user, invitationCode }),
     onSuccess: () => {
-      toast.success('응원을 보냈습니다!')
+      toast.success('응원을 보냈습니다!', { autoClose: 1000 })
     },
     onError: () => {
-      toast.error('응원을 보내는 데 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
+      toast.error('응원을 보내는 데 문제가 발생했습니다. 잠시 후 다시 시도해주세요.', { autoClose: 1000 })
     },
   })
 

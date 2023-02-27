@@ -21,7 +21,7 @@ interface Props {
 
 export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }: Props) => {
   const navigate = useNavigate()
-  const { isRunning: isTimerRunning, startTime } = timer
+  const { isRunning: isTimerRunning, startTime } = timer ?? {}
 
   const stopwatchOffset = new Date()
 
@@ -84,8 +84,10 @@ export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }:
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
-              {timer?.tag ?? ''}
-              {timer.name}
+              <span className="mr-2 rounded-lg bg-white bg-opacity-50 py-1 px-2 text-xl text-primary">
+                #{timer?.tag ?? ''}
+              </span>
+              {timer?.name ?? ''}
             </h1>
             <button onClick={openModal}>
               <EditIcon />
@@ -102,16 +104,9 @@ export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }:
           </div>
         )}
       </div>
-
       {modalVisible && (
         <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
-          <TimerTitleChangeModal
-            name={timer.name}
-            onClose={closeModal}
-            onSubmit={() => {}}
-            // TODO: 타이머 이름 변경 기능 구현(백엔드)
-            // onSubmit={newName => setTimer(prev => ({ ...prev, name: newName }))}
-          />
+          <TimerTitleChangeModal name={timer.name} onClose={closeModal} onSubmit={() => {}} />
         </ModalPortal>
       )}
     </>
