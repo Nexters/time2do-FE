@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useCopyToClipboard } from 'react-use'
@@ -13,7 +13,7 @@ const Participants = ({ participants = [] }: Props) => {
   const [copyState, copyToClipboard] = useCopyToClipboard()
 
   useEffect(() => {
-    console.log('test')
+    console.log(copyState.error, copyState.value, '$@$')
     if (copyState.error) {
       toast.error('복사에 실패했습니다. 다시 시도해주세요.')
     } else if (copyState.value) {

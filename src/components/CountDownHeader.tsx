@@ -85,7 +85,7 @@ export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }:
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
               <span className="mr-2 rounded-lg bg-white bg-opacity-50 py-1 px-2 text-xl text-primary">
-                #{timer?.tag ?? ''}
+                {timer?.tag ? `#${timer.tag}` : ''}
               </span>
               {timer?.name ?? ''}
             </h1>

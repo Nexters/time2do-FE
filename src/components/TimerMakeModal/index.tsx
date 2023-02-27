@@ -17,6 +17,8 @@ import {
 } from 'date-fns'
 import useCopyClipBoard from '../../hooks/useCopyClipBoard'
 import { useNavigate } from 'react-router-dom'
+import { useCopyToClipboard } from 'react-use'
+import { toast } from 'react-toastify'
 
 interface TimerMakeModalProps {
   children: React.ReactNode
@@ -271,6 +273,7 @@ TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: 
   const [groupCode, setGroupCode] = useState<string>('')
   const [isCopy, onCopy] = useCopyClipBoard()
   const navigate = useNavigate()
+  const [copyState, copyToClipboard] = useCopyToClipboard()
 
   const handleClickEvent = () => {
     closePortal()
@@ -299,7 +302,11 @@ TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: 
         <button
           className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-primary"
           onClick={() => {
-            navigate(`/countdown/${groupCode}`)
+            copyToClipboard(groupCode)
+            toast.dark('코드가 복사되었습니다.')
+            setTimeout(() => {
+              navigate(`/countdown/${groupCode}`)
+            }, 1000)
           }}>
           <div className="flex justify-center">
             <img className="mr-[4px]" src={LinkShareIcon} alt="링크 공유하기 버튼" />
