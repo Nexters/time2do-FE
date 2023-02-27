@@ -11,7 +11,7 @@ const OnboardingAnimation = () => {
   }
 
   return (
-    <div>
+    <div className="w-full">
       <Lottie options={options} />
     </div>
   )
@@ -26,7 +26,7 @@ OnboardingAnimation.Second = () => {
   }
 
   return (
-    <div>
+    <div className="w-full">
       <Lottie options={options} />
     </div>
   )
