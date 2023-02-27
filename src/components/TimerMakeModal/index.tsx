@@ -290,7 +290,7 @@ TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: 
         <span>코드를 공유해 친구들을 초대해봐요</span>
       </div>
       <div className="mb-[22px] h-[60px] w-full items-center rounded-[10px] bg-grey-1000 text-center">
-        <span className="align-middle text-title1 font-semibold leading-[60px] text-grey-300">{`#${groupCode}`}</span>
+        <span className="align-middle text-title1 font-semibold leading-[60px] text-grey-300">{`${groupCode}`}</span>
       </div>
       <div className="flex text-title2 font-semibold text-white">
         <button className="mr-[10px] h-[60px] w-[168px] rounded-[10px] bg-grey-800" onClick={handleClickEvent}>

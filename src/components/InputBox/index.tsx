@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import TagBox from './_fragment/TagBox'
 import { format, formatISO } from 'date-fns'
 import ModalPortal from '../ModalPortal'
+import { cls } from '../../utils/cls'
 
 interface Props {
   InputBoxName: string
@@ -12,9 +13,17 @@ interface Props {
   type?: string
   registerName?: string
   changeEvent?: any
+  errorMessage?: string
 }
 
-const InputBox = ({ required = true, type = 'text', registerName = 'name', InputBoxName, placeHolder }: Props) => {
+const InputBox = ({
+  required = true,
+  type = 'text',
+  registerName = 'name',
+  InputBoxName,
+  placeHolder,
+  errorMessage,
+}: Props) => {
   const { register } = useFormContext()
 
   return (
@@ -25,15 +34,20 @@ const InputBox = ({ required = true, type = 'text', registerName = 'name', Input
           <span className="text-primary">{required && '*'}</span>
         </span>
       </label>
-      <input
-        className="input mb-8 h-[60px] w-full border-grey-800 bg-grey-900 text-lg text-grey-300
-        ring-0 placeholder:text-grey-700 focus:border-primary focus:bg-[#786DFF1A] focus:outline-none focus:ring-0"
-        type={type}
-        placeholder={placeHolder}
-        required={required}
-        maxLength={15}
-        {...register(registerName)}
-      />
+      <div className="mb-8">
+        <input
+          className={cls(
+            'input h-[60px] w-full border-grey-800 bg-grey-900 text-lg text-grey-300 caret-primary ring-0 placeholder:text-grey-700 focus:border-primary focus:bg-[#786DFF1A] focus:outline-none focus:ring-0',
+            errorMessage ? 'border-accent' : '',
+          )}
+          type={type}
+          placeholder={placeHolder}
+          required={required}
+          maxLength={15}
+          {...register(registerName)}
+        />
+        <p className="mt-[0.625rem] text-left text-accent">{errorMessage}</p>
+      </div>
     </div>
   )
 }
