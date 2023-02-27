@@ -1,16 +1,12 @@
-import { putUser } from '../api/user'
-import OnboardingAnimation from '../components/OnboardingLotties'
+import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import React, { useRef, useState } from 'react'
+import { putUser } from '../../api/user'
 
-const Onboarding = () => {
+const Carousal = ({ children }: { children: React.ReactNode }) => {
   const [dotActive, setDotActive] = useState(0)
   const targetPost = useRef<HTMLDivElement>(null)
   const userInfo = localStorage.getItem('user')
   const userId = JSON.parse(userInfo as string).id
-  const navigate = useNavigate()
-  // eslint-disable-next-line react/jsx-key
-  const children = [<OnboardingAnimation />, <OnboardingAnimation.Second />]
 
   const handleScroll = (e: React.FormEvent) => {
     const currentScrollPosition = e.currentTarget.scrollLeft
@@ -26,14 +22,7 @@ const Onboarding = () => {
     })
   }
 
-  const handleClickNext = async () => {
-    const postCount = React.Children.toArray(children).length
-    targetPost.current?.scrollTo({
-      left: (targetPost.current.scrollWidth + 1) / postCount,
-      behavior: 'smooth',
-    })
-  }
-
+  const navigate = useNavigate()
   const handleSkipClickEvent = async () => {
     const response = await putUser({
       userId: userId,
@@ -64,21 +53,11 @@ const Onboarding = () => {
       </header>
       <div className="w-full">
         <div ref={targetPost} onScroll={e => handleScroll(e)} className="carousel w-full snap-mandatory">
-          <div className="carousel-item w-full">
-            <OnboardingAnimation />
-          </div>
-          <div className="carousel-item w-full">
-            <OnboardingAnimation.Second />
-          </div>
+          {children}
         </div>
-      </div>
-      <div className="p-5 text-right">
-        <button className="btn-primary btn w-24 text-title2 font-bold text-white" onClick={handleClickNext}>
-          다음
-        </button>
       </div>
     </>
   )
 }
 
-export default Onboarding
+export default Carousal
