@@ -12,7 +12,8 @@ export function Home() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!user?.onboarding) {
+    console.log(user)
+    if (user && !user?.onboarding) {
       navigate('onboarding')
     }
   })
