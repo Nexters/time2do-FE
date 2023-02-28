@@ -108,6 +108,13 @@ body {
   height: -webkit-fill-available;
 }
 
+@media (min-width: 448px) {
+  body {
+    min-width: 448px;
+    width: 100%;
+  }
+}
+
 html {
   height: -webkit-fill-available;
 }
