@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router'
 import { useRecoilValue } from 'recoil'
 import { getReportData, putUserNickname } from '../api/report'
-import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
+import bombCharacterImageUrl from '../assets/images/bombCharacterSingle.png'
 import closeIconUrl from '../assets/svg/Close.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
 import profileImageUrl from '../assets/svg/Profile.svg'
@@ -151,7 +151,7 @@ export function Report() {
         {reportData && todos.length === 0 && groupTimers.length === 0 && (
           <div className="py-10 px-6 text-center">
             <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
-            <p className="mt-[1.875rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>
+            <p className="mt-[1.25rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>
           </div>
         )}
 
