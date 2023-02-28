@@ -41,14 +41,14 @@ export function CountDownNew() {
   return (
     <div className="h-full bg-[#0F1214] text-center">
       <div className="m-auto">
-        <Header name="다운 타이머 만들기" />
+        <Header name="그룹 타이머 만들기" />
         <div className="px-5">
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
               <InputBox InputBoxName="타이머 이름" placeHolder="타이머 이름을 입력해주세요. (15자 이내)" />
               <InputBox.TagSelect
                 InputBoxName="관련 태그"
-                placeHolder="관련 태그를 입력해주세요. (최대 2개)"
+                placeHolder="관련 태그를 입력해주세요. (1개)"
                 required={false}
               />
               <InputBox.TargetTimeSet InputBoxName="목표시간" startTime={startTime} />

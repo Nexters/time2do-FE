@@ -2,10 +2,13 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStopwatch } from 'react-timer-hook'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import { v4 as uuid } from 'uuid'
+
 import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
-import { countUpTimerAtom, userAtom } from '../recoil/atoms'
+import { countUpTimerAtom, countUpTimerRecordsAtom, userAtom } from '../recoil/atoms'
+import { totalCountUpTimerSecondsSelector } from '../recoil/selectors'
 import ModalPortal from './ModalPortal'
 
 const SECOUNDS_IN_ONE_MINUTE = 60
@@ -16,7 +19,10 @@ export const CountUpHeader = () => {
   const user = useRecoilValue(userAtom)
 
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const { isRunning: isTimerRunning, startTime, endTime } = timer
+  const [timerRecords, setTimerRecords] = useRecoilState(countUpTimerRecordsAtom)
+
+  const totalCountUpTimerSeconds = useRecoilValue(totalCountUpTimerSecondsSelector(timer.id))
+  const { isRunning: isTimerRunning, startTime } = timer
 
   const [modalVisible, setModalVisible] = useState(false)
   const [isTriggered, setIsTriggered] = useState(false)
@@ -25,6 +31,25 @@ export const CountUpHeader = () => {
     minutes: 0,
     seconds: 0,
   })
+
+  const getLastTimeRecord = () => {
+    const sortedTimerRecords = (timerRecords ?? [])
+      .filter(timeRecord => timeRecord.timerId === timer.id)
+      .sort((a, b) => {
+        const aTime = new Date(a.startTime).getTime()
+        const bTime = new Date(b.startTime).getTime()
+        if (aTime > bTime) {
+          return -1
+        }
+        if (aTime < bTime) {
+          return 1
+        }
+        return 0
+      })
+
+    const lastRecord = sortedTimerRecords?.[0]
+    return lastRecord
+  }
 
   const openModal = () => {
     setModalVisible(true)
@@ -67,7 +92,6 @@ export const CountUpHeader = () => {
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
     autoStart: false,
   })
-  console.log(timeOffset)
   let newHours = hours + timeOffset.hours
   let newMinutes = minutes + timeOffset.minutes
   let newSeconds = seconds + timeOffset.seconds
@@ -80,53 +104,103 @@ export const CountUpHeader = () => {
     newMinutes -= MINUTES_IN_ONE_HOUR
   }
 
-  useLayoutEffect(() => {
-    if (!startTime) return
-
-    const startedTimeInMilliSeconds =
-      typeof startTime === 'string' ? new Date(startTime).getTime() : startTime.getTime()
-    const timeDiff = new Date().getTime() - startedTimeInMilliSeconds
-    console.log(timeDiff)
-    if (timeDiff) {
-      const date = new Date(timeDiff)
-      const hours = date.getUTCHours()
-      const minutes = date.getUTCMinutes()
-      const seconds = date.getUTCSeconds()
-      setTimeOffset({ hours, minutes, seconds })
-
-      setIsTriggered(true)
+  useEffect(() => {
+    if (!startTime || !timer.id) return
+    const stopWatchAndRecordsSecondsDiff = totalCountUpTimerSeconds - hours * 3600 - minutes * 60 - seconds
+    if (stopWatchAndRecordsSecondsDiff < 1) {
+      setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+      return
     }
-  }, [startTime, endTime])
+
+    const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
+    const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
+    const offsetSeconds = Math.floor(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
+    setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
+
+    setIsTriggered(true)
+  }, [totalCountUpTimerSeconds])
 
   useEffect(() => {
     if (isTriggered && !isRunning && isTimerRunning) {
       start()
     }
+    setIsTriggered(false)
   }, [isTriggered])
 
-  useEffect(() => {
-    if (endTime && isRunning) {
-      pause()
-    }
-  }, [endTime])
+  if (!isTimerRunning && isRunning && !timer.id) {
+    reset()
+    setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+  }
+  if (!isTimerRunning && isRunning && timer.id) pause()
 
   const startTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true, startTime: new Date() }))
     start()
+    const newId = new Date().getTime()
+    setTimer(prev => ({ ...prev, id: newId, isRunning: true, startTime: new Date() }))
+    setTimerRecords(prev => [
+      ...prev,
+      {
+        id: new Date().getTime(),
+        userId: timer?.makerId ?? 'LOCAL',
+        timerId: newId,
+        startTime: new Date(),
+      },
+    ])
   }
 
   const resetTimer = () => {
-    setTimer(prev => ({ ...prev, endTime: new Date(), isRunning: false }))
+    const lastRecord = getLastTimeRecord()
+    if (timer?.id && isRunning) {
+      setTimerRecords(prev => [
+        ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+        { ...lastRecord, endTime: new Date() },
+      ])
+    }
+
+    setTimer(prev => ({ ...prev, id: 0, endTime: new Date(), isRunning: false }))
     reset(undefined, false)
+    setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
   }
+
+  const pauseTimer = () => {
+    setTimer(prev => ({ ...prev, isRunning: false }))
+    pause()
+
+    if (!timer.id) return
+    const lastRecord = getLastTimeRecord()
+    setTimerRecords(prev => [
+      ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+      { ...lastRecord, endTime: new Date() },
+    ])
+  }
+
+  const restartTimer = () => {
+    setTimer(prev => ({ ...prev, isRunning: true }))
+    setTimerRecords(prev => [
+      ...prev,
+      {
+        id: new Date().getTime(),
+        userId: timer?.makerId ?? 'LOCAL',
+        timerId: timer.id,
+        startTime: new Date(),
+      },
+    ])
+    start()
+  }
+
+  const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
 
   return (
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button onClick={modeButtonClickHandler} className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
-            개인모드
-            <Switch classNames="ml-2" />
+          <button
+            onPointerEnter={() => setIsHoveringModeButton(true)}
+            onPointerLeave={() => setIsHoveringModeButton(false)}
+            onClick={modeButtonClickHandler}
+            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
+            <Switch classNames={isHoveringModeButton ? 'mr-2' : ''} />
+            {isHoveringModeButton ? '그룹모드' : ''}
           </button>
 
           <button onClick={reportButtonClickHandler}>
@@ -148,11 +222,12 @@ export const CountUpHeader = () => {
             </button>
           </div>
           <TimerButtons
-            hasStarted={Boolean(isTimerRunning)}
+            hasStarted={Boolean(timer.id)}
             isRunning={isRunning}
             onStartClick={startTimer}
             onResetClick={resetTimer}
-            onPauseClick={pause}
+            onPauseClick={pauseTimer}
+            onRestartAfterPauseClick={restartTimer}
           />
         </div>
       </div>
@@ -201,6 +276,7 @@ interface TimerButtonsProps {
   onStartClick: () => void
   onResetClick: () => void
   onPauseClick: () => void
+  onRestartAfterPauseClick: () => void
 }
 
 export const TimerButtons = ({
@@ -209,6 +285,7 @@ export const TimerButtons = ({
   onStartClick,
   onResetClick,
   onPauseClick,
+  onRestartAfterPauseClick,
 }: TimerButtonsProps) => {
   if (!hasStarted)
     return (
@@ -240,7 +317,9 @@ export const TimerButtons = ({
           멈추기
         </button>
       ) : (
-        <button onClick={onStartClick} className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg text-white">
+        <button
+          onClick={onRestartAfterPauseClick}
+          className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg text-white">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
             <path
               fillRule="evenodd"

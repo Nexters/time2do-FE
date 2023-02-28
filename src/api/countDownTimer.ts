@@ -70,12 +70,7 @@ export const addCheerUp = async ({
   user: User | null
   invitationCode: string | undefined
 }) => {
-  try {
-    const response = await api.post(`/timers/${invitationCode}/users/${user?.id}/supporting`)
+  const response = await api.post(`/timers/${invitationCode}/users/${user?.id}/supporting`)
 
-    return response.data
-  } catch (error) {
-    console.log(error)
-    return null
-  }
+  return response.data
 }

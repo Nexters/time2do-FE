@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router'
 import { useRecoilValue } from 'recoil'
 import { getReportData, putUserNickname } from '../api/report'
-import bombCharacterImageUrl from '../assets/images/bombCharacter.png'
+import bombCharacterImageUrl from '../assets/images/bombCharacterSingle.png'
 import closeIconUrl from '../assets/svg/Close.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
 import profileImageUrl from '../assets/svg/Profile.svg'
@@ -151,7 +151,7 @@ export function Report() {
         {reportData && todos.length === 0 && groupTimers.length === 0 && (
           <div className="py-10 px-6 text-center">
             <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
-            <p className="mt-[1.875rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>
+            <p className="mt-[1.25rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>
           </div>
         )}
 
@@ -166,23 +166,22 @@ export function Report() {
           <div className="py-7 px-6">
             <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
             {groupTimers.map(groupTimer => (
-              <div key={groupTimer.name} className="rounded-[0.625rem] bg-grey-900 px-4 py-4">
-                <div className="mb-1 flex items-center">
-                  <div className="rounded-3xl bg-grey-1000 px-2 py-[0.3125rem] text-[0.9375rem] font-semibold leading-[1.125rem] text-grey-200 backdrop-blur-[7.5px]">
+              <div key={groupTimer.name} className="rounded-[0.625rem] bg-[#171D25] px-[0.875rem] py-[0.875rem]">
+                <div className="mb-2 flex items-center">
+                  <div className="rounded-[0.375rem] bg-primary px-[0.3125rem] py-[0.1875rem] text-[0.9375rem] font-semibold leading-[140%] text-white">
                     #{groupTimer.tag}
                   </div>
-                  <p className="pl-[0.375rem] text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">
+                  <p className="pl-[0.5rem] text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">
                     {groupTimer.name}
                   </p>
                 </div>
-                <div className="flex items-center text-[1.0625rem] font-bold leading-[1.25rem] text-grey-400">
-                  <img src={profileIconUrl} alt="인원수" />
-                  <span className="pl-[0.125rem]">{groupTimer.participantsCount}</span>
+                <div className="flex items-center text-[0.9375rem] font-semibold leading-[140%] text-grey-400">
+                  <span>멤버 {groupTimer.participantsCount}명</span>
                   <span className="pl-[0.375rem]">
-                    {format(new Date(groupTimer.displayTime), 'a h시 m분', { locale: ko })}
+                    {format(new Date(groupTimer.displayTime), 'a h:mm', { locale: ko })}
                   </span>
                 </div>
-                <div className="pr-[0.625rem] text-right text-[1.875rem] font-bold leading-[2.25rem] text-grey-200">
+                <div className="pr-[0.125rem] text-right text-[1.875rem] font-bold leading-[2.25rem] text-grey-200">
                   <span>3시간</span>
                 </div>
               </div>
