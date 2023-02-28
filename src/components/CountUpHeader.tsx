@@ -8,6 +8,7 @@ import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
 import { countUpTimerAtom, countUpTimerRecordsAtom, userAtom } from '../recoil/atoms'
+import { totalCountUpTimerSecondsSelector } from '../recoil/selectors'
 import ModalPortal from './ModalPortal'
 
 const SECOUNDS_IN_ONE_MINUTE = 60
@@ -20,7 +21,8 @@ export const CountUpHeader = () => {
   const [timer, setTimer] = useRecoilState(countUpTimerAtom)
   const [timerRecords, setTimerRecords] = useRecoilState(countUpTimerRecordsAtom)
 
-  const { isRunning: isTimerRunning, startTime, endTime } = timer
+  const totalCountUpTimerSeconds = useRecoilValue(totalCountUpTimerSecondsSelector(timer.id))
+  const { isRunning: isTimerRunning, startTime } = timer
 
   const [modalVisible, setModalVisible] = useState(false)
   const [isTriggered, setIsTriggered] = useState(false)
@@ -29,6 +31,25 @@ export const CountUpHeader = () => {
     minutes: 0,
     seconds: 0,
   })
+
+  const getLastTimeRecord = () => {
+    const sortedTimerRecords = (timerRecords ?? [])
+      .filter(timeRecord => timeRecord.timerId === timer.id)
+      .sort((a, b) => {
+        const aTime = new Date(a.startTime).getTime()
+        const bTime = new Date(b.startTime).getTime()
+        if (aTime > bTime) {
+          return -1
+        }
+        if (aTime < bTime) {
+          return 1
+        }
+        return 0
+      })
+
+    const lastRecord = sortedTimerRecords?.[0]
+    return lastRecord
+  }
 
   const openModal = () => {
     setModalVisible(true)
@@ -71,7 +92,6 @@ export const CountUpHeader = () => {
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
     autoStart: false,
   })
-  console.log(timeOffset)
   let newHours = hours + timeOffset.hours
   let newMinutes = minutes + timeOffset.minutes
   let newSeconds = seconds + timeOffset.seconds
@@ -84,65 +104,34 @@ export const CountUpHeader = () => {
     newMinutes -= MINUTES_IN_ONE_HOUR
   }
 
-  useLayoutEffect(() => {
-    if (!startTime || !isTimerRunning) return
-
-    const startedTimeInMilliSeconds =
-      typeof startTime === 'string' ? new Date(startTime).getTime() : startTime.getTime()
-    const timeDiff = new Date().getTime() - startedTimeInMilliSeconds
-    console.log(timeDiff)
-    if (timeDiff) {
-      const date = new Date(timeDiff)
-      const hours = date.getUTCHours()
-      const minutes = date.getUTCMinutes()
-      const seconds = date.getUTCSeconds()
-      setTimeOffset({ hours, minutes, seconds })
-
-      setIsTriggered(true)
+  useEffect(() => {
+    if (!startTime || !timer.id) return
+    const stopWatchAndRecordsSecondsDiff = totalCountUpTimerSeconds - hours * 3600 - minutes * 60 - seconds
+    if (stopWatchAndRecordsSecondsDiff < 1) {
+      setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+      return
     }
-  }, [startTime, endTime])
+
+    const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
+    const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
+    const offsetSeconds = Math.floor(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
+    setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
+
+    setIsTriggered(true)
+  }, [totalCountUpTimerSeconds])
 
   useEffect(() => {
     if (isTriggered && !isRunning && isTimerRunning) {
       start()
     }
+    setIsTriggered(false)
   }, [isTriggered])
 
-  // useEffect(() => {
-  //   if (endTime && isRunning) {
-  //     pause()
-  //   }
-  // }, [endTime])
-
-  console.log(timerRecords)
-
-  const getLastTimeRecord = () => {
-    const sortedTimerRecords = (timerRecords ?? [])
-      .filter(timeRecord => timeRecord.timerId === timer.id)
-      .sort((a, b) => {
-        if (a.startTime > b.startTime) {
-          return -1
-        }
-        if (a.startTime < b.startTime) {
-          return 1
-        }
-        return 0
-      })
-
-    console.log(sortedTimerRecords)
-    const lastRecord = sortedTimerRecords?.[0]
-    return lastRecord
+  if (!isTimerRunning && isRunning && !timer.id) {
+    reset()
+    setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
   }
-
-  const getCurrentTimeRecordStartTime = () => {
-    const lastRecord = getLastTimeRecord()
-    if (!lastRecord && timer.startTime)
-      return typeof timer.startTime === 'string' ? new Date(timer.startTime) : timer.startTime
-
-    if (lastRecord.endTime) return lastRecord.endTime
-    if (lastRecord.startTime) return lastRecord.startTime
-    return new Date()
-  }
+  if (!isTimerRunning && isRunning && timer.id) pause()
 
   const startTimer = () => {
     start()
@@ -160,22 +149,19 @@ export const CountUpHeader = () => {
   }
 
   const resetTimer = () => {
+    const lastRecord = getLastTimeRecord()
+    if (timer?.id && isRunning) {
+      setTimerRecords(prev => [
+        ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+        { ...lastRecord, endTime: new Date() },
+      ])
+    }
+
     setTimer(prev => ({ ...prev, id: 0, endTime: new Date(), isRunning: false }))
     reset(undefined, false)
-
-    if (!timer?.id || !isRunning) return
-    setTimerRecords(prev => [
-      ...prev,
-      {
-        id: new Date().getTime(),
-        userId: timer?.makerId ?? 'LOCAL',
-        timerId: timer.id,
-        startTime: getCurrentTimeRecordStartTime(),
-        endTime: new Date(),
-      },
-    ])
+    setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
   }
-  console.log(timer.id)
+
   const pauseTimer = () => {
     setTimer(prev => ({ ...prev, isRunning: false }))
     pause()
@@ -190,7 +176,6 @@ export const CountUpHeader = () => {
 
   const restartTimer = () => {
     setTimer(prev => ({ ...prev, isRunning: true }))
-    setTimeOffset({ hours: newHours, minutes: newMinutes, seconds: newSeconds })
     setTimerRecords(prev => [
       ...prev,
       {
