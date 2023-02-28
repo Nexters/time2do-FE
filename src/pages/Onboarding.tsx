@@ -18,6 +18,12 @@ const Onboarding = () => {
     <OnboardingAnimation.Forth />,
   ]
 
+  const changeLocalOnboardingValue = () => {
+    const userData = JSON.parse(localStorage.getItem('user') as string)
+    userData.onboarding = true
+    localStorage.setItem('user', JSON.stringify(userData))
+  }
+
   const handleScroll = (e: React.FormEvent) => {
     const currentScrollPosition = e.currentTarget.scrollLeft
     const postCount = React.Children.toArray(children).length
@@ -43,10 +49,11 @@ const Onboarding = () => {
         behavior: 'smooth',
       })
     } else {
+      changeLocalOnboardingValue()
       await putUser({
         userId: userId,
         data: {
-          onBoarding: true,
+          onboarding: true,
         },
       })
       navigate('/')
@@ -57,9 +64,10 @@ const Onboarding = () => {
     const response = await putUser({
       userId: userId,
       data: {
-        onBoarding: true,
+        onboarding: true,
       },
     })
+    changeLocalOnboardingValue()
     navigate('/')
     return response
   }
