@@ -19,7 +19,7 @@ export type TimeRecord = {
   userId: string
   timerId: number
   startTime: DateTime
-  endTime: DateTime
+  endTime?: DateTime
 }
 
 export type Timer = {

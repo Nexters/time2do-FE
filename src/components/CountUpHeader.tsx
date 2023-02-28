@@ -85,7 +85,7 @@ export const CountUpHeader = () => {
   }
 
   useLayoutEffect(() => {
-    if (!startTime) return
+    if (!startTime || !isTimerRunning) return
 
     const startedTimeInMilliSeconds =
       typeof startTime === 'string' ? new Date(startTime).getTime() : startTime.getTime()
@@ -108,20 +108,99 @@ export const CountUpHeader = () => {
     }
   }, [isTriggered])
 
-  useEffect(() => {
-    if (endTime && isRunning) {
-      pause()
-    }
-  }, [endTime])
+  // useEffect(() => {
+  //   if (endTime && isRunning) {
+  //     pause()
+  //   }
+  // }, [endTime])
+
+  console.log(timerRecords)
+
+  const getLastTimeRecord = () => {
+    const sortedTimerRecords = (timerRecords ?? [])
+      .filter(timeRecord => timeRecord.timerId === timer.id)
+      .sort((a, b) => {
+        if (a.startTime > b.startTime) {
+          return -1
+        }
+        if (a.startTime < b.startTime) {
+          return 1
+        }
+        return 0
+      })
+
+    console.log(sortedTimerRecords)
+    const lastRecord = sortedTimerRecords?.[0]
+    return lastRecord
+  }
+
+  const getCurrentTimeRecordStartTime = () => {
+    const lastRecord = getLastTimeRecord()
+    if (!lastRecord && timer.startTime)
+      return typeof timer.startTime === 'string' ? new Date(timer.startTime) : timer.startTime
+
+    if (lastRecord.endTime) return lastRecord.endTime
+    if (lastRecord.startTime) return lastRecord.startTime
+    return new Date()
+  }
 
   const startTimer = () => {
-    setTimer(prev => ({ ...prev, id: new Date().getTime(), isRunning: true, startTime: new Date() }))
     start()
+    const newId = new Date().getTime()
+    setTimer(prev => ({ ...prev, id: newId, isRunning: true, startTime: new Date() }))
+    setTimerRecords(prev => [
+      ...prev,
+      {
+        id: new Date().getTime(),
+        userId: timer?.makerId ?? 'LOCAL',
+        timerId: newId,
+        startTime: new Date(),
+      },
+    ])
   }
 
   const resetTimer = () => {
     setTimer(prev => ({ ...prev, id: 0, endTime: new Date(), isRunning: false }))
     reset(undefined, false)
+
+    if (!timer?.id || !isRunning) return
+    setTimerRecords(prev => [
+      ...prev,
+      {
+        id: new Date().getTime(),
+        userId: timer?.makerId ?? 'LOCAL',
+        timerId: timer.id,
+        startTime: getCurrentTimeRecordStartTime(),
+        endTime: new Date(),
+      },
+    ])
+  }
+  console.log(timer.id)
+  const pauseTimer = () => {
+    setTimer(prev => ({ ...prev, isRunning: false }))
+    pause()
+
+    if (!timer.id) return
+    const lastRecord = getLastTimeRecord()
+    setTimerRecords(prev => [
+      ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+      { ...lastRecord, endTime: new Date() },
+    ])
+  }
+
+  const restartTimer = () => {
+    setTimer(prev => ({ ...prev, isRunning: true }))
+    setTimeOffset({ hours: newHours, minutes: newMinutes, seconds: newSeconds })
+    setTimerRecords(prev => [
+      ...prev,
+      {
+        id: new Date().getTime(),
+        userId: timer?.makerId ?? 'LOCAL',
+        timerId: timer.id,
+        startTime: new Date(),
+      },
+    ])
+    start()
   }
 
   const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
@@ -158,11 +237,12 @@ export const CountUpHeader = () => {
             </button>
           </div>
           <TimerButtons
-            hasStarted={Boolean(isTimerRunning)}
+            hasStarted={Boolean(timer.id)}
             isRunning={isRunning}
             onStartClick={startTimer}
             onResetClick={resetTimer}
-            onPauseClick={pause}
+            onPauseClick={pauseTimer}
+            onRestartAfterPauseClick={restartTimer}
           />
         </div>
       </div>
@@ -211,6 +291,7 @@ interface TimerButtonsProps {
   onStartClick: () => void
   onResetClick: () => void
   onPauseClick: () => void
+  onRestartAfterPauseClick: () => void
 }
 
 export const TimerButtons = ({
@@ -219,6 +300,7 @@ export const TimerButtons = ({
   onStartClick,
   onResetClick,
   onPauseClick,
+  onRestartAfterPauseClick,
 }: TimerButtonsProps) => {
   if (!hasStarted)
     return (
@@ -250,7 +332,9 @@ export const TimerButtons = ({
           멈추기
         </button>
       ) : (
-        <button onClick={onStartClick} className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg text-white">
+        <button
+          onClick={onRestartAfterPauseClick}
+          className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg text-white">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
             <path
               fillRule="evenodd"
