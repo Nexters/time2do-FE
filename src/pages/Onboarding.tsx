@@ -1,20 +1,24 @@
 import { putUser } from '../api/user'
 import OnboardingAnimation from '../components/OnboardingLotties'
 import { useNavigate } from 'react-router-dom'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const Onboarding = () => {
   const [dotActive, setDotActive] = useState(0)
   const [pageIndex, setPageIndex] = useState(0)
   const targetPost = useRef<HTMLDivElement>(null)
   const userInfo = localStorage.getItem('user')
-  const userId = JSON.parse(userInfo as string).id
+  const userId = JSON.parse(userInfo as string)?.id
   const navigate = useNavigate()
   // eslint-disable-next-line react/jsx-key
   const children = [
+    // eslint-disable-next-line react/jsx-key
     <OnboardingAnimation />,
+    // eslint-disable-next-line react/jsx-key
     <OnboardingAnimation.Second />,
+    // eslint-disable-next-line react/jsx-key
     <OnboardingAnimation.Third />,
+    // eslint-disable-next-line react/jsx-key
     <OnboardingAnimation.Forth />,
   ]
 
@@ -43,7 +47,6 @@ const Onboarding = () => {
   const handleClickNext = async () => {
     if (pageIndex < children.length - 1) {
       const postCount = React.Children.toArray(children).length
-      setPageIndex(pageIndex + 1)
       targetPost.current?.scrollTo({
         left: ((pageIndex + 1) * targetPost.current.scrollWidth) / postCount,
         behavior: 'smooth',
@@ -108,7 +111,7 @@ const Onboarding = () => {
       </div>
       <div className="p-5 text-right">
         <button className="btn-primary btn w-24 text-title2 font-bold text-white" onClick={handleClickNext}>
-          다음
+          {pageIndex !== children.length - 1 ? '다음' : '완료'}
         </button>
       </div>
     </>
