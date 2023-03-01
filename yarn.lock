@@ -351,6 +351,11 @@
   resolved "https://registry.yarnpkg.com/@h6s/calendar/-/calendar-1.1.0-alpha.2.tgz#8a0dabca4b711a2f8529a736ef6086e0c768d403"
   integrity sha512-sNZz+Yg31yAfGwwoABfCq3G2DIKwFKEwfNG52yzyxRtq5iBiCXhTxjDqhMYreHj9jmlvi2onL+iWJ+H2vDUJuQ==
 
+"@hookform/error-message@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@hookform/error-message/-/error-message-2.0.1.tgz#6a37419106e13664ad6a29c9dae699ae6cd276b8"
+  integrity sha512-U410sAr92xgxT1idlu9WWOVjndxLdgPUHEB8Schr27C9eh7/xUnITWpCMF93s+lGiG++D4JnbSnrb5A21AdSNg==
+
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.8.tgz#03595ac2075a4dc0f191cc2131de14fbd7d410b9"

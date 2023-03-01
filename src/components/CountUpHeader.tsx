@@ -370,9 +370,9 @@ export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleCha
           value={timerTitle}
           onChange={e => setTimerTitle(e.target.value)}
           type="text"
-          id="nickname"
           className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pt-[1.1875rem] pb-[1.25rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300 focus:border-primary"
           autoFocus
+          maxLength={15}
         />
         <div className="flex w-full justify-center gap-3">
           <button
