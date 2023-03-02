@@ -328,13 +328,13 @@ TimerMakeModal.ErrorModal = ({ closePortal }: { closePortal: any }) => {
   return (
     <div className="fixed right-1/2 bottom-1/2 h-[190px] w-[388px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[22px] pb-4.5 pt-[25px] text-left">
       <div className="mb-4">
-        <span className="text-[22px] font-bold text-grey-200">시간을 확인해주세요!</span>
+        <span className="text-[22px] font-bold text-grey-200">설정된 시간이 올바르지 않아요!</span>
       </div>
       <div className="mb-5.5">
-        <span>설정된 시간이 올바르지 않아요</span>
+        <span>시간을 확인해주세요</span>
       </div>
       <div className="flex text-title2 font-semibold text-white">
-        <button className="mr-[10px] h-[60px] w-full rounded-[10px] bg-grey-800" onClick={handleClickEvent}>
+        <button className="mr-[10px] h-[60px] w-full rounded-[10px] bg-primary" onClick={handleClickEvent}>
           닫기
         </button>
       </div>
