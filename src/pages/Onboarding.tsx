@@ -1,12 +1,13 @@
 import { putUser } from '../api/user'
 import OnboardingAnimation from '../components/OnboardingLotties'
 import { useNavigate } from 'react-router-dom'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 const Onboarding = () => {
   const [dotActive, setDotActive] = useState(0)
   const [pageIndex, setPageIndex] = useState(0)
   const targetPost = useRef<HTMLDivElement>(null)
+
   const userInfo = localStorage.getItem('user')
   const userId = JSON.parse(userInfo as string)?.id
   const navigate = useNavigate()
@@ -21,11 +22,13 @@ const Onboarding = () => {
     // eslint-disable-next-line react/jsx-key
     <OnboardingAnimation.Forth />,
   ]
-
   const changeLocalOnboardingValue = () => {
     const userData = JSON.parse(localStorage.getItem('user') as string)
-    userData.onboarding = true
-    localStorage.setItem('user', JSON.stringify(userData))
+    console.log('userData', userData)
+    if (userData) {
+      userData.onboarding = true
+      localStorage.setItem('user', JSON.stringify(userData))
+    }
   }
 
   const handleScroll = (e: React.FormEvent) => {
@@ -70,7 +73,7 @@ const Onboarding = () => {
         onboarding: true,
       },
     })
-    changeLocalOnboardingValue()
+    await changeLocalOnboardingValue()
     navigate('/')
     return response
   }

@@ -3,19 +3,19 @@ import { CountUpHeader } from '../components/CountUpHeader'
 import { TodoList } from '../components/TodoList'
 import { todosAtom, userAtom } from '../recoil/atoms'
 import { useEffect } from 'react'
-import { getUserById } from '../api/user'
 import { useNavigate } from 'react-router-dom'
 
 export function Home() {
   const todos = useRecoilValue(todosAtom)
   const user = useRecoilValue(userAtom)
+  const userData = localStorage ? JSON.parse(localStorage.getItem('user') as string) : null
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (user && !user?.onboarding) {
+    if (user && !userData?.onboarding) {
       navigate('onboarding')
     }
-  })
+  }, [])
 
   return (
     <>
