@@ -24,7 +24,6 @@ const Onboarding = () => {
   ]
   const changeLocalOnboardingValue = () => {
     const userData = JSON.parse(localStorage.getItem('user') as string)
-    console.log('userData', userData)
     if (userData) {
       userData.onboarding = true
       localStorage.setItem('user', JSON.stringify(userData))
