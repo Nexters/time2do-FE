@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import { addCheerUp, getCheerUps, getParticipants, participate } from '../api/countDownTimer'
@@ -8,21 +8,24 @@ import { CountDownHeader } from '../components/CountDownHeader'
 import Participants from '../components/Participants'
 import { TodoList } from '../components/TodoList'
 import { todosAtom, userAtom } from '../recoil/atoms'
+import { User } from '../types'
 
 export function CountDownDetails() {
   const user = useRecoilValue(userAtom)
-  const [usersParticipating, setUsersParticipating] = useState([])
+  const nagivation = useNavigate()
+  if (!user) {
+    nagivation('/login')
+  }
+  const [usersParticipating, setUsersParticipating] = useState<any[]>([])
   const { invitationCode } = useParams()
   const [showCheerUpAnimation, setShowCheerUpAnimation] = useState(false)
+
   const { data: countDownTimer } = useQuery({
-    queryKey: ['getCountDownTimer'],
+    queryKey: ['getCountDownTimer', invitationCode],
     queryFn: () => participate({ user, invitationCode }),
-    onSuccess: data => {
-      const users = data?.users ?? []
-      setUsersParticipating(users.map((user: any) => ({ userName: user.username, toDos: [] })))
-    },
   })
-  console.log(countDownTimer)
+
+  console.log(countDownTimer, '@@')
 
   const { data: participants } = useQuery({
     queryKey: ['getParticipants'],
@@ -32,10 +35,19 @@ export function CountDownDetails() {
     refetchIntervalInBackground: false,
     onSuccess: data => {
       setUsersParticipating(data ?? [])
+
+      if (data.find(participant => participant.userName === user?.username)) {
+        setUsersParticipating(data.map((participant: any) => ({ userName: participant.userName, toDos: [] })))
+        return
+      }
+      setUsersParticipating([
+        [user, ...data].map((user: any) => ({
+          userName: user?.username ?? user?.userName,
+          toDos: [],
+        })),
+      ])
     },
   })
-  console.log(countDownTimer)
-  console.log(participants)
   const todos = useRecoilValue(todosAtom)
 
   const { data: cheerUps } = useQuery({
@@ -76,7 +88,6 @@ export function CountDownDetails() {
   })
 
   const handleCheerUpClick = () => {
-    console.log('test')
     addCheerUpMutation.mutate()
   }
 
