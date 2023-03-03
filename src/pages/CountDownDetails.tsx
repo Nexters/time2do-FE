@@ -36,7 +36,7 @@ export function CountDownDetails() {
     onSuccess: data => {
       setUsersParticipating(data ?? [])
 
-      if (data.find(participant => participant.userName === user?.username)) {
+      if (data.find((participant: any) => participant.userName === user?.userName)) {
         setUsersParticipating(data.map((participant: any) => ({ userName: participant.userName, toDos: [] })))
         return
       }

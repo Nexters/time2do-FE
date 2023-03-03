@@ -18,7 +18,7 @@ const CountDownHome = () => {
     handleSubmit,
     formState: { errors },
   } = useForm()
-  const onSubmit = async data => {
+  const onSubmit = async (data: any) => {
     console.log(data)
     setCodeEntered(true)
     const response = await api.get(`/timers/${data.invitationCode}`)
