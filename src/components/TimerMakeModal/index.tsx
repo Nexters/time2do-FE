@@ -190,24 +190,25 @@ interface StartTimePickerProps {
 
 // eslint-disable-next-line react/display-name
 TimerMakeModal.StartTimePicker = ({ startTime, setStartTime, modalClose }: StartTimePickerProps) => {
-  const [dayTime, setDayTime] = useState(startTime.getHours() > 12)
+  const [dayTime, setDayTime] = useState(startTime.getHours() >= 12)
   const [hour, setHour] = useState(startTime.getHours() > 12 ? startTime.getHours() - 12 : startTime.getHours())
   const [minute, setMinute] = useState(startTime.getMinutes())
 
   const times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
+  const handleTime = (hour: number) => {
+    if (!dayTime && hour === 12) {
+      return 0
+    } else if (dayTime && hour == 12) {
+      return 12
+    } else {
+      return dayTime ? hour + 12 : hour
+    }
+  }
   const handleOnClick = () => {
-    setStartTime(
-      new Date(
-        startTime.getFullYear(),
-        startTime.getMonth(),
-        startTime.getDate(),
-        dayTime ? hour + 12 : hour,
-        minute,
-        0,
-      ),
-    )
+    const editHour = handleTime(hour)
+    setStartTime(new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate(), editHour, minute, 0))
 
     modalClose()
   }
@@ -312,6 +313,29 @@ TimerMakeModal.CompleteModal = ({ closePortal, invitationCode }: { closePortal: 
             <img className="mr-[4px]" src={LinkShareIcon} alt="링크 공유하기 버튼" />
             <span>코드 공유</span>
           </div>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// eslint-disable-next-line react/display-name
+TimerMakeModal.ErrorModal = ({ closePortal }: { closePortal: any }) => {
+  const handleClickEvent = () => {
+    closePortal()
+  }
+
+  return (
+    <div className="fixed right-1/2 bottom-1/2 h-[190px] w-[388px] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[22px] pb-4.5 pt-[25px] text-left">
+      <div className="mb-4">
+        <span className="text-[22px] font-bold text-grey-200">시간을 확인해주세요!</span>
+      </div>
+      <div className="mb-5.5">
+        <span>설정된 시간이 올바르지 않아요</span>
+      </div>
+      <div className="flex text-title2 font-semibold text-white">
+        <button className="mr-[10px] h-[60px] w-full rounded-[10px] bg-grey-800" onClick={handleClickEvent}>
+          닫기
         </button>
       </div>
     </div>
