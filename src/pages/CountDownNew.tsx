@@ -9,6 +9,7 @@ import ModalPortal from '../components/ModalPortal'
 import { postNewGroup } from '../api/countDownTimer'
 
 export function CountDownNew() {
+  const user = useRecoilValue(userAtom)
   const [startTime, setStartTime] = useState(new Date())
   const [modalVisible, setModalVisible] = useState(false)
   const [invitationCode, setInvitationCode] = useState('')
@@ -24,7 +25,7 @@ export function CountDownNew() {
   const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      makerId: '0',
+      makerId: user?.idToken ?? '',
       type: 2,
       tag: '',
       startTime: formatISO(new Date()),
