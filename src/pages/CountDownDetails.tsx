@@ -1,14 +1,16 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useRecoilValue } from 'recoil'
 import { addCheerUp, getCheerUps, getParticipants, participate } from '../api/countDownTimer'
+import { syncTodos } from '../api/report'
 import { CountDownHeader } from '../components/CountDownHeader'
 import Participants from '../components/Participants'
 import { TodoList } from '../components/TodoList'
 import { todosAtom, userAtom } from '../recoil/atoms'
 import { User } from '../types'
+import { getLocalStorageState } from '../utils'
 
 export function CountDownDetails() {
   const user = useRecoilValue(userAtom)
@@ -18,11 +20,23 @@ export function CountDownDetails() {
   }
   const { invitationCode } = useParams()
   const [showCheerUpAnimation, setShowCheerUpAnimation] = useState(false)
+  const [selectedParticipant, setSelectedParticipant] = useState<string | undefined>()
 
   const { data: countDownTimer } = useQuery({
     queryKey: ['getCountDownTimer', invitationCode],
     queryFn: () => participate({ user, invitationCode }),
   })
+  const localTodos = getLocalStorageState('todos', '[]')
+
+  const syncTodosMutation = useMutation({
+    mutationFn: () => syncTodos({ userId: user?.id, todos: localTodos }),
+  })
+
+  useEffect(() => {
+    if (user?.id) {
+      syncTodosMutation.mutate()
+    }
+  }, [user])
 
   console.log(countDownTimer, '@@')
 
@@ -79,20 +93,33 @@ export function CountDownDetails() {
     addCheerUpMutation.mutate()
   }
 
+  const getProperTodos = () => {
+    if (!selectedParticipant || user?.userName === selectedParticipant) return todos
+    const matchingParticipant = (participants ?? []).find(
+      (participant: any) => participant.userName === selectedParticipant,
+    )
+    if (matchingParticipant) {
+      return matchingParticipant?.toDos ?? []
+    }
+    return []
+  }
+
+  const selectedTodos = getProperTodos()
   return (
     <>
       <header className="h-[32rem] w-full bg-grey-1000">
         <CountDownHeader
           timer={countDownTimer}
+          expires={new Date(countDownTimer?.endTime ?? new Date())}
           showCheerUpAnimation={showCheerUpAnimation}
           onCheerUpClick={handleCheerUpClick}
         />
       </header>
       <div className="min-h-[400px]  bg-grey-1000">
-        <Participants participants={participants} />
+        <Participants onParticipantClick={name => setSelectedParticipant(name)} participants={participants} />
         <div className="border-2 border-grey-850 opacity-50"></div>
         <div className=" py-7 px-6">
-          <TodoList todos={todos} />
+          <TodoList todos={selectedTodos} />
         </div>
       </div>
     </>

@@ -8,9 +8,10 @@ import { Todo } from '../types'
 
 interface Props {
   participants: { userName: string; toDos: Todo[] }[]
+  onParticipantClick: (name: string) => void
 }
 
-const Participants = ({ participants = [] }: Props) => {
+const Participants = ({ participants = [], onParticipantClick }: Props) => {
   const user = useRecoilValue(userAtom)
   const { invitationCode } = useParams()
   const [copyState, copyToClipboard] = useCopyToClipboard()
@@ -36,6 +37,7 @@ const Participants = ({ participants = [] }: Props) => {
               <button
                 style={{ backgroundImage: `url('/img/profile/Profile${Math.floor(Math.random() * 12) + 1}.png')` }}
                 className="h-14 w-14 bg-cover bg-center"
+                onClick={() => onParticipantClick(participant.userName ?? '')}
               />
               <div className="mt-1 text-center">{participant.userName}</div>
             </div>

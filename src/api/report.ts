@@ -31,7 +31,8 @@ export const putUserNickname = async ({ userId, nickname }: { userId: number; ni
   return response.data
 }
 
-export const syncTodos = async ({ userId, todos }: { userId: number; todos: Todo[] }) => {
+export const syncTodos = async ({ userId, todos }: { userId?: number; todos: Todo[] }) => {
+  if (!userId) throw new Error()
   const response = await api.post(`/users/${userId}/tasks`, todos)
 
   return response.data

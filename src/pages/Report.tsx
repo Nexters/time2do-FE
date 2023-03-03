@@ -229,7 +229,7 @@ export function Report() {
           <div className="py-7 px-6">
             <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
             {groupTimers.map(groupTimer => (
-              <div key={groupTimer.name} className="rounded-[0.625rem] bg-[#171D25] px-[0.875rem] py-[0.875rem]">
+              <div key={groupTimer.name} className="mb-3 rounded-[0.625rem] bg-[#171D25] px-[0.875rem] py-[0.875rem]">
                 <div className="mb-2 flex items-center">
                   <div className="rounded-[0.375rem] bg-primary px-[0.3125rem] py-[0.1875rem] text-[0.9375rem] font-semibold leading-[140%] text-white">
                     #{groupTimer.tag}

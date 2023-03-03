@@ -40,10 +40,12 @@ export type Timer = {
 }
 
 // 서버에서 계산해서 내려준 값을 포함한 타이머 타입
-export type GroupTimer = Timer & {
+export type GroupTimer = Omit<Timer, 'startTime' | 'endTime'> & {
   participantsCount: number
   displayTime: string
   duration: number
+  startTime: DateTime
+  endTime: DateTime
 }
 
 export type User = {

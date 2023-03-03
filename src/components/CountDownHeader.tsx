@@ -1,4 +1,4 @@
-import { useStopwatch } from 'react-timer-hook'
+import { useStopwatch, useTimer } from 'react-timer-hook'
 import { useEffect, useState } from 'react'
 import Switch from '../assets/svg/Switch'
 import Report from '../assets/svg/ReportIcon'
@@ -15,14 +15,15 @@ now.setSeconds(now.getSeconds() + 100)
 
 interface Props {
   timer: GroupTimer
+  expires: Date
   onCheerUpClick: () => void
   showCheerUpAnimation: boolean
 }
 
-export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }: Props) => {
+export const CountDownHeader = ({ timer, expires, onCheerUpClick, showCheerUpAnimation }: Props) => {
   const navigate = useNavigate()
-  const { isRunning: isTimerRunning, startTime } = timer ?? {}
-
+  const { isRunning: isTimerRunning, startTime, endTime } = timer ?? {}
+  console.log(timer)
   const stopwatchOffset = new Date()
 
   const [modalVisible, setModalVisible] = useState(false)
@@ -35,9 +36,11 @@ export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }:
     setModalVisible(false)
   }
 
-  const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
-    autoStart: false,
-    offsetTimestamp: stopwatchOffset,
+  console.log(expires, typeof expires)
+
+  const { seconds, minutes, hours, isRunning, start } = useTimer({
+    expiryTimestamp: new Date(endTime),
+    autoStart: true,
   })
 
   useEffect(() => {
@@ -73,6 +76,15 @@ export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }:
         </div>
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
+            {new Date(timer?.startTime).getTime() > new Date().getTime() && (
+              <div className="text-xl font-semibold">
+                <span className="text-primary">
+                  {new Date(timer?.startTime).getHours()}:{new Date(timer?.startTime).getMinutes()}
+                </span>{' '}
+                시작 예정
+              </div>
+            )}
+
             <div className="mb-3">
               <span className="countdown font-montserrat text-[4rem] font-bold">
                 {/* @ts-ignore */}
@@ -89,9 +101,9 @@ export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }:
               </span>
               {timer?.name ?? ''}
             </h1>
-            <button onClick={openModal}>
+            {/* <button onClick={openModal}>
               <EditIcon />
-            </button>
+            </button> */}
           </div>
           <button onClick={onCheerUpClick} className="btn-primary btn h-14 gap-2 rounded-full px-5 text-xl">
             <WhiteHeart />
