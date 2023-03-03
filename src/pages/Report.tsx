@@ -5,7 +5,6 @@ import { ko } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router'
 import { useRecoilValue } from 'recoil'
-import api from '../api'
 import { getReportData, putUserNickname, syncTimeRecords, syncTodos, syncTodosAndTimeRecords } from '../api/report'
 import bombCharacterImageUrl from '../assets/images/bombCharacterSingle.png'
 import closeIconUrl from '../assets/svg/Close.svg'
@@ -15,8 +14,8 @@ import Header from '../components/Header'
 import ModalPortal from '../components/ModalPortal'
 import ReportCalendar from '../components/ReportCalendar'
 import { TodoList } from '../components/TodoList'
-import { BooleanNumberTypes } from '../consts'
 import { userAtom } from '../recoil/atoms'
+import { GroupTimer } from '../types'
 import { getLocalStorageState } from '../utils'
 
 // 47h0m0s -> 47:00:00
@@ -51,15 +50,6 @@ export function Report() {
     queryKey: ['getReportData'],
     queryFn: () => getReportData({ userId, date: cursorDate }),
   })
-
-  useEffect(() => {
-    async function getUserTodos() {
-      const response = await api.get(`users/59/tasks`)
-      console.log(response)
-      return response
-    }
-    getUserTodos()
-  }, [])
 
   const nicknameMutation = useMutation({
     mutationFn: () => putUserNickname({ userId, nickname }),
@@ -157,6 +147,15 @@ export function Report() {
     refetchReportData()
   }, [cursorDate])
 
+  const getDuration = (groupTimer: GroupTimer) => {
+    if (!groupTimer.endTime || !groupTimer.startTime) return ''
+    const diff = new Date(new Date(groupTimer.endTime).getTime() - new Date(groupTimer.startTime).getTime())
+    const hours = diff.getUTCHours()
+    const minutes = diff.getUTCMinutes()
+    if (!hours) return `${minutes}분`
+    return `${hours}시간 ${minutes}분`
+  }
+
   return (
     <>
       <div className="bg-grey-1000">
@@ -242,11 +241,11 @@ export function Report() {
                 <div className="flex items-center text-[0.9375rem] font-semibold leading-[140%] text-grey-400">
                   <span>멤버 {groupTimer.participantsCount}명</span>
                   <span className="pl-[0.375rem]">
-                    {format(new Date(groupTimer.displayTime), 'a h:mm', { locale: ko })}
+                    {format(new Date(groupTimer.displayTime), 'a h:mm', { locale: ko })} 종료
                   </span>
                 </div>
                 <div className="pr-[0.125rem] text-right text-[1.875rem] font-bold leading-[2.25rem] text-grey-200">
-                  <span>3시간</span>
+                  <span>{getDuration(groupTimer)}</span>
                 </div>
               </div>
             ))}
