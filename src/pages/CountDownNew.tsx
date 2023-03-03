@@ -7,6 +7,8 @@ import { Timer } from '../types'
 import { formatISO } from 'date-fns'
 import ModalPortal from '../components/ModalPortal'
 import { postNewGroup } from '../api/countDownTimer'
+import { useRecoilValue } from 'recoil'
+import { userAtom } from '../recoil/atoms'
 
 export function CountDownNew() {
   const user = useRecoilValue(userAtom)
@@ -29,7 +31,7 @@ export function CountDownNew() {
       type: 2,
       tag: '',
       startTime: formatISO(new Date()),
-      endTime: formatISO(new Date()),
+      completeTime: formatISO(new Date()),
     },
   })
   const onSubmit = async (data: any) => {

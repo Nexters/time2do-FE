@@ -150,12 +150,12 @@ InputBox.TargetTimeSet = ({ InputBoxName, startTime }: { InputBoxName: string; s
     const endTime = new Date(startTime)
     endTime.setHours(endTime.getHours() + parseInt(hour))
     endTime.setMinutes(endTime.getMinutes() + parseInt(minute))
-    setValue('endTime', formatISO(endTime))
+    setValue('completeTime', formatISO(endTime))
   }, [hour, minute])
 
   return (
     <>
-      <input type="hidden" {...register('endTime')} />
+      <input type="hidden" {...register('completeTime')} />
       <div className="mb-8 h-min">
         <label className="label">
           <span className="label-text text-sm font-bold text-gray-300 ">

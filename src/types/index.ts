@@ -29,7 +29,7 @@ export type Timer = {
   type: (typeof TimerTypes)[keyof typeof TimerTypes]
   tag?: string
   startTime?: DateTime
-  endTime?: DateTime
+  completeTime?: DateTime
 
   // 서버에서 받아오는 값
   id: number
