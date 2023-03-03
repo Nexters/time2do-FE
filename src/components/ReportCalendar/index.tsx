@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import cx from 'classnames'
 import ChevronRight from '../../assets/svg/ChevronRight'
 import ChevronLeft from '../../assets/svg/ChevronLeft'
-import GreenDot from '../../assets/svg/GreenDot'
+import GroupTimerIcon from '../../assets/svg/GroupTimerIcon'
 import { TimeBlock } from '../../api/report'
 
 const getDayColorClassName = (hour: number, minute: number) => {
@@ -138,7 +138,7 @@ const ReportCalendar: React.FC<ReportCalendarProps> = ({
                     }`}>
                     {isCursorMonth && isInGroupTimer && (
                       <div className="absolute right-[-0.125rem] top-[-0.125rem] translate-x-[2px] translate-y-[-2px]">
-                        <GreenDot />
+                        <GroupTimerIcon />
                       </div>
                     )}
                     <div className="flex flex-col gap-2">
@@ -168,7 +168,7 @@ const ReportCalendar: React.FC<ReportCalendarProps> = ({
                     onClick={() => dateClickHandler(value, isCursorMonth)}>
                     {isCursorMonth && isInGroupTimer && (
                       <div className="absolute right-[-0.125rem] top-[-0.125rem]">
-                        <GreenDot />
+                        <GroupTimerIcon />
                       </div>
                     )}
                     <div className="flex flex-col gap-2">
@@ -195,7 +195,7 @@ const ReportCalendar: React.FC<ReportCalendarProps> = ({
                   onMouseEnter={() => dateMouseEnterHandler(value, isCursorMonth)}>
                   {isCursorMonth && isInGroupTimer && (
                     <div className="absolute right-[-0.125rem] top-[-0.125rem]">
-                      <GreenDot />
+                      <GroupTimerIcon />
                     </div>
                   )}
                   {isToday(value) && (

@@ -10,7 +10,6 @@ import bombCharacterImageUrl from '../assets/images/bombCharacterSingle.png'
 import closeIconUrl from '../assets/svg/Close.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
 import profileImageUrl from '../assets/svg/Profile.svg'
-import profileIconUrl from '../assets/svg/ProfileIcon.svg'
 import Header from '../components/Header'
 import ModalPortal from '../components/ModalPortal'
 import ReportCalendar from '../components/ReportCalendar'
@@ -32,7 +31,7 @@ export function Report() {
   const { cursorDate } = calendarHook
 
   const user = useRecoilValue(userAtom)
-  const userId = user?.idToken
+  const userId = user?.id
 
   if (!userId) {
     return <Navigate to="/" replace />
