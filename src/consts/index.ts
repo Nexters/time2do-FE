@@ -5,7 +5,6 @@ export const defaultTodo: Todo = {
   id: new Date().getTime(),
   completed: false,
   userId: 0,
-  private: 0,
   createdTime: new Date(),
 }
 

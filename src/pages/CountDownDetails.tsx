@@ -50,7 +50,7 @@ export function CountDownDetails() {
       })
       console.log(cheerUps, filteredCheerUps)
       if (filteredCheerUps.length === 0) return
-      filteredCheerUps.forEach((cheerUp: any, index) => {
+      filteredCheerUps.forEach((cheerUp: any) => {
         setTimeout(() => {
           setShowCheerUpAnimation(true)
 

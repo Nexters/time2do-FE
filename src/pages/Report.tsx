@@ -113,8 +113,7 @@ export function Report() {
           id: toDo.id,
           userId: toDo.userId,
           content: toDo.content,
-          completed: BooleanNumberTypes['TRUE'],
-          private: BooleanNumberTypes['FALSE'],
+          completed: true,
           createdTime: new Date(toDo.createdTime),
           completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
         }))

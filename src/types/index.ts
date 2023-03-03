@@ -9,7 +9,6 @@ export type Todo = {
   userId: number
   content: string
   completed: boolean
-  private: BooleanNumber
   createdTime: DateTime
   completedTime?: DateTime
 }

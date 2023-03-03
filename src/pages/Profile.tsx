@@ -21,7 +21,7 @@ const formatTotalDuration = (totalDuration: string) => {
   return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
 }
 
-const userId = '1'
+const userId = 0
 
 const today = new Date(new Date().toDateString())
 
@@ -58,8 +58,7 @@ export function Report() {
           id: toDo.id,
           userId: toDo.userId,
           content: toDo.content,
-          completed: BooleanNumberTypes['TRUE'],
-          private: BooleanNumberTypes['FALSE'],
+          completed: true,
           createdTime: new Date(toDo.createdTime),
           completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
         }))

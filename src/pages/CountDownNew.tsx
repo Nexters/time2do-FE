@@ -27,7 +27,7 @@ export function CountDownNew() {
   const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      makerId: user?.idToken ?? '',
+      makerId: user?.id ?? 0,
       type: 2,
       tag: '',
       startTime: formatISO(new Date()),

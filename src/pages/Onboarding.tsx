@@ -9,7 +9,7 @@ const Onboarding = () => {
   const [dotActive, setDotActive] = useState(0)
   const [pageIndex, setPageIndex] = useState(0)
   const targetPost = useRef<HTMLDivElement>(null)
-  const [user = {}, setUser] = useRecoilState(userAtom)
+  const [user, setUser] = useRecoilState(userAtom)
   const navigate = useNavigate()
   // eslint-disable-next-line react/jsx-key
   const children = [
@@ -23,8 +23,8 @@ const Onboarding = () => {
     <OnboardingAnimation.Forth />,
   ]
   const changeLocalOnboardingValue = () => {
-    if (user) {
-      setUser(prev => ({ ...prev, onboarding: true }))
+    if (user?.id) {
+      setUser({ ...user, onboarding: true })
     }
   }
 
@@ -54,7 +54,7 @@ const Onboarding = () => {
     } else {
       changeLocalOnboardingValue()
       await putUser({
-        userId: user?.id,
+        userId: user?.id ?? 0,
         data: {
           onboarding: true,
         },
@@ -65,7 +65,7 @@ const Onboarding = () => {
 
   const handleSkipClickEvent = async () => {
     const response = await putUser({
-      userId: user?.id,
+      userId: user?.id ?? 0,
       data: {
         onboarding: true,
       },
