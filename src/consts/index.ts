@@ -1,13 +1,12 @@
-import { format } from 'date-fns'
 import { Timer, Todo } from '../types'
 
 export const defaultTodo: Todo = {
   content: '',
   id: new Date().getTime(),
-  completed: 0,
-  userId: 'LOCAL',
+  completed: false,
+  userId: 0,
   private: 0,
-  createdTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+  createdTime: new Date(),
 }
 
 export const TimerTypes = {
@@ -22,7 +21,7 @@ export const defaultCountUpTimer: Timer = {
   // 클라이언트에서만 사용하거나 서버에 동기화할 때 비뀔 수 있는 필드들
   isRunning: false,
   id: 0,
-  makerId: 'LOCAL',
+  makerId: 0,
 }
 
 export const BooleanNumberTypes = {

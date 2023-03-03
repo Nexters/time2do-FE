@@ -2,14 +2,14 @@ import { putUser } from '../api/user'
 import OnboardingAnimation from '../components/OnboardingLotties'
 import { useNavigate } from 'react-router-dom'
 import React, { useRef, useState } from 'react'
+import { useRecoilState } from 'recoil'
+import { userAtom } from '../recoil/atoms'
 
 const Onboarding = () => {
   const [dotActive, setDotActive] = useState(0)
   const [pageIndex, setPageIndex] = useState(0)
   const targetPost = useRef<HTMLDivElement>(null)
-
-  const userInfo = localStorage.getItem('user')
-  const userId = JSON.parse(userInfo as string)?.id
+  const [user = {}, setUser] = useRecoilState(userAtom)
   const navigate = useNavigate()
   // eslint-disable-next-line react/jsx-key
   const children = [
@@ -23,10 +23,8 @@ const Onboarding = () => {
     <OnboardingAnimation.Forth />,
   ]
   const changeLocalOnboardingValue = () => {
-    const userData = JSON.parse(localStorage.getItem('user') as string)
-    if (userData) {
-      userData.onboarding = true
-      localStorage.setItem('user', JSON.stringify(userData))
+    if (user) {
+      setUser(prev => ({ ...prev, onboarding: true }))
     }
   }
 
@@ -56,7 +54,7 @@ const Onboarding = () => {
     } else {
       changeLocalOnboardingValue()
       await putUser({
-        userId: userId,
+        userId: user?.id,
         data: {
           onboarding: true,
         },
@@ -67,7 +65,7 @@ const Onboarding = () => {
 
   const handleSkipClickEvent = async () => {
     const response = await putUser({
-      userId: userId,
+      userId: user?.id,
       data: {
         onboarding: true,
       },

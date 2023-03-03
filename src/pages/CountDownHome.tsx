@@ -8,9 +8,6 @@ import { toast } from 'react-toastify'
 import api from '../api'
 
 const CountDownHome = () => {
-  const [codeEntered, setCodeEntered] = useState(false)
-  console.log(codeEntered, '2#@$')
-  // console.log(countDownTimer)
   const navigate = useNavigate()
   const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
   const {
@@ -19,18 +16,15 @@ const CountDownHome = () => {
     formState: { errors },
   } = useForm()
   const onSubmit = async (data: any) => {
-    console.log(data)
-    setCodeEntered(true)
     const response = await api.get(`/timers/${data.invitationCode}`)
+    console.log(await api.get('/timers'))
     if (response?.data?.invitationCode !== data.invitationCode) {
-      toast.error('존재하지 않는 그룹 타이머입니다.')
+      toast.dark('존재하지 않는 그룹 타이머입니다.')
       return
     }
-
     navigate(`/countdown/${data.invitationCode}`)
   }
-  console.log()
-  console.log(errors)
+
   return (
     <div className="bg-grey-900">
       <div className="flex h-[25rem] items-center justify-center p-5">

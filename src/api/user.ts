@@ -11,6 +11,16 @@ export const postUser = async (userInfo: RegisterUser) => {
   }
 }
 
+export const login = async (userInfo: RegisterUser) => {
+  try {
+    const response = await api.post(`/login`, userInfo)
+    return response
+  } catch (e: any) {
+    const response = e.response
+    return response
+  }
+}
+
 export const putUser = async ({ userId, data }: { userId: number; data: any }) => {
   try {
     const response = await api.put(`/users/${userId}`, data)

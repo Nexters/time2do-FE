@@ -5,7 +5,8 @@ import { ko } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router'
 import { useRecoilValue } from 'recoil'
-import { getReportData, putUserNickname } from '../api/report'
+import api from '../api'
+import { getReportData, putUserNickname, syncTimeRecords, syncTodos, syncTodosAndTimeRecords } from '../api/report'
 import bombCharacterImageUrl from '../assets/images/bombCharacterSingle.png'
 import closeIconUrl from '../assets/svg/Close.svg'
 import editIconUrl from '../assets/svg/Edit.svg'
@@ -16,6 +17,7 @@ import ReportCalendar from '../components/ReportCalendar'
 import { TodoList } from '../components/TodoList'
 import { BooleanNumberTypes } from '../consts'
 import { userAtom } from '../recoil/atoms'
+import { getLocalStorageState } from '../utils'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -50,6 +52,15 @@ export function Report() {
     queryFn: () => getReportData({ userId, date: cursorDate }),
   })
 
+  useEffect(() => {
+    async function getUserTodos() {
+      const response = await api.get(`users/59/tasks`)
+      console.log(response)
+      return response
+    }
+    getUserTodos()
+  }, [])
+
   const nicknameMutation = useMutation({
     mutationFn: () => putUserNickname({ userId, nickname }),
     onSuccess: () => {
@@ -59,6 +70,39 @@ export function Report() {
     },
     onError: () => {
       alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    },
+  })
+  const localTodos = getLocalStorageState('todos', '[]')
+  const localTimeRecords = getLocalStorageState('countUpTimerRecords', '[]')
+  const syncTodosMutation = useMutation({
+    mutationFn: () => syncTodos({ userId, todos: localTodos }),
+    onSuccess: () => {
+      refetchReportData()
+    },
+    onError: () => {
+      alert('투두를 동기화하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    },
+  })
+
+  const syncTimeRecordsMutation = useMutation({
+    mutationFn: () => syncTimeRecords({ userId, timeRecords: localTimeRecords }),
+    onSuccess: () => {
+      refetchReportData()
+    },
+    onError: e => {
+      console.log(e)
+      alert('타이머 정보를 동기화하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    },
+  })
+
+  const syncTodosAndTimeRecordsMutation = useMutation({
+    mutationFn: () => syncTodosAndTimeRecords({ userId, timeRecords: localTimeRecords, todos: localTodos }),
+    onSuccess: () => {
+      refetchReportData()
+    },
+    onError: e => {
+      console.log(e)
+      alert('동기화하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
     },
   })
 
@@ -119,14 +163,36 @@ export function Report() {
       <div className="bg-grey-1000">
         <div>
           <Header name="레포트" />
-          <div className="flex items-center px-[1.25rem] pb-4">
-            <img src={profileImageUrl} alt="프로필" />
-            <p className="ml-[0.9375rem] mr-[0.625rem] text-[1.4375rem] font-semibold text-grey-200">
-              {reportData?.userName ?? ''}
-            </p>
-            <button className="border-none bg-none" onClick={openModal}>
-              <img src={editIconUrl} alt="수정" />
-            </button>
+          <div className="flex items-center justify-between px-[1.25rem] pb-4">
+            <div className="flex items-center justify-center">
+              <img src={profileImageUrl} alt="프로필" />
+              <p className="ml-[0.9375rem] mr-[0.625rem] text-[1.4375rem] font-semibold text-grey-200">
+                {reportData?.userName || user?.userName}
+              </p>
+              <button className="border-none bg-none" onClick={openModal}>
+                <img src={editIconUrl} alt="수정" />
+              </button>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <button
+                onClick={() => syncTodosAndTimeRecordsMutation.mutate()}
+                className="btn-primary btn-sm btn-circle btn">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-5 w-5">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                  />
+                </svg>
+              </button>
+              <span className="mt-1 text-sm">동기화</span>
+            </div>
           </div>
         </div>
 

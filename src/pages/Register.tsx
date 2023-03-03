@@ -74,7 +74,7 @@ const Register = () => {
         <div className="px-5">
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-              <InputBox InputBoxName="닉네임" placeHolder="닉네임을 입력해주세요." registerName="username" />
+              <InputBox InputBoxName="닉네임" placeHolder="닉네임을 입력해주세요." registerName="userName" />
               <InputBox
                 InputBoxName="비밀번호"
                 placeHolder="비밀번호를 입력해주세요."

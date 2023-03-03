@@ -8,11 +8,11 @@ import { useNavigate } from 'react-router-dom'
 export function Home() {
   const todos = useRecoilValue(todosAtom)
   const user = useRecoilValue(userAtom)
-  const userData = localStorage ? JSON.parse(localStorage.getItem('user') as string) : null
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (user && !userData?.onboarding) {
+    console.log(user)
+    if (user && !user?.onboarding) {
       navigate('onboarding')
     }
   }, [])

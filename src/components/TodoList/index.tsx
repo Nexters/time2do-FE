@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
-import { useSetRecoilState } from 'recoil'
-import { todosAtom } from '../../recoil/atoms'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { todosAtom, userAtom } from '../../recoil/atoms'
 import { BooleanNumberTypes, defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
 import { Todo } from '../../types'
@@ -16,16 +16,19 @@ interface Props {
 }
 
 export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Props) => {
+  const user = useRecoilValue(userAtom)
   const setTodos = useSetRecoilState(todosAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
 
   const addTodo = (value: string) => {
     const id = new Date().getTime()
-    const newTodo = {
+    const newTodo: Todo = {
       ...defaultTodo,
       id,
       content: value,
+      userId: user?.id ?? 0,
+      createdTime: new Date(),
     }
     setTodos(prev => [newTodo, ...prev])
   }
@@ -114,7 +117,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
             if (readonly) return
             onUpdateTodo({
               ...todo,
-              completed: e.target.checked ? BooleanNumberTypes.TRUE : BooleanNumberTypes.FALSE,
+              completed: e.target.checked,
               completedTime: new Date(),
             })
           }}

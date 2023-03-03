@@ -95,7 +95,6 @@ export const CountUpHeader = () => {
   const reportButtonClickHandler = () => {
     if (user) {
       navigate('/report')
-
       return
     }
 

@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useCopyToClipboard } from 'react-use'
+import { useRecoilValue } from 'recoil'
+import { userAtom } from '../recoil/atoms'
 import { Todo } from '../types'
 
 interface Props {
@@ -9,6 +11,7 @@ interface Props {
 }
 
 const Participants = ({ participants = [] }: Props) => {
+  const user = useRecoilValue(userAtom)
   const { invitationCode } = useParams()
   const [copyState, copyToClipboard] = useCopyToClipboard()
   console.log(participants)
@@ -20,24 +23,35 @@ const Participants = ({ participants = [] }: Props) => {
     }
   }, [copyState])
 
+  const filteredUsers = (participants ?? []).find(participant => participant.userName === user?.userName)
+    ? participants
+    : [{ userName: user?.userName, toDo: [] }, ...(participants ?? [])]
+  console.log(filteredUsers)
   return (
-    <div className="flex items-center justify-between p-5">
-      <div className="flex gap-[0.625rem]">
-        {participants.map(participant => (
-          <div key={participant.userName} className="flex-col items-center justify-center">
-            <button
-              style={{ backgroundImage: `url('/img/profile/Profile${Math.floor(Math.random() * 12) + 1}.png')` }}
-              className={`h-14 w-14 bg-[url('/img/profile/Profile5.png')] bg-cover bg-center`}
-            />
-            <div className="mt-1 text-center">{participant.userName}</div>
-          </div>
-        ))}
+    <div className="relative">
+      <div className="relative w-full max-w-md items-center justify-between overflow-auto p-4">
+        <div className="flex gap-[0.625rem]">
+          {filteredUsers.map(participant => (
+            <div key={participant.userName} className="flex-col items-center justify-center">
+              <button
+                style={{ backgroundImage: `url('/img/profile/Profile${Math.floor(Math.random() * 12) + 1}.png')` }}
+                className="h-14 w-14 bg-cover bg-center"
+              />
+              <div className="mt-1 text-center">{participant.userName}</div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div>
-        <button onClick={() => copyToClipboard(invitationCode ?? '')} className="btn-circle btn h-14 w-14 bg-[#282651]">
-          <div className="h-8 w-8 bg-[url('/img/link.png')] bg-cover bg-center" />
+      <div className="absolute right-3 top-3 bottom-3 flex items-center justify-center ">
+        <button
+          onClick={() => copyToClipboard(invitationCode ?? '')}
+          className="btn h-full bg-grey-850 px-2 py-4 shadow-lg">
+          <div className="flex-col text-center">
+            <img src="/img/link.png" width="32" height="32" className="mx-auto" alt="" />
+            {/* <div className="h-8 w-8 bg-[url('/img/link.png')] bg-cover bg-center" /> */}
+            <div className="mt-2 text-center">코드 공유</div>
+          </div>
         </button>
-        <div className="mt-2 text-center">코드 공유</div>
       </div>
     </div>
   )

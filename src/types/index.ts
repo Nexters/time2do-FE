@@ -6,9 +6,9 @@ export type DateTime = Date | string // 'yyyy-MM-dd HH:mm:ss'
 
 export type Todo = {
   id: number
-  userId: string
+  userId: number
   content: string
-  completed: BooleanNumber
+  completed: boolean
   private: BooleanNumber
   createdTime: DateTime
   completedTime?: DateTime
@@ -16,7 +16,7 @@ export type Todo = {
 
 export type TimeRecord = {
   id: number
-  userId: string
+  userId: number
   timerId: number
   startTime: DateTime
   endTime?: DateTime
@@ -25,7 +25,7 @@ export type TimeRecord = {
 
 export type Timer = {
   name: string
-  makerId: string
+  makerId: number
   type: (typeof TimerTypes)[keyof typeof TimerTypes]
   tag?: string
   startTime?: DateTime
@@ -48,7 +48,7 @@ export type GroupTimer = Timer & {
 }
 
 export type User = {
-  id: string
+  id: number
   idToken: string
   userName: string
   onboarding: boolean

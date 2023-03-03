@@ -90,7 +90,7 @@ export const countDownTimerAtom = atom<Timer>({
     // 클라이언트에서만 사용하거나 서버에 동기화할 때 비뀔 수 있는 필드들
     id: new Date().getTime(),
     isRunning: false,
-    makerId: 'LOCAL',
+    makerId: 0,
   },
   effects: [localStorageEffect('countDownTimer')],
 })

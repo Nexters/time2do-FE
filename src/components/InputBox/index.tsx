@@ -86,6 +86,7 @@ InputBox.TagSelect = ({ required = true, InputBoxName, placeHolder }: Props) => 
 
   const onKeyPress = (e: any) => {
     if (e.key === 'Enter') {
+      e.preventDefault()
       insertTag()
     }
   }
