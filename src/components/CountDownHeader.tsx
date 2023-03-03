@@ -53,7 +53,7 @@ export const CountDownHeader = ({ timer, onCheerUpClick, showCheerUpAnimation }:
     autoplay: true,
     animationData: cheerupLottie,
   }
-
+  console.log(timer, '@@')
   return (
     <>
       <div className="relative h-full w-full overflow-hidden bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">

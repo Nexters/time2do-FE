@@ -34,7 +34,7 @@ const Register = () => {
       return null
     } else {
       const response = await postUser({
-        username: data.username,
+        userName: data.userName,
         password: data.password,
       })
       const statusCode = response.status

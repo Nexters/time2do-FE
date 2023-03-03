@@ -20,6 +20,7 @@ export type TimeRecord = {
   timerId: number
   startTime: DateTime
   endTime?: DateTime
+  timerName?: string
 }
 
 export type Timer = {
@@ -49,11 +50,11 @@ export type GroupTimer = Timer & {
 export type User = {
   id: string
   idToken: string
-  username: string
+  userName: string
   onboarding: boolean
 }
 
 export type RegisterUser = {
-  username: string
+  userName: string
   password: string
 }

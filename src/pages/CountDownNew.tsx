@@ -7,14 +7,13 @@ import { Timer } from '../types'
 import { formatISO } from 'date-fns'
 import ModalPortal from '../components/ModalPortal'
 import { postNewGroup } from '../api/countDownTimer'
-import { useRecoilValue } from 'recoil'
-import { userAtom } from '../recoil/atoms'
-import { Navigate } from 'react-router'
 
 export function CountDownNew() {
+  const user = useRecoilValue(userAtom)
   const [startTime, setStartTime] = useState(new Date())
   const [modalVisible, setModalVisible] = useState(false)
   const [invitationCode, setInvitationCode] = useState('')
+  const [isError, setIsError] = useState(false)
 
   const modalOpen = () => {
     return setModalVisible(true)
@@ -26,7 +25,7 @@ export function CountDownNew() {
   const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      makerId: '0',
+      makerId: user?.idToken ?? '',
       type: 2,
       tag: '',
       startTime: formatISO(new Date()),
@@ -34,9 +33,15 @@ export function CountDownNew() {
     },
   })
   const onSubmit = async (data: any) => {
-    const response = await postNewGroup(data)
-    setInvitationCode(response.invitationCode)
-    modalOpen()
+    if (startTime < new Date()) {
+      setIsError(true)
+      modalOpen()
+    } else {
+      setIsError(false)
+      const response = await postNewGroup(data)
+      setInvitationCode(response.invitationCode)
+      modalOpen()
+    }
   }
   return (
     <div className="h-full bg-[#0F1214] text-center">
@@ -62,7 +67,11 @@ export function CountDownNew() {
           </FormProvider>
           {modalVisible && (
             <ModalPortal closePortal={modalClose} isOpened={modalVisible}>
-              <TimerMakeModal.CompleteModal closePortal={modalClose} invitationCode={invitationCode} />
+              {isError ? (
+                <TimerMakeModal.ErrorModal closePortal={modalClose} />
+              ) : (
+                <TimerMakeModal.CompleteModal closePortal={modalClose} invitationCode={invitationCode} />
+              )}
             </ModalPortal>
           )}
         </div>

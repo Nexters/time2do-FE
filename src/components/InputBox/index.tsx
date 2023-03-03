@@ -254,7 +254,9 @@ InputBox.StartTimeSet = ({ InputBoxName, startTime, setStartTime }: StartTimeSet
             <input
               className="focus-visible:none input h-1/2 w-full rounded-[10px] border-grey-800 bg-grey-900 text-display6 focus:outline-none"
               value={`${startTime.getHours() < 12 ? '오전' : '오후'} ${
-                startTime.getHours() < 12
+                startTime.getHours() === (0 || 12)
+                  ? 12
+                  : startTime.getHours() < 12
                   ? `${String(startTime.getHours()).padStart(2, '0')}`
                   : `${String(startTime.getHours() - 12).padStart(2, '0')}`
               } : ${String(startTime.getMinutes()).padStart(2, '0')}`}
