@@ -15,7 +15,7 @@ const Participants = ({ participants = [], onParticipantClick }: Props) => {
   const user = useRecoilValue(userAtom)
   const { invitationCode } = useParams()
   const [copyState, copyToClipboard] = useCopyToClipboard()
-  console.log(participants)
+
   useEffect(() => {
     if (copyState.error) {
       toast.error('복사에 실패했습니다. 다시 시도해주세요.')

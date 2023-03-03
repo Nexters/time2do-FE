@@ -23,7 +23,7 @@ interface Props {
 export const CountDownHeader = ({ timer, expires, onCheerUpClick, showCheerUpAnimation }: Props) => {
   const navigate = useNavigate()
   const { isRunning: isTimerRunning, startTime, endTime } = timer ?? {}
-  console.log(timer)
+
   const stopwatchOffset = new Date()
 
   const [modalVisible, setModalVisible] = useState(false)
@@ -35,8 +35,6 @@ export const CountDownHeader = ({ timer, expires, onCheerUpClick, showCheerUpAni
   const closeModal = () => {
     setModalVisible(false)
   }
-
-  console.log(expires, typeof expires)
 
   const { seconds, minutes, hours, isRunning, start } = useTimer({
     expiryTimestamp: new Date(endTime),
@@ -56,7 +54,7 @@ export const CountDownHeader = ({ timer, expires, onCheerUpClick, showCheerUpAni
     autoplay: true,
     animationData: cheerupLottie,
   }
-  console.log(timer, '@@')
+
   return (
     <>
       <div className="relative h-full w-full overflow-hidden bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">

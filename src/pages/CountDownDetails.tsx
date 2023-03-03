@@ -38,8 +38,6 @@ export function CountDownDetails() {
     }
   }, [user])
 
-  console.log(countDownTimer, '@@')
-
   const { data: participants } = useQuery({
     queryKey: ['getParticipants'],
     queryFn: () => getParticipants({ user, invitationCode }),
@@ -62,7 +60,7 @@ export function CountDownDetails() {
         if (timeDiff < 4800) return true
         return false
       })
-      console.log(cheerUps, filteredCheerUps)
+
       if (filteredCheerUps.length === 0) return
       filteredCheerUps.forEach((cheerUp: any) => {
         setTimeout(() => {
