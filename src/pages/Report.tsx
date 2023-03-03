@@ -32,7 +32,7 @@ export function Report() {
   const { cursorDate } = calendarHook
 
   const user = useRecoilValue(userAtom)
-  const userId = user?.idToken
+  const userId = user?.id
 
   if (!userId) {
     return <Navigate to="/" replace />
