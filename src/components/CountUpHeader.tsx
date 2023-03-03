@@ -18,6 +18,7 @@ const MINUTES_IN_ONE_HOUR = 60
 type LocalStorageState = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'
 
 const getTotalSecondsFromTimeRecords = (timeRecords: TimeRecord[], timerId: number) => {
+  if (!timerId) return 0
   const filteredTimeRecords = timeRecords.filter(record => record.timerId === timerId)
   const totalSeconds = filteredTimeRecords.reduce((acc, cur) => {
     const startTime = new Date(cur.startTime).getTime()
@@ -39,6 +40,7 @@ export const CountUpHeader = () => {
   const [timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countUpTimerRecords', [])
 
   const [modalVisible, setModalVisible] = useState(false)
+  const [isQuitModalShown, setIsQuitModalShown] = useState(false)
   const [timeOffset, setTimeOffset] = useState<{ hours: number; minutes: number; seconds: number }>({
     hours: 0,
     minutes: 0,
@@ -70,6 +72,7 @@ export const CountUpHeader = () => {
 
   const closeModal = () => {
     setModalVisible(false)
+    setIsQuitModalShown(false)
   }
 
   const [reportLoginModalVisible, setReportLoginModalVisible] = useState(false)
@@ -130,7 +133,7 @@ export const CountUpHeader = () => {
     if (stopWatchAndRecordsSecondsDiff < 1) stopWatchAndRecordsSecondsDiff = 0
     const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
     const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
-    const offsetSeconds = Math.floor(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
+    const offsetSeconds = Math.round(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
     if (stopWatchAndRecordsSecondsDiff >= 1) {
       setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
     } else {
@@ -186,6 +189,8 @@ export const CountUpHeader = () => {
     setTimer({ ...timer, id: 0, startTime: undefined, endTime: undefined, isRunning: false })
     reset(undefined, false)
     setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+
+    setIsQuitModalShown(true)
   }
 
   const pauseTimer = () => {
@@ -268,6 +273,12 @@ export const CountUpHeader = () => {
             onClose={closeModal}
             onSubmit={newTitle => setTimer({ ...timer, name: newTitle })}
           />
+        </ModalPortal>
+      )}
+
+      {isQuitModalShown && (
+        <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
+          <QuitConfirmModal onClose={closeModal} />
         </ModalPortal>
       )}
 
@@ -417,6 +428,31 @@ export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleCha
           </button>
         </div>
       </form>
+    </div>
+  )
+}
+
+export const QuitConfirmModal = ({ onClose }: { onClose: () => void }) => {
+  const navigate = useNavigate()
+  return (
+    <div className="w-[24.25rem] rounded-2xl bg-grey-850 px-5 pb-[1.125rem] pt-6">
+      <h1 className="mb-4 text-2xl font-bold text-grey-200">타이머를 끝낼까요?</h1>
+      <div className="text-grey-400">다 못 끝낸 할 일 목록은 남아있어요.</div>
+      <div className="mb-4 text-grey-400">하지만 시간을 저장하고 싶다면 로그인이 필요해요</div>
+      <div className="flex w-full justify-center gap-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="width-full flex-1 rounded-[0.625rem] bg-grey-800  py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white">
+          끝내기
+        </button>
+        <button
+          onClick={() => navigate('/login')}
+          type="submit"
+          className="width-full flex-1 rounded-[0.625rem] bg-primary py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white">
+          로그인
+        </button>
+      </div>
     </div>
   )
 }
