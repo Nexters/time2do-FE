@@ -7,7 +7,6 @@ export const totalCountUpTimerSecondsSelector = selectorFamily({
   get:
     timerId =>
     ({ get }) => {
-      console.log('hi')
       const timeRecords = get(countUpTimerRecordsAtom) ?? []
       const filteredTimeRecords = timeRecords.filter(record => record.timerId === timerId)
       const totalSeconds = filteredTimeRecords.reduce((acc, cur) => {

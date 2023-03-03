@@ -1,19 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStopwatch } from 'react-timer-hook'
-import { useInterval } from 'react-use'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useInterval, useLocalStorage } from 'react-use'
+import { useRecoilValue } from 'recoil'
 
 import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
-import { countUpTimerAtom, countUpTimerRecordsAtom, userAtom } from '../recoil/atoms'
-import { totalCountUpTimerSecondsSelector } from '../recoil/selectors'
-import { TimeRecord } from '../types'
+import { defaultCountUpTimer } from '../consts'
+import { userAtom } from '../recoil/atoms'
+import { Timer, TimeRecord } from '../types'
 import ModalPortal from './ModalPortal'
 
 const SECOUNDS_IN_ONE_MINUTE = 60
 const MINUTES_IN_ONE_HOUR = 60
+
+type LocalStorageState = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'
 
 const getTotalSecondsFromTimeRecords = (timeRecords: TimeRecord[], timerId: number) => {
   const filteredTimeRecords = timeRecords.filter(record => record.timerId === timerId)
@@ -25,15 +27,16 @@ const getTotalSecondsFromTimeRecords = (timeRecords: TimeRecord[], timerId: numb
   return totalSeconds
 }
 
+const getLocalStorageState = (key: LocalStorageState, defaultValue: any) => {
+  return JSON.parse(localStorage.getItem(key) ?? defaultValue)
+}
+
 export const CountUpHeader = () => {
   const navigate = useNavigate()
   const user = useRecoilValue(userAtom)
 
-  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const [timerRecords, setTimerRecords] = useRecoilState(countUpTimerRecordsAtom)
-
-  const totalCountUpTimerSeconds = useRecoilValue(totalCountUpTimerSecondsSelector(timer.id))
-  const { isRunning: isTimerRunning, startTime, endTime } = timer
+  const [timer = defaultCountUpTimer, setTimer] = useLocalStorage<Timer>('countUpTimer', defaultCountUpTimer)
+  const [timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countUpTimerRecords', [])
 
   const [modalVisible, setModalVisible] = useState(false)
   const [timeOffset, setTimeOffset] = useState<{ hours: number; minutes: number; seconds: number }>({
@@ -114,27 +117,22 @@ export const CountUpHeader = () => {
     newMinutes -= MINUTES_IN_ONE_HOUR
   }
 
-  // useEffect(() => {
-  //   console.log(totalCountUpTimerSeconds, hours, minutes, seconds, timeOffset)
-
-  //   let stopWatchAndRecordsSecondsDiff = totalCountUpTimerSeconds - hours * 3600 - minutes * 60 - seconds
-  //   if (stopWatchAndRecordsSecondsDiff < 0) stopWatchAndRecordsSecondsDiff = 0
-  //   if (Math.abs(stopWatchAndRecordsSecondsDiff) < 1.3) return
-  //   const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
-  //   const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
-  //   const offsetSeconds = Math.floor(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
-  //   setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
-  // }, [totalCountUpTimerSeconds])
-
   useInterval(() => {
-    const localStorageCountUpTimer = JSON.parse(localStorage.getItem('countUpTimer') ?? '{}')
-    const localStorageCountUpTimeRecords = JSON.parse(localStorage.getItem('countUpTimerRecords') ?? '[]')
+    const localStorageCountUpTimer = getLocalStorageState('countUpTimer', '{}')
+    const localStorageCountUpTimeRecords = getLocalStorageState('countUpTimerRecords', '[]')
     if (
       Object.keys(localStorageCountUpTimer)?.length &&
       ((localStorageCountUpTimer?.id ?? 0) !== timer?.id || localStorageCountUpTimer?.isRunning !== timer?.isRunning)
     ) {
       setTimer(localStorageCountUpTimer)
     }
+    const totalSeconds = getTotalSecondsFromTimeRecords(localStorageCountUpTimeRecords, localStorageCountUpTimer.id)
+    let stopWatchAndRecordsSecondsDiff = totalSeconds - hours * 3600 - minutes * 60 - seconds
+    if (stopWatchAndRecordsSecondsDiff < 1) stopWatchAndRecordsSecondsDiff = 0
+    const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
+    const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
+    const offsetSeconds = Math.floor(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
+    setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
     if (
       localStorageCountUpTimeRecords?.length &&
       (localStorageCountUpTimeRecords?.length !== timerRecords?.length ||
@@ -151,32 +149,24 @@ export const CountUpHeader = () => {
     )
       start()
     if (!localStorageCountUpTimer.isRunning && isRunning && localStorageCountUpTimer.id) pause()
-    if (!localStorageCountUpTimer.isRunning && isRunning && !timer.id) {
+    if (!localStorageCountUpTimer.isRunning && !localStorageCountUpTimer?.id) {
       reset()
       setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
     }
-    const totalSeconds = getTotalSecondsFromTimeRecords(localStorageCountUpTimeRecords, localStorageCountUpTimer.id)
-    let stopWatchAndRecordsSecondsDiff = totalSeconds - hours * 3600 - minutes * 60 - seconds
-    if (stopWatchAndRecordsSecondsDiff < 0) stopWatchAndRecordsSecondsDiff = 0
-    const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
-    const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
-    const offsetSeconds = Math.round(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
-    setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
   }, 1000)
 
-  console.log(totalCountUpTimerSeconds, timeOffset)
-  console.log(hours, minutes, seconds)
   const startTimer = () => {
     start()
     const newId = new Date().getTime()
-    setTimer(prev => ({ ...prev, id: newId, isRunning: true, startTime: new Date() }))
-    setTimerRecords(prev => [
-      ...prev,
+    setTimer({ ...timer, id: newId, isRunning: true, startTime: new Date() })
+    setTimerRecords([
+      ...timerRecords,
       {
         id: new Date().getTime(),
         userId: timer?.makerId ?? 'LOCAL',
         timerId: newId,
         startTime: new Date(),
+        timerName: timer?.name,
       },
     ])
   }
@@ -184,38 +174,41 @@ export const CountUpHeader = () => {
   const resetTimer = () => {
     const lastRecord = getLastTimeRecord(timerRecords, timer.id)
     if (timer?.id && isRunning) {
-      setTimerRecords(prev => [
-        ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+      setTimerRecords([
+        ...(timerRecords.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
         { ...lastRecord, endTime: new Date() },
       ])
     }
 
-    setTimer(prev => ({ ...prev, id: 0, endTime: undefined, isRunning: false }))
+    setTimer({ ...timer, id: 0, startTime: undefined, endTime: undefined, isRunning: false })
     reset(undefined, false)
     setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
   }
 
   const pauseTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: false }))
+    setTimer({ ...timer, isRunning: false })
     pause()
 
     if (!timer.id) return
-    const lastRecord = getLastTimeRecord(timerRecords, timer.id)
-    setTimerRecords(prev => [
-      ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+    const countUpTimerRecords: TimeRecord[] = getLocalStorageState('countUpTimerRecords', '[]')
+    const lastRecord = getLastTimeRecord(countUpTimerRecords, timer.id)
+    setTimerRecords([
+      ...(countUpTimerRecords.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
       { ...lastRecord, endTime: new Date() },
     ])
   }
 
   const restartTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true }))
-    setTimerRecords(prev => [
-      ...prev,
+    setTimer({ ...timer, isRunning: true })
+    const countUpTimerRecords = getLocalStorageState('countUpTimerRecords', [])
+    setTimerRecords([
+      ...countUpTimerRecords,
       {
         id: new Date().getTime(),
         userId: timer?.makerId ?? 'LOCAL',
         timerId: timer.id,
         startTime: new Date(),
+        timerName: timer?.name,
       },
     ])
     start()
@@ -270,7 +263,7 @@ export const CountUpHeader = () => {
           <TimerTitleChangeModal
             name={timer.name}
             onClose={closeModal}
-            onSubmit={newTitle => setTimer(prev => ({ ...prev, name: newTitle }))}
+            onSubmit={newTitle => setTimer({ ...timer, name: newTitle })}
           />
         </ModalPortal>
       )}
