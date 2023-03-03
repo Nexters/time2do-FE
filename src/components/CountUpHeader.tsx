@@ -132,7 +132,11 @@ export const CountUpHeader = () => {
     const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
     const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
     const offsetSeconds = Math.floor(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
-    setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
+    if (stopWatchAndRecordsSecondsDiff >= 1) {
+      setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
+    } else {
+      setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+    }
     if (
       localStorageCountUpTimeRecords?.length &&
       (localStorageCountUpTimeRecords?.length !== timerRecords?.length ||
