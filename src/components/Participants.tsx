@@ -5,13 +5,15 @@ import { useCopyToClipboard } from 'react-use'
 import { useRecoilValue } from 'recoil'
 import { userAtom } from '../recoil/atoms'
 import { Todo } from '../types'
+import { cls } from '../utils/cls'
 
 interface Props {
   participants: { userName: string; toDos: Todo[] }[]
   onParticipantClick: (name: string) => void
+  selectedParticipant?: string
 }
 
-const Participants = ({ participants = [], onParticipantClick }: Props) => {
+const Participants = ({ participants = [], onParticipantClick, selectedParticipant }: Props) => {
   const user = useRecoilValue(userAtom)
   const { invitationCode } = useParams()
   const [copyState, copyToClipboard] = useCopyToClipboard()
@@ -27,7 +29,7 @@ const Participants = ({ participants = [], onParticipantClick }: Props) => {
   const filteredUsers = (participants ?? []).find(participant => participant.userName === user?.userName)
     ? participants
     : [{ userName: user?.userName, toDo: [] }, ...(participants ?? [])]
-  console.log(filteredUsers)
+
   return (
     <div className="relative">
       <div className="relative w-full max-w-md items-center justify-between overflow-auto p-4">
@@ -36,7 +38,10 @@ const Participants = ({ participants = [], onParticipantClick }: Props) => {
             <div key={participant.userName} className="flex-col items-center justify-center">
               <button
                 style={{ backgroundImage: `url('/img/profile/Profile${Math.floor(Math.random() * 12) + 1}.png')` }}
-                className="h-14 w-14 bg-cover bg-center"
+                className={cls(
+                  'btn-circle h-14 w-14 bg-cover bg-center',
+                  selectedParticipant === participant.userName ? 'ring-4 ring-secondary' : '',
+                )}
                 onClick={() => onParticipantClick(participant.userName ?? '')}
               />
               <div className="mt-1 text-center">{participant.userName}</div>

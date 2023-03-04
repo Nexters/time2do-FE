@@ -114,7 +114,11 @@ export function CountDownDetails() {
         />
       </header>
       <div className="min-h-[400px]  bg-grey-1000">
-        <Participants onParticipantClick={name => setSelectedParticipant(name)} participants={participants} />
+        <Participants
+          onParticipantClick={name => setSelectedParticipant(name)}
+          selectedParticipant={selectedParticipant}
+          participants={participants}
+        />
         <div className="border-2 border-grey-850 opacity-50"></div>
         <div className=" py-7 px-6">
           <TodoList todos={selectedTodos} />
