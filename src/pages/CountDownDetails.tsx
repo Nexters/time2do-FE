@@ -42,7 +42,7 @@ export function CountDownDetails() {
     queryKey: ['getParticipants'],
     queryFn: () => getParticipants({ user, invitationCode }),
     // 90초마다 참여자 refetch
-    refetchInterval: 5000,
+    refetchInterval: 3000,
     refetchIntervalInBackground: false,
   })
   const todos = useRecoilValue(todosAtom)
@@ -51,13 +51,13 @@ export function CountDownDetails() {
     queryKey: ['getCheerUps'],
     queryFn: () => getCheerUps({ user, invitationCode }),
     // 90초마다 참여자 refetch
-    refetchInterval: 5000,
+    refetchInterval: 3000,
     refetchIntervalInBackground: false,
     onSuccess: data => {
       const cheerUps = data ?? []
       const filteredCheerUps = cheerUps.filter((cheerUp: any) => {
         const timeDiff = new Date().getTime() - new Date(cheerUp.createdTime).getTime()
-        if (timeDiff < 4800) return true
+        if (timeDiff < 2900) return true
         return false
       })
 
