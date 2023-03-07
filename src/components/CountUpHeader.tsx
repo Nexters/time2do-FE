@@ -8,6 +8,7 @@ import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
 import { defaultCountUpTimer } from '../consts'
+import { useCountUpTimer } from '../hooks/useCountUpTimer'
 import { userAtom } from '../recoil/atoms'
 import { Timer, TimeRecord } from '../types'
 import ModalPortal from './ModalPortal'
@@ -104,7 +105,7 @@ export const CountUpHeader = () => {
     openReportLoginModal()
   }
 
-  const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
+  const { seconds, minutes, hours, isRunning, start, pause, reset } = useCountUpTimer({
     autoStart: false,
   })
   let newHours = hours + timeOffset.hours
@@ -119,47 +120,47 @@ export const CountUpHeader = () => {
     newMinutes -= MINUTES_IN_ONE_HOUR
   }
 
-  useInterval(() => {
-    const localStorageCountUpTimer = getLocalStorageState('countUpTimer', '{}')
-    const localStorageCountUpTimeRecords = getLocalStorageState('countUpTimerRecords', '[]')
-    if (
-      Object.keys(localStorageCountUpTimer)?.length &&
-      ((localStorageCountUpTimer?.id ?? 0) !== timer?.id || localStorageCountUpTimer?.isRunning !== timer?.isRunning)
-    ) {
-      setTimer(localStorageCountUpTimer)
-    }
-    const totalSeconds = getTotalSecondsFromTimeRecords(localStorageCountUpTimeRecords, localStorageCountUpTimer.id)
-    let stopWatchAndRecordsSecondsDiff = totalSeconds - hours * 3600 - minutes * 60 - seconds
-    if (stopWatchAndRecordsSecondsDiff < 1) stopWatchAndRecordsSecondsDiff = 0
-    const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
-    const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
-    const offsetSeconds = Math.round(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
-    if (stopWatchAndRecordsSecondsDiff >= 1) {
-      setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
-    } else {
-      setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
-    }
-    if (
-      localStorageCountUpTimeRecords?.length &&
-      (localStorageCountUpTimeRecords?.length !== timerRecords?.length ||
-        localStorageCountUpTimeRecords?.at(-1)?.id !== timerRecords?.at(-1)?.id ||
-        localStorageCountUpTimeRecords?.at(-1)?.endTime !== timerRecords?.at(-1)?.endTime)
-    ) {
-      setTimerRecords(localStorageCountUpTimeRecords)
-    }
-    if (
-      localStorageCountUpTimer.isRunning &&
-      localStorageCountUpTimer.startTime &&
-      !localStorageCountUpTimer.endTime &&
-      !isRunning
-    )
-      start()
-    if (!localStorageCountUpTimer.isRunning && isRunning && localStorageCountUpTimer.id) pause()
-    if (!localStorageCountUpTimer.isRunning && !localStorageCountUpTimer?.id) {
-      reset()
-      setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
-    }
-  }, 1000)
+  // useInterval(() => {
+  //   const localStorageCountUpTimer = getLocalStorageState('countUpTimer', '{}')
+  //   const localStorageCountUpTimeRecords = getLocalStorageState('countUpTimerRecords', '[]')
+  //   if (
+  //     Object.keys(localStorageCountUpTimer)?.length &&
+  //     ((localStorageCountUpTimer?.id ?? 0) !== timer?.id || localStorageCountUpTimer?.isRunning !== timer?.isRunning)
+  //   ) {
+  //     setTimer(localStorageCountUpTimer)
+  //   }
+  //   const totalSeconds = getTotalSecondsFromTimeRecords(localStorageCountUpTimeRecords, localStorageCountUpTimer.id)
+  //   let stopWatchAndRecordsSecondsDiff = totalSeconds - hours * 3600 - minutes * 60 - seconds
+  //   if (stopWatchAndRecordsSecondsDiff < 1) stopWatchAndRecordsSecondsDiff = 0
+  //   const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
+  //   const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
+  //   const offsetSeconds = Math.round(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
+  //   if (stopWatchAndRecordsSecondsDiff >= 1) {
+  //     setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
+  //   } else {
+  //     setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+  //   }
+  //   if (
+  //     localStorageCountUpTimeRecords?.length &&
+  //     (localStorageCountUpTimeRecords?.length !== timerRecords?.length ||
+  //       localStorageCountUpTimeRecords?.at(-1)?.id !== timerRecords?.at(-1)?.id ||
+  //       localStorageCountUpTimeRecords?.at(-1)?.endTime !== timerRecords?.at(-1)?.endTime)
+  //   ) {
+  //     setTimerRecords(localStorageCountUpTimeRecords)
+  //   }
+  //   if (
+  //     localStorageCountUpTimer.isRunning &&
+  //     localStorageCountUpTimer.startTime &&
+  //     !localStorageCountUpTimer.endTime &&
+  //     !isRunning
+  //   )
+  //     start()
+  //   if (!localStorageCountUpTimer.isRunning && isRunning && localStorageCountUpTimer.id) pause()
+  //   if (!localStorageCountUpTimer.isRunning && !localStorageCountUpTimer?.id) {
+  //     reset()
+  //     setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+  //   }
+  // }, 1000)
 
   const startTimer = () => {
     start()
@@ -176,7 +177,7 @@ export const CountUpHeader = () => {
       },
     ])
   }
-
+  // console.log('check')
   const resetTimer = () => {
     const lastRecord = getLastTimeRecord(timerRecords, timer.id)
     if (timer?.id && isRunning) {
