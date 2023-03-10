@@ -1,8 +1,6 @@
-import { format } from 'date-fns'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useStopwatch } from 'react-timer-hook'
-import { useInterval, useLocalStorage } from 'react-use'
+import { useLocalStorage } from 'react-use'
 import { useRecoilValue } from 'recoil'
 
 import EditIcon from '../assets/svg/EditIcon'
@@ -14,21 +12,7 @@ import { userAtom } from '../recoil/atoms'
 import { Timer, TimeRecord } from '../types'
 import ModalPortal from './ModalPortal'
 
-const SECOUNDS_IN_ONE_MINUTE = 60
-const MINUTES_IN_ONE_HOUR = 60
-
 type LocalStorageState = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'
-
-const getTotalSecondsFromTimeRecords = (timeRecords: TimeRecord[], timerId: number) => {
-  if (!timerId) return 0
-  const filteredTimeRecords = timeRecords.filter(record => record.timerId === timerId)
-  const totalSeconds = filteredTimeRecords.reduce((acc, cur) => {
-    const startTime = new Date(cur.startTime).getTime()
-    const endTime = cur.endTime ? new Date(cur.endTime).getTime() : new Date().getTime()
-    return acc + (endTime - startTime) / 1000
-  }, 0)
-  return totalSeconds
-}
 
 const getLocalStorageState = (key: LocalStorageState, defaultValue: any) => {
   return JSON.parse(localStorage.getItem(key) ?? defaultValue)
@@ -38,18 +22,13 @@ export const CountUpHeader = () => {
   const navigate = useNavigate()
   const user = useRecoilValue(userAtom)
 
-  const [timer = defaultCountUpTimer, setTimer] = useLocalStorage<Timer>('countUpTimer', defaultCountUpTimer)
-  const [timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countUpTimerRecords', [])
+  const [_timer = defaultCountUpTimer, setTimer] = useLocalStorage<Timer>('countUpTimer', defaultCountUpTimer)
+  const [_timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countUpTimerRecords', [])
 
   const [modalVisible, setModalVisible] = useState(false)
   const [isQuitModalShown, setIsQuitModalShown] = useState(false)
-  const [timeOffset, setTimeOffset] = useState<{ hours: number; minutes: number; seconds: number }>({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  })
 
-  const getLastTimeRecord = (timeRecords: TimeRecord[], id: number) => {
+  const getLastTimeRecord = (timeRecords: TimeRecord[], id: number): TimeRecord | undefined => {
     const sortedTimerRecords = (timeRecords ?? [])
       .filter((timeRecord: TimeRecord) => timeRecord.timerId === id)
       .sort((a, b) => {
@@ -107,126 +86,58 @@ export const CountUpHeader = () => {
   }
 
   const startTimer = () => {
-    start()
     const newId = new Date().getTime()
-    setTimer({ ...timer, id: newId, isRunning: true, startTime: new Date() })
+    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
+    const timerRecords = getLocalStorageState('countUpTimerRecords', [])
+    setTimer({ ...timer, id: timer.id || newId, isRunning: true, startTime: new Date() })
     setTimerRecords([
       ...timerRecords,
       {
         id: new Date().getTime(),
         userId: timer?.makerId ?? 'LOCAL',
-        timerId: newId,
+        timerId: timer.id || newId,
         startTime: new Date(),
         timerName: timer?.name,
       },
     ])
   }
-  // console.log('check')
+
   const resetTimer = () => {
+    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
+    const timerRecords = getLocalStorageState('countUpTimerRecords', [])
     const lastRecord = getLastTimeRecord(timerRecords, timer.id)
     if (timer?.id && isRunning) {
       setTimerRecords([
-        ...(timerRecords.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+        ...(timerRecords.filter((timeRecord: TimeRecord) => timeRecord.id !== lastRecord?.id ?? 0) ?? []),
         { ...lastRecord, endTime: new Date() },
       ])
     }
 
     setTimer({ ...timer, id: 0, startTime: undefined, endTime: undefined, isRunning: false })
-    reset(undefined, false)
-    setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
 
     setIsQuitModalShown(true)
   }
 
   const pauseTimer = () => {
+    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
     setTimer({ ...timer, isRunning: false })
-    pause()
 
     if (!timer.id) return
     const countUpTimerRecords: TimeRecord[] = getLocalStorageState('countUpTimerRecords', '[]')
     const lastRecord = getLastTimeRecord(countUpTimerRecords, timer.id)
+    if (!lastRecord) return
     setTimerRecords([
-      ...(countUpTimerRecords.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+      ...countUpTimerRecords.filter(timeRecord => timeRecord.id !== lastRecord?.id),
       { ...lastRecord, endTime: new Date() },
     ])
   }
 
-  const restartTimer = () => {
-    setTimer({ ...timer, isRunning: true })
-    const countUpTimerRecords = getLocalStorageState('countUpTimerRecords', [])
-    setTimerRecords([
-      ...countUpTimerRecords,
-      {
-        id: new Date().getTime(),
-        userId: timer?.makerId ?? 'LOCAL',
-        timerId: timer.id,
-        startTime: new Date(),
-        timerName: timer?.name,
-      },
-    ])
-    start()
-  }
-
   const { seconds, minutes, hours, isRunning, start, pause, reset } = useCountUpTimer({
     autoStart: false,
-    timerId: timer.id,
     onStart: startTimer,
     onPause: pauseTimer,
     onReset: resetTimer,
   })
-  let newHours = hours + timeOffset.hours
-  let newMinutes = minutes + timeOffset.minutes
-  let newSeconds = seconds + timeOffset.seconds
-  if (newSeconds >= SECOUNDS_IN_ONE_MINUTE) {
-    newMinutes += 1
-    newSeconds -= SECOUNDS_IN_ONE_MINUTE
-  }
-  if (newMinutes >= MINUTES_IN_ONE_HOUR) {
-    newHours += 1
-    newMinutes -= MINUTES_IN_ONE_HOUR
-  }
-
-  // useInterval(() => {
-  //   const localStorageCountUpTimer = getLocalStorageState('countUpTimer', '{}')
-  //   const localStorageCountUpTimeRecords = getLocalStorageState('countUpTimerRecords', '[]')
-  //   if (
-  //     Object.keys(localStorageCountUpTimer)?.length &&
-  //     ((localStorageCountUpTimer?.id ?? 0) !== timer?.id || localStorageCountUpTimer?.isRunning !== timer?.isRunning)
-  //   ) {
-  //     setTimer(localStorageCountUpTimer)
-  //   }
-  //   const totalSeconds = getTotalSecondsFromTimeRecords(localStorageCountUpTimeRecords, localStorageCountUpTimer.id)
-  //   let stopWatchAndRecordsSecondsDiff = totalSeconds - hours * 3600 - minutes * 60 - seconds
-  //   if (stopWatchAndRecordsSecondsDiff < 1) stopWatchAndRecordsSecondsDiff = 0
-  //   const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
-  //   const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
-  //   const offsetSeconds = Math.round(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
-  //   if (stopWatchAndRecordsSecondsDiff >= 1) {
-  //     setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
-  //   } else {
-  //     setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
-  //   }
-  //   if (
-  //     localStorageCountUpTimeRecords?.length &&
-  //     (localStorageCountUpTimeRecords?.length !== timerRecords?.length ||
-  //       localStorageCountUpTimeRecords?.at(-1)?.id !== timerRecords?.at(-1)?.id ||
-  //       localStorageCountUpTimeRecords?.at(-1)?.endTime !== timerRecords?.at(-1)?.endTime)
-  //   ) {
-  //     setTimerRecords(localStorageCountUpTimeRecords)
-  //   }
-  //   if (
-  //     localStorageCountUpTimer.isRunning &&
-  //     localStorageCountUpTimer.startTime &&
-  //     !localStorageCountUpTimer.endTime &&
-  //     !isRunning
-  //   )
-  //     start()
-  //   if (!localStorageCountUpTimer.isRunning && isRunning && localStorageCountUpTimer.id) pause()
-  //   if (!localStorageCountUpTimer.isRunning && !localStorageCountUpTimer?.id) {
-  //     reset()
-  //     setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
-  //   }
-  // }, 1000)
 
   const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
 
@@ -250,24 +161,24 @@ export const CountUpHeader = () => {
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
             <div className="mb-3">
-              <TimerDisplayedNumbers hours={newHours} minutes={newMinutes} seconds={newSeconds} />
+              <TimerDisplayedNumbers hours={hours} minutes={minutes} seconds={seconds} />
             </div>
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
-              {timer.name}
+              {getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
             </h1>
             <button onClick={openModal}>
               <EditIcon />
             </button>
           </div>
           <TimerButtons
-            hasStarted={Boolean(timer.id)}
-            isRunning={isRunning}
-            onStartClick={startTimer}
-            onResetClick={resetTimer}
-            onPauseClick={pauseTimer}
-            onRestartAfterPauseClick={restartTimer}
+            hasStarted={Boolean(getLocalStorageState('countUpTimer', defaultCountUpTimer).id)}
+            isRunning={getLocalStorageState('countUpTimer', defaultCountUpTimer).isRunning}
+            onStartClick={start}
+            onResetClick={reset}
+            onPauseClick={pause}
+            onRestartAfterPauseClick={start}
           />
         </div>
       </div>
@@ -275,9 +186,11 @@ export const CountUpHeader = () => {
       {modalVisible && (
         <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
-            name={timer.name}
+            name={getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
             onClose={closeModal}
-            onSubmit={newTitle => setTimer({ ...timer, name: newTitle })}
+            onSubmit={newTitle =>
+              setTimer({ ...getLocalStorageState('countUpTimer', defaultCountUpTimer), name: newTitle })
+            }
           />
         </ModalPortal>
       )}
