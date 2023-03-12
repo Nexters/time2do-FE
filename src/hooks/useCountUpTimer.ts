@@ -45,39 +45,42 @@ export function useCountUpTimer({ autoStart = false, offsetTimestamp = 0, onPaus
     if (!isRunningFromStorage) {
       if (!isRunning) {
         if (!idFromStorage && passedSeconds > 0) {
-          reset()
+          reset(true)
         }
       } else if (isRunning) {
         if (idFromStorage) {
-          pause()
+          pause(true)
         } else {
-          reset()
+          reset(true)
         }
       }
       setSeconds(passedSecondsFromStorage)
     } else if (isRunningFromStorage) {
       if (!isRunning) {
-        start()
+        // 이 start 나 위의 pause 같은 게 호출될 때 onPaused, onStarted 같은 걸 호출하면
+        // 불필요한 레코드가 추가로 생성될 수 있기 때문에 그걸 막을 수 있는 인자를 추가해야 할듯.
+        start(true)
       }
       setSeconds(passedSecondsFromStorage + getSecondsFromPrevTime(prevTime, true))
     }
   }, 1000)
 
-  function start() {
+  function start(skipCallback = false) {
+    console.log('test', skipCallback)
     const newPrevTime = new Date().getTime()
     setPrevTime(newPrevTime)
     setIsRunning(true)
     setSeconds(passedSeconds)
-    onStart?.()
+    if (!skipCallback) onStart?.()
   }
 
-  function pause() {
+  function pause(skipCallback = false) {
     setPassedSeconds(seconds)
     setIsRunning(false)
-    onPause?.()
+    if (!skipCallback) onPause?.()
   }
 
-  function reset(offset = 0, newAutoStart = false) {
+  function reset(skipCallback = false, offset = 0, newAutoStart = false) {
     // 리셋하면 0 초 혹은 offset 초로 시작
     const newPassedSeconds = getSecondsFromExpiry(offset, true) || 0
     setPassedSeconds(newPassedSeconds)
@@ -85,7 +88,7 @@ export function useCountUpTimer({ autoStart = false, offsetTimestamp = 0, onPaus
     setPrevTime(newPrevTime)
     setIsRunning(newAutoStart)
     setSeconds(newPassedSeconds)
-    onReset?.()
+    if (!skipCallback) onReset?.()
   }
 
   return {

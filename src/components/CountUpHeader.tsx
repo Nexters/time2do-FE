@@ -86,6 +86,7 @@ export const CountUpHeader = () => {
   }
 
   const startTimer = () => {
+    console.log('test2')
     const newId = new Date().getTime()
     const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
     const timerRecords = getLocalStorageState('countUpTimerRecords', [])
@@ -175,10 +176,10 @@ export const CountUpHeader = () => {
           <TimerButtons
             hasStarted={Boolean(getLocalStorageState('countUpTimer', defaultCountUpTimer).id)}
             isRunning={getLocalStorageState('countUpTimer', defaultCountUpTimer).isRunning}
-            onStartClick={start}
-            onResetClick={reset}
-            onPauseClick={pause}
-            onRestartAfterPauseClick={start}
+            onStartClick={() => start()}
+            onResetClick={() => reset()}
+            onPauseClick={() => pause()}
+            onRestartAfterPauseClick={() => start()}
           />
         </div>
       </div>
