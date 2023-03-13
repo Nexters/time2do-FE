@@ -35,7 +35,7 @@ export function useCountUpTimer({ autoStart = false, offsetTimestamp = 0, onPaus
   const [prevTime, setPrevTime] = useState<number>(new Date().getTime())
   const [seconds, setSeconds] = useState(passedSeconds + getSecondsFromPrevTime(prevTime || 0, true))
   const [isRunning, setIsRunning] = useState<boolean>(autoStart)
-  console.log(passedSeconds, prevTime, seconds, isRunning)
+
   useInterval(() => {
     const countUpTimer = getLocalStorageState('countUpTimer', '{}')
     const countUpTimerRecords = getLocalStorageState('countUpTimerRecords', '[]')
@@ -66,7 +66,6 @@ export function useCountUpTimer({ autoStart = false, offsetTimestamp = 0, onPaus
   }, 1000)
 
   function start(skipCallback = false) {
-    console.log('test', skipCallback)
     const newPrevTime = new Date().getTime()
     setPrevTime(newPrevTime)
     setIsRunning(true)

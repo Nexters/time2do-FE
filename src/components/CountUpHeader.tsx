@@ -86,7 +86,6 @@ export const CountUpHeader = () => {
   }
 
   const startTimer = () => {
-    console.log('test2')
     const newId = new Date().getTime()
     const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
     const timerRecords = getLocalStorageState('countUpTimerRecords', [])
