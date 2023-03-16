@@ -5,6 +5,7 @@ import { CountDownDetails, CountDownNew, History, Home, Login, NotFound, Report 
 import Register from './pages/Register'
 import Onboarding from './pages/Onboarding'
 import CountDownHome from './pages/CountDownHome'
+import { DownTimer } from './pages/DownTimer'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route element={<DefaultLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/countdown" element={<CountDownHome />} />
+          <Route path="/down" element={<DownTimer />} />
           <Route path="/countdown/new" element={<CountDownNew />} />
           <Route path="/countdown/:invitationCode" element={<CountDownDetails />} />
           <Route path="/report" element={<Report />} />
