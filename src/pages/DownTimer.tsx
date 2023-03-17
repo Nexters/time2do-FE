@@ -1,11 +1,10 @@
+import { useRecoilValue } from 'recoil'
 import { DownHeader } from '../components/DownHeader'
 import { TodoList } from '../components/TodoList'
-import { getLocalStorageState } from '../utils'
+import { todosAtom } from '../recoil/atoms'
 
-interface Props {}
-
-export function DownTimer({}: Props) {
-  const localTodos = getLocalStorageState('todos', '[]')
+export function DownTimer() {
+  const todos = useRecoilValue(todosAtom)
 
   return (
     <>
@@ -14,7 +13,7 @@ export function DownTimer({}: Props) {
       </header>
       <div className="min-h-[400px]  bg-grey-1000">
         <div className=" py-7 px-6">
-          <TodoList todos={localTodos} />
+          <TodoList todos={todos} />
         </div>
       </div>
     </>

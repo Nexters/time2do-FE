@@ -1,3 +1,4 @@
+import { add } from 'date-fns'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocalStorage } from 'react-use'
@@ -6,24 +7,19 @@ import { useRecoilValue } from 'recoil'
 import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
-import { defaultCountUpTimer } from '../consts'
-import { useCountUpTimer } from '../hooks/useCountUpTimer'
+import { defaultCountDownTimer } from '../consts'
+import { useCountDownTimer } from '../hooks/useCountDownTimer'
 import { userAtom } from '../recoil/atoms'
 import { Timer, TimeRecord } from '../types'
+import { getLocalStorageState } from '../utils'
 import ModalPortal from './ModalPortal'
-
-type LocalStorageState = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'
-
-const getLocalStorageState = (key: LocalStorageState, defaultValue: any) => {
-  return JSON.parse(localStorage.getItem(key) ?? defaultValue)
-}
 
 export const DownHeader = () => {
   const navigate = useNavigate()
   const user = useRecoilValue(userAtom)
 
-  const [_timer = defaultCountUpTimer, setTimer] = useLocalStorage<Timer>('countDownTimer', defaultCountUpTimer)
-  const [_timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countUpTimerRecords', [])
+  const [timer = defaultCountDownTimer, setTimer] = useLocalStorage<Timer>('countDownTimer', defaultCountDownTimer)
+  const [_timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countDownTimerRecords', [])
 
   const [modalVisible, setModalVisible] = useState(false)
   const [isQuitModalShown, setIsQuitModalShown] = useState(false)
@@ -87,9 +83,14 @@ export const DownHeader = () => {
 
   const startTimer = () => {
     const newId = new Date().getTime()
-    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
-    const timerRecords = getLocalStorageState('countUpTimerRecords', [])
-    setTimer({ ...timer, id: timer.id || newId, isRunning: true, startTime: new Date() })
+    const timerRecords = getLocalStorageState('countDownTimerRecords', '[]')
+    setTimer({
+      ...defaultCountDownTimer,
+      id: newId,
+      isRunning: true,
+      startTime: new Date(),
+      endTime: add(new Date(), { seconds: 30 }),
+    })
     setTimerRecords([
       ...timerRecords,
       {
@@ -100,11 +101,12 @@ export const DownHeader = () => {
         timerName: timer?.name,
       },
     ])
+    start()
   }
 
   const resetTimer = () => {
-    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
-    const timerRecords = getLocalStorageState('countUpTimerRecords', [])
+    const timer = getLocalStorageState('countDownTimer', defaultCountDownTimer)
+    const timerRecords = getLocalStorageState('countDownTimerRecords', [])
     const lastRecord = getLastTimeRecord(timerRecords, timer.id)
     if (timer?.id && isRunning) {
       setTimerRecords([
@@ -119,27 +121,54 @@ export const DownHeader = () => {
   }
 
   const pauseTimer = () => {
-    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
+    const timer = getLocalStorageState('countDownTimer', defaultCountDownTimer)
     setTimer({ ...timer, isRunning: false })
 
     if (!timer.id) return
-    const countUpTimerRecords: TimeRecord[] = getLocalStorageState('countUpTimerRecords', '[]')
-    const lastRecord = getLastTimeRecord(countUpTimerRecords, timer.id)
+    const countDownTimerRecords: TimeRecord[] = getLocalStorageState('countDownTimerRecords', '[]')
+    const lastRecord = getLastTimeRecord(countDownTimerRecords, timer.id)
     if (!lastRecord) return
     setTimerRecords([
-      ...countUpTimerRecords.filter(timeRecord => timeRecord.id !== lastRecord?.id),
+      ...countDownTimerRecords.filter(timeRecord => timeRecord.id !== lastRecord?.id),
       { ...lastRecord, endTime: new Date() },
     ])
   }
-
-  const { seconds, minutes, hours, isRunning, start, pause, reset } = useCountUpTimer({
+  console.log(timer?.endTime)
+  const { seconds, minutes, hours, isRunning, start, pause } = useCountDownTimer({
+    expiryTimestamp:
+      typeof timer?.endTime === 'string' ? new Date(timer?.endTime).getTime() ?? 0 : timer?.endTime?.getTime() ?? 0,
     autoStart: false,
-    onStart: startTimer,
-    onPause: pauseTimer,
-    onReset: resetTimer,
+    onExpire: () => console.log('countDownTimer Expired'),
+    // onStart: startTimer,
+    // onPause: pauseTimer,
+    // onReset: resetTimer,
   })
 
   const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
+
+  const startCountDownTimer = () => {
+    const newId = new Date().getTime()
+    const timer = getLocalStorageState('countDownTimer', defaultCountDownTimer)
+    const timerRecords = getLocalStorageState('countUpTimerRecords', '[]')
+    setTimer({
+      ...timer,
+      id: timer.id || newId,
+      isRunning: true,
+      startTime: new Date(),
+      endTime: add(new Date(), { seconds: 60 }),
+    })
+    setTimerRecords([
+      ...timerRecords,
+      {
+        id: new Date().getTime(),
+        userId: timer?.makerId ?? 'LOCAL',
+        timerId: timer.id || newId,
+        startTime: new Date(),
+        timerName: timer?.name,
+      },
+    ])
+    start()
+  }
 
   return (
     <>
@@ -166,17 +195,17 @@ export const DownHeader = () => {
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
-              {getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
+              {getLocalStorageState('countDownTimer', defaultCountDownTimer).name ?? '타이머 이름'}
             </h1>
             <button onClick={openModal}>
               <EditIcon />
             </button>
           </div>
           <TimerButtons
-            hasStarted={Boolean(getLocalStorageState('countUpTimer', defaultCountUpTimer).id)}
-            isRunning={getLocalStorageState('countUpTimer', defaultCountUpTimer).isRunning}
-            onStartClick={() => start()}
-            onResetClick={() => reset()}
+            hasStarted={Boolean(getLocalStorageState('countDownTimer', defaultCountDownTimer).id)}
+            isRunning={getLocalStorageState('countDownTimer', defaultCountDownTimer).isRunning}
+            onStartClick={startCountDownTimer}
+            onResetClick={() => {}}
             onPauseClick={() => pause()}
             onRestartAfterPauseClick={() => start()}
           />
@@ -186,10 +215,10 @@ export const DownHeader = () => {
       {modalVisible && (
         <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
-            name={getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
+            name={getLocalStorageState('countDownTimer', defaultCountDownTimer).name ?? '타이머 이름'}
             onClose={closeModal}
             onSubmit={newTitle =>
-              setTimer({ ...getLocalStorageState('countUpTimer', defaultCountUpTimer), name: newTitle })
+              setTimer({ ...getLocalStorageState('countDownTimer', defaultCountDownTimer), name: newTitle })
             }
           />
         </ModalPortal>

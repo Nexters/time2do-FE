@@ -1,5 +1,11 @@
-type LocalStorageState = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'
+type LocalStorageState =
+  | 'countUpTimer'
+  | 'countUpTimerRecords'
+  | 'countDownTimerRecords'
+  | 'countDownTimer'
+  | 'user'
+  | 'todos'
 
 export const getLocalStorageState = (key: LocalStorageState, defaultValue: any) => {
-  return JSON.parse(localStorage.getItem(key) ?? defaultValue)
+  return typeof defaultValue === 'string' ? JSON.parse(localStorage.getItem(key) ?? defaultValue) : defaultValue
 }

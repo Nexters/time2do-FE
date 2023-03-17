@@ -2,7 +2,7 @@ import { TimerTypes, BooleanNumberTypes } from '../consts'
 
 export type BooleanNumber = (typeof BooleanNumberTypes)[keyof typeof BooleanNumberTypes]
 
-export type DateTime = Date | string // 'yyyy-MM-dd HH:mm:ss'
+export type DateTime = Date // 'yyyy-MM-dd HH:mm:ss'
 
 export type Todo = {
   id: number

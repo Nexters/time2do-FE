@@ -37,8 +37,8 @@ export function useCountUpTimer({ autoStart = false, offsetTimestamp = 0, onPaus
   const [isRunning, setIsRunning] = useState<boolean>(autoStart)
 
   useInterval(() => {
-    const countUpTimer = getLocalStorageState('countUpTimer', '{}')
-    const countUpTimerRecords = getLocalStorageState('countUpTimerRecords', '[]')
+    const countUpTimer = getLocalStorageState('countUpTimer', {})
+    const countUpTimerRecords = getLocalStorageState('countUpTimerRecords', [])
     const passedSecondsFromStorage = getTotalSecondsUpToLastRecordFromTimeRecords(countUpTimerRecords, countUpTimer.id)
     setPassedSeconds(passedSecondsFromStorage)
     const { isRunning: isRunningFromStorage, id: idFromStorage } = countUpTimer

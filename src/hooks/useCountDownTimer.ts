@@ -19,13 +19,13 @@ interface Props {
   autoStart?: boolean
 }
 
-export function useTimer({ expiryTimestamp: expiry, onExpire, autoStart = false }: Props) {
+export function useCountDownTimer({ expiryTimestamp: expiry, onExpire, autoStart = false }: Props) {
   const [expiryTimestamp, setExpiryTimestamp] = useState(expiry)
   const [seconds, setSeconds] = useState(getSecondsFromExpiry(expiryTimestamp, true))
   const [isRunning, setIsRunning] = useState(autoStart)
   const [didStart, setDidStart] = useState(autoStart)
   const [delay, setDelay] = useState(getDelayFromExpiryTimestamp(expiryTimestamp))
-
+  console.log(expiry)
   function handleExpire() {
     onExpire()
     setIsRunning(false)
@@ -47,16 +47,17 @@ export function useTimer({ expiryTimestamp: expiry, onExpire, autoStart = false 
   function resume() {
     const time = new Date()
     time.setMilliseconds(time.getMilliseconds() + seconds * 1000)
-    restart(time.getTime())
+    restart(time.getTime(), true)
   }
 
   function start() {
-    if (didStart) {
-      setSeconds(getSecondsFromExpiry(expiryTimestamp, true))
-      setIsRunning(true)
-    } else {
-      resume()
-    }
+    // if (didStart) {
+    setSeconds(getSecondsFromExpiry(expiryTimestamp, true))
+    setIsRunning(true)
+    // } else {
+    // resume()
+    // }
+    console.log('ㅅㄷㄴㅅ')
   }
 
   useInterval(

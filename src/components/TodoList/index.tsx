@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { todosAtom, userAtom } from '../../recoil/atoms'
-import { BooleanNumberTypes, defaultTodo } from '../../consts'
+import { defaultTodo } from '../../consts'
 import Plus from '../../assets/svg/Plus'
 import { Todo } from '../../types'
 import { cls } from '../../utils/cls'
@@ -45,6 +45,11 @@ export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Prop
     setTodos(prev => prev.map(todo => (todo.id === newTodo.id ? newTodo : todo)))
   }
 
+  const deleteTodo = (deletedTodo: Todo) => {
+    console.log(deletedTodo)
+    setTodos(prev => prev.filter(todo => todo.id !== deletedTodo.id))
+  }
+
   return (
     <div className="relative w-full">
       <div className="mb-4 flex items-center justify-start gap-2">
@@ -68,7 +73,7 @@ export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Prop
             key={todo.id}
             todo={todo}
             readonly={Boolean(readonly)}
-            onRemoveTodo={deletedTodo => setTodos(todos.filter(todo => todo.id !== deletedTodo.id))}
+            onRemoveTodo={deleteTodo}
             onUpdateTodo={updateTodo}
             onAddTodo={() => addTodo('')}
           />
