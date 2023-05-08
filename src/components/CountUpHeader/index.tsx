@@ -1,16 +1,15 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocalStorage } from 'react-use'
 import { useRecoilValue } from 'recoil'
 
 import EditIcon from '../../assets/svg/EditIcon'
 import Report from '../../assets/svg/ReportIcon'
-import Switch from '../../assets/svg/Switch'
 import { defaultCountUpTimer } from '../../consts'
 import { useCountUpTimer } from '../../hooks/useCountUpTimer'
 import { useModal } from '../../hooks/useModal'
 import { userAtom } from '../../recoil/atoms'
 import { Timer, TimeRecord } from '../../types'
+import { HoveringButton } from '../HoveringButton'
 import { LoginModal } from '../modals/LoginModal'
 import { QuitConfirmModal } from '../timer/modals/QuitConfirmModal'
 import { TimerTitleChangeModal } from '../timer/modals/TimerTitleChangeModal'
@@ -125,21 +124,11 @@ export const CountUpHeader = () => {
     onReset: resetTimer,
   })
 
-  const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
-
   return (
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
-          <button
-            onPointerEnter={() => setIsHoveringModeButton(true)}
-            onPointerLeave={() => setIsHoveringModeButton(false)}
-            onClick={modeButtonClickHandler}
-            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
-            <Switch classNames={isHoveringModeButton ? 'mr-2' : ''} />
-            {isHoveringModeButton ? '그룹모드' : ''}
-          </button>
-
+          <HoveringButton onClick={modeButtonClickHandler} buttonText="" buttonTextOnHover="그룹모드" />
           <button onClick={reportButtonClickHandler}>
             <Report />
           </button>
