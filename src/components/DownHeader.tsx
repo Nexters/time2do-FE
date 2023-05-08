@@ -184,7 +184,7 @@ export const DownHeader = () => {
       </div>
 
       {modalVisible && (
-        <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
+        <ModalPortal onClose={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
             name={getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
             onClose={closeModal}
@@ -196,13 +196,13 @@ export const DownHeader = () => {
       )}
 
       {isQuitModalShown && (
-        <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
+        <ModalPortal onClose={() => setModalVisible(false)} isOpened={modalVisible}>
           <QuitConfirmModal onClose={closeModal} />
         </ModalPortal>
       )}
 
       {reportLoginModalVisible && (
-        <ModalPortal closePortal={closeReportLoginModal} isOpened={reportLoginModalVisible}>
+        <ModalPortal onClose={closeReportLoginModal} isOpened={reportLoginModalVisible}>
           <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
             <div className="flex flex-col">
               <p className="mb-4 text-[1.375rem] font-bold leading-[140%] text-grey-200">로그인이 필요해요</p>
@@ -373,21 +373,5 @@ export const QuitConfirmModal = ({ onClose }: { onClose: () => void }) => {
         </button>
       </div>
     </div>
-  )
-}
-
-interface TimerDisplayedNumbersProps {
-  hours: number
-  minutes: number
-  seconds: number
-}
-
-const TimerDisplayedNumbers = ({ hours, minutes, seconds }: TimerDisplayedNumbersProps) => {
-  return (
-    <span className="countdown font-montserrat text-[4rem] font-bold">
-      {/* @ts-ignore */}
-      <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:{/* @ts-ignore */}
-      <span style={{ '--value': seconds }}></span>
-    </span>
   )
 }

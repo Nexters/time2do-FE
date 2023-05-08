@@ -68,7 +68,7 @@ export function CountDownNew() {
             </form>
           </FormProvider>
           {modalVisible && (
-            <ModalPortal closePortal={modalClose} isOpened={modalVisible}>
+            <ModalPortal onClose={modalClose} isOpened={modalVisible}>
               {isError ? (
                 <TimerMakeModal.ErrorModal closePortal={modalClose} />
               ) : (

@@ -255,7 +255,7 @@ export function Report() {
       </div>
 
       {modalVisible && (
-        <ModalPortal closePortal={closeModal} isOpened={modalVisible}>
+        <ModalPortal onClose={closeModal} isOpened={modalVisible}>
           <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[0.875rem] pb-[1.125rem] pt-[2.9375rem]">
             <div className="absolute right-[0.875rem] top-[0.875rem]">
               <button>
