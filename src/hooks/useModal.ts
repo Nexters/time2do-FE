@@ -13,6 +13,7 @@ export const useModal = <ModalName>() => {
 
   const closeModal = useCallback(() => {
     setIsOpen(false)
+    setModalName(undefined)
   }, [])
 
   return {
