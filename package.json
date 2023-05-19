@@ -29,7 +29,7 @@
     "react-use": "^17.4.0",
     "recoil": "^0.7.6",
     "sortablejs": "^1.15.0",
-    "uuidv4": "^6.2.13"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
@@ -39,6 +39,7 @@
     "@types/react-dom": "^18.0.9",
     "@types/react-lottie": "^1.2.6",
     "@types/sortablejs": "^1.15.0",
+    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "@vitejs/plugin-react": "^3.0.0",

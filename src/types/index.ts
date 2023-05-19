@@ -39,6 +39,27 @@ export type Timer = {
   timeRecords?: TimeRecord[]
 }
 
+export type Timestamp = number
+export type UpTimer = {
+  name: string
+  // 맨처음 타이머를 시작했을 때의 시간
+  startedAt: Timestamp
+  // 마지막 reset 때 시간
+  endedAt?: Timestamp
+  // 유저 상호작용 pause 때마다 업데이트
+  lastlyPausedAt?: Timestamp
+  // 유저 상호작용 start 때마다 업데이트
+  lastlyStartedAt: Timestamp
+  // 유저 상호작용 pause 때마다 업데이트
+  lastlyRecordedTotalSeconds: number
+  isRunning: boolean
+  makerId?: string
+  makerName?: string
+  // 서버에서 받아오는 값
+  id: string
+  linkUrl?: string
+}
+
 // 서버에서 계산해서 내려준 값을 포함한 타이머 타입
 export type GroupTimer = Omit<Timer, 'startTime' | 'endTime'> & {
   participantsCount: number
@@ -59,3 +80,5 @@ export type RegisterUser = {
   userName: string
   password: string
 }
+
+export type LocalStorageKey = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'

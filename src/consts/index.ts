@@ -1,4 +1,4 @@
-import { Timer, Todo } from '../types'
+import { Timer, Todo, UpTimer } from '../types'
 
 export const defaultTodo: Todo = {
   content: '',
@@ -21,6 +21,15 @@ export const defaultCountUpTimer: Timer = {
   isRunning: false,
   id: 0,
   makerId: 0,
+}
+
+export const defaultUpTimer: UpTimer = {
+  name: '오늘 무조건 다 끝내본다!!',
+  // 클라이언트에서만 사용하거나 서버에 동기화할 때 비뀔 수 있는 필드들
+  isRunning: false,
+  id: 0,
+  makerId: 0,
+  startedAt: '',
 }
 
 export const BooleanNumberTypes = {
