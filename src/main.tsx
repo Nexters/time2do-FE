@@ -32,10 +32,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
 
-      <WrapperRouter>
+      {/* <WrapperRouter> */}
+      <MemoryRouter>
         <ToastContainer position="top-center" autoClose={2000} pauseOnFocusLoss={false} limit={3} />
         <App />
-      </WrapperRouter>
+      </MemoryRouter>
+      {/* </WrapperRouter> */}
     </QueryClientProvider>
   </React.StrictMode>,
 )
