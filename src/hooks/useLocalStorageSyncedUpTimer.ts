@@ -36,14 +36,19 @@ export function useLocalStorageSyncedCountUpTimer({
   useInterval(() => {
     const countUpTimer = getUpTimer()
     // 아예 존재안하면 뭘 하기도 이상하니 로컬에서도 초기화하고 끝낸다.
+    // 다만 에러상황이라면 경고를 띄우거나 하는 게 좋을 것 같다. onError?
     if (!countUpTimer) {
       reset()
       return
     }
     const { lastlyStartedAt, lastlyRecordedTotalSeconds, isRunning: isRunningInStorage } = countUpTimer
     setIsRunning(isRunningInStorage)
-    if (!isRunningInStorage) return
+    if (!isRunningInStorage) {
+      setPassedSeconds(lastlyRecordedTotalSeconds)
+      return
+    }
     const currentTotalSeconds = getCurrentTotalPassedSeconds(lastlyStartedAt, lastlyRecordedTotalSeconds)
+    console.log(currentTotalSeconds - passedSeconds)
     setPassedSeconds(currentTotalSeconds)
     setTimer(countUpTimer)
   }, 1000)
@@ -102,9 +107,6 @@ export function useLocalStorageSyncedCountUpTimer({
   }
 
   function reset(skipCallback = false) {
-    const countUpTimer = getUpTimer()
-    if (!countUpTimer) return
-
     setUpTimer(null)
     setPassedSeconds(0)
     setIsRunning(false)
