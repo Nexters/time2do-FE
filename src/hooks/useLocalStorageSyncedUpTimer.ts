@@ -107,9 +107,6 @@ export function useLocalStorageSyncedCountUpTimer({
   }
 
   function reset(skipCallback = false) {
-    const countUpTimer = getUpTimer()
-    if (!countUpTimer) return
-
     setUpTimer(null)
     setPassedSeconds(0)
     setIsRunning(false)
