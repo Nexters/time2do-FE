@@ -42,7 +42,12 @@ export function useLocalStorageSyncedCountUpTimer({
     }
     const { lastlyStartedAt, lastlyRecordedTotalSeconds, isRunning: isRunningInStorage } = countUpTimer
     setIsRunning(isRunningInStorage)
-    if (!isRunningInStorage) return
+    if (!isRunningInStorage) {
+      console.log(passedSeconds, lastlyRecordedTotalSeconds, lastlyStartedAt)
+      setPassedSeconds(lastlyRecordedTotalSeconds)
+      setTimer(countUpTimer)
+      return
+    }
     const currentTotalSeconds = getCurrentTotalPassedSeconds(lastlyStartedAt, lastlyRecordedTotalSeconds)
     setPassedSeconds(currentTotalSeconds)
     setTimer(countUpTimer)
