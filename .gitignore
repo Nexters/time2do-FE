@@ -28,3 +28,6 @@ dist-ssr
 !.yarn/releases
 !.yarn/plugins
 .pnp.*
+
+*.sh
+*.zip
