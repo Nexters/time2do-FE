@@ -18,7 +18,7 @@ interface Props {
   onStart?: (timer?: UpTimer) => void
   onRestart?: (timer?: UpTimer) => void
   onPause?: (timer?: UpTimer) => void
-  onReset?: (timer?: UpTimer) => void
+  onReset?: (timer: UpTimer) => void
 }
 
 export function useLocalStorageSyncedCountUpTimer({
@@ -47,13 +47,11 @@ export function useLocalStorageSyncedCountUpTimer({
     const { lastlyStartedAt, lastlyRecordedTotalSeconds, isRunning: isRunningInStorage } = countUpTimer
     setIsRunning(isRunningInStorage)
     if (!isRunningInStorage) {
-      console.log(passedSeconds, lastlyRecordedTotalSeconds, lastlyStartedAt)
       setPassedSeconds(lastlyRecordedTotalSeconds)
       setTimer(countUpTimer)
       return
     }
     const currentTotalSeconds = getCurrentTotalPassedSeconds(lastlyStartedAt, lastlyRecordedTotalSeconds)
-    console.log(currentTotalSeconds - passedSeconds)
     setPassedSeconds(currentTotalSeconds)
     setTimer(countUpTimer)
   }, 1000)
@@ -112,12 +110,33 @@ export function useLocalStorageSyncedCountUpTimer({
     if (!skipCallback) onPause?.(updatedTimer)
   }
 
-  function reset(skipCallback = false) {
+  function resetTimer(skipCallback = false, lastlyUpdatedTimer: UpTimer | null = null) {
     setUpTimer(null)
     setPassedSeconds(0)
     setIsRunning(false)
-    setTimer(null)
-    if (!skipCallback) onReset?.(undefined)
+    if (!skipCallback && lastlyUpdatedTimer) {
+      onReset?.(lastlyUpdatedTimer)
+      setTimer(null)
+    } else {
+      setTimer(null)
+    }
+  }
+
+  function reset(skipCallback = false) {
+    const countUpTimer = getUpTimer()
+    if (!countUpTimer) {
+      resetTimer()
+      return
+    }
+    const { lastlyStartedAt, lastlyRecordedTotalSeconds } = countUpTimer
+    const currentTotalSeconds = getCurrentTotalPassedSeconds(lastlyStartedAt, lastlyRecordedTotalSeconds)
+    const updatedTimer = {
+      ...countUpTimer,
+      isRunning: false,
+      lastlyRecordedTotalSeconds: currentTotalSeconds,
+      endedAt: new Date().getTime(),
+    }
+    resetTimer(skipCallback, updatedTimer)
   }
 
   return {

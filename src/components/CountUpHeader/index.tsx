@@ -13,6 +13,7 @@ import { TimerDisplayedNumbers } from '../timer/TimerDisplayedNumbers'
 import ModalPortal from './../ModalPortal'
 import { useLocalStorageSyncedCountUpTimer } from '../../hooks/useLocalStorageSyncedUpTimer'
 import { useEffect, useState } from 'react'
+import { UpTimer } from '../../types'
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
@@ -37,9 +38,14 @@ export const CountUpHeader = () => {
     openModal('Login')
   }
 
+  function handleUpTimerReset(timer: UpTimer) {
+    console.log(timer, '&&&')
+  }
+
   const { timer, seconds, minutes, hours, isRunning, start, pause, reset, restart } = useLocalStorageSyncedCountUpTimer(
     {
       timerName,
+      onReset: handleUpTimerReset,
     },
   )
 
