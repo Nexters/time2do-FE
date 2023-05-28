@@ -15,14 +15,13 @@ export const useUpTimerReport = () => {
         const formattedDate = format(new Date(cur.startedAt), 'yyyy-MM-dd')
         const { timers, aggregation } = acc.timersAndAggregationAtDates[formattedDate] ?? {
           timers: [],
-          aggregation: { totalSeconds: 0, toDos: [] },
+          aggregation: { totalSeconds: 0 },
         }
         const updatedTimersAtTargetDate = [...timers, cur]
         const updatedAggregationAtTargetDate = {
           ...aggregation,
           totalSeconds: aggregation.totalSeconds + cur.lastlyRecordedTotalSeconds,
           ...getTimeFromSeconds(aggregation.totalSeconds + cur.lastlyRecordedTotalSeconds),
-          toDos: aggregation.toDos.concat(cur.toDos ?? []),
         }
         const updatedTimersAtDate = {
           ...acc.timersAndAggregationAtDates,

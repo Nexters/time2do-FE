@@ -5,11 +5,11 @@ import type { Todo } from './TodoItem'
 import type { UpTimer } from './UpTimer'
 // import { populate } from './populate'
 
-export class UpTimerDB extends Dexie {
+export class Time2DoDB extends Dexie {
   upTimers!: Table<UpTimer, number>
   todoItems!: Table<Todo, number>
   constructor() {
-    super('UpTimerDB')
+    super('Time2DoDB')
     this.version(1).stores({
       upTimers: 'id, startedAt, endedAt',
       todoItems: '++id, completedTime, upTimerId',
@@ -24,7 +24,7 @@ export class UpTimerDB extends Dexie {
   }
 }
 
-export const db = new UpTimerDB()
+export const db = new Time2DoDB()
 
 // db.on('populate', populate)
 

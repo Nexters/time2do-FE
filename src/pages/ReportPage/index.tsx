@@ -2,12 +2,14 @@ import { format } from 'date-fns'
 import { useState } from 'react'
 import Header from '@/components/Header'
 import ReportCalendar from '@/components/ReportCalendar'
-import { GroupTimer, TimersAndAggregation } from '@/types'
+import { TimersAndAggregation } from '@/types'
 import { NicknameEdit } from './NicknameEdit'
 import { useUpTimerReport } from '@/hooks/useUpTimerReport'
 import { getFormattedStringFromSeconds } from '@/utils'
 import { TodoList } from '@/components/TodoList'
 import bombCharacterImageUrl from '@/assets/images/bombCharacterSingle.png'
+import { useTodoList } from '@/hooks/useTodoList'
+import { endOfDay, startOfDay } from 'date-fns'
 
 const today = new Date(new Date().toDateString())
 
@@ -15,47 +17,25 @@ export function ReportPage() {
   const { totalDurationFormattedString, timersAndAggregationAtDates } = useUpTimerReport()
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(today)
+  console.log(selectedDate, startOfDay(selectedDate), ' **', endOfDay(selectedDate), '$$')
+  const { todoList } = useTodoList(
+    selectedDate
+      ? { where: { startTimestamp: selectedDate.getTime(), endTimestamp: endOfDay(selectedDate).getTime() } }
+      : undefined,
+  )
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''
   const {
     aggregation = {
       totalSeconds: 0,
-      toDos: [],
       hours: 0,
       minutes: 0,
       seconds: 0,
     },
   }: TimersAndAggregation = timersAndAggregationAtDates[selectedDateString] ?? ({} as TimersAndAggregation)
 
-  // const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
-  // const todos =
-  //   reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
-  //     ? reportData.timeBlocks[selectedDateString].toDos.map(toDo => ({
-  //         id: toDo.id,
-  //         userId: toDo.userId,
-  //         content: toDo.content,
-  //         completed: true,
-  //         createdTime: new Date(toDo.createdTime),
-  //         completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
-  //       }))
-  //     : []
-  // const groupTimers =
-  //   reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
-  //     ? reportData.timeBlocks[selectedDateString].groupTimers
-  //     : []
-  console.log(selectedDate, selectedDateString)
-
   const dateClickHandler = (date: Date) => {
     setSelectedDate(date)
-  }
-
-  const getDuration = (groupTimer: GroupTimer) => {
-    if (!groupTimer.endTime || !groupTimer.startTime) return ''
-    const diff = new Date(new Date(groupTimer.endTime).getTime() - new Date(groupTimer.startTime).getTime())
-    const hours = diff.getUTCHours()
-    const minutes = diff.getUTCMinutes()
-    if (!hours) return `${minutes}분`
-    return `${hours}시간 ${minutes}분`
   }
 
   return (
@@ -86,10 +66,10 @@ export function ReportPage() {
           </div>
         )}
 
-        {aggregation.toDos && (
+        {todoList && (
           <div className="my-5 px-6">
-            <TodoList name="완료한 할 일 목록" todos={aggregation.toDos} readonly />
-            {aggregation.toDos.length === 0 && (
+            <TodoList name="완료한 할 일 목록" todos={todoList} readonly />
+            {todoList.length === 0 && (
               <div className="px-6 py-7 text-center">
                 <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
                 <p className="mt-[1.25rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>

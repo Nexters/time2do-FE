@@ -1,12 +1,13 @@
 import { useRecoilValue } from 'recoil'
 import { CountUpHeader } from '../components/CountUpHeader'
 import { TodoList } from '../components/TodoList'
-import { todosAtom, userAtom } from '../recoil/atoms'
+import { userAtom } from '../recoil/atoms'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTodoList } from '@/hooks/useTodoList'
 
 export function Home() {
-  const todos = useRecoilValue(todosAtom)
+  const { todoList } = useTodoList()
   const user = useRecoilValue(userAtom)
   const navigate = useNavigate()
 
@@ -22,7 +23,7 @@ export function Home() {
         <CountUpHeader />
       </header>
       <div className="min-h-[400px] bg-grey-1000 px-6 py-7">
-        <TodoList todos={todos} />
+        <TodoList todos={todoList} />
       </div>
     </>
   )

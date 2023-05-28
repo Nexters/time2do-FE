@@ -12,7 +12,7 @@ export type Todo = {
   content: string
   completed: boolean
   createdTime: Timestamp
-  completedTime?: Timestamp
+  completedTime: Timestamp
   timerId?: string
 }
 
@@ -62,7 +62,6 @@ export type UpTimer = {
   linkUrl?: string
   // 이전 배포 버전과의 구분을 위한 값
   version?: string
-  toDos?: Todo[]
 }
 
 // 서버에서 계산해서 내려준 값을 포함한 타이머 타입
@@ -92,7 +91,6 @@ export interface TimersAggregation {
   hours: number
   minutes: number
   seconds: number
-  toDos: Todo[]
   groupTimers?: GroupTimer[]
   hasGroupTimer?: boolean
 }
