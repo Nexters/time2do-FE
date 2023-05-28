@@ -10,7 +10,7 @@ const Header = ({ name }: Props) => {
   return (
     <header className="flex h-20 w-full items-center bg-grey-1000 text-center">
       <div className="w-full flex-1 text-center text-[1.1875rem] font-medium text-white">{name}</div>
-      <button className="absolute ml-[0.625rem]" onClick={() => navigate(-1)}>
+      <button className="absolute ml-[0.625rem]" onClick={() => navigate('/')}>
         <img src={BackIcon} alt="뒤로가기 버튼" />
       </button>
     </header>

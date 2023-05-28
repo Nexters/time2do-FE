@@ -24,3 +24,16 @@ export function getTimeFromSeconds(secondsRemained: number) {
     days,
   }
 }
+
+export function getFormattedStringFromSeconds(seconds: number, inKorean?: boolean) {
+  const { hours, minutes, seconds: secondsRemained } = getTimeFromSeconds(seconds)
+  const hoursString = String(hours).padStart(2, '0')
+  const minutesString = String(minutes).padStart(2, '0')
+  const secondsString = String(secondsRemained).padStart(2, '0')
+
+  if (inKorean) {
+    return `${hoursString}시간 ${minutesString}분 ${secondsString}초`
+  }
+
+  return `${hoursString}:${minutesString}:${secondsString}`
+}

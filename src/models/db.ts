@@ -12,7 +12,7 @@ export class UpTimerDB extends Dexie {
     super('UpTimerDB')
     this.version(1).stores({
       upTimers: 'id, startedAt, endedAt',
-      todoItems: '++id, upTimerId',
+      todoItems: '++id, completedTime, upTimerId',
     })
   }
 
