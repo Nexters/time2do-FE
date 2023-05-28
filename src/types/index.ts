@@ -40,6 +40,7 @@ export type Timer = {
 }
 
 export type Timestamp = number
+
 export type UpTimer = {
   name: string
   // 맨처음 타이머를 시작했을 때의 시간
@@ -58,6 +59,8 @@ export type UpTimer = {
   // 서버에서 받아오는 값
   id: string
   linkUrl?: string
+  // 이전 배포 버전과의 구분을 위한 값
+  version?: string
 }
 
 // 서버에서 계산해서 내려준 값을 포함한 타이머 타입

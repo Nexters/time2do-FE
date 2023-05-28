@@ -47,7 +47,7 @@ export const CountUpHeader = () => {
     if (timer?.name && timer.name !== timerName) setTimerName(timer.name)
     else if (!timer?.name) setTimerName('타이머 이름')
   }, [timer?.name])
-  console.log(timer)
+
   return (
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">

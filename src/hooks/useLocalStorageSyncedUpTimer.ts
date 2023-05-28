@@ -8,6 +8,9 @@ import { v4 as uuidv4 } from 'uuid'
  * 로컬에서 timer state 를 관리하기 보다 앱의 모든 곳에서 useLocalStorage 로 직접 접근하는 걸 강제한다.
  */
 
+// 이전 배포 버전과 localStorage 에 저장되는 timer 의 버전이 다르면 리셋하도록 한다.
+const VERSION = '1.0.0'
+
 interface Props {
   timerName: string
   makerId?: string
@@ -37,7 +40,7 @@ export function useLocalStorageSyncedCountUpTimer({
     const countUpTimer = getUpTimer()
     // 아예 존재안하면 뭘 하기도 이상하니 로컬에서도 초기화하고 끝낸다.
     // 다만 에러상황이라면 경고를 띄우거나 하는 게 좋을 것 같다. onError?
-    if (!countUpTimer) {
+    if (!countUpTimer || !countUpTimer?.version || countUpTimer.version !== VERSION) {
       reset()
       return
     }
@@ -67,6 +70,7 @@ export function useLocalStorageSyncedCountUpTimer({
       startedAt: timestampNow,
       lastlyStartedAt: timestampNow,
       lastlyRecordedTotalSeconds: 0,
+      version: VERSION,
       ...(makerId && { makerId }),
       ...(makerName && { makerName }),
     }
