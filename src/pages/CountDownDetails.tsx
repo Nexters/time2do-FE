@@ -9,7 +9,7 @@ import { CountDownHeader } from '../components/CountDownHeader'
 import Participants from '../components/Participants'
 import { TodoList } from '../components/TodoList'
 import { todosAtom, userAtom } from '../recoil/atoms'
-import { User } from '../types'
+import { Todo, User } from '../types'
 import { getLocalStorageState } from '../utils'
 
 export function CountDownDetails() {
@@ -29,7 +29,7 @@ export function CountDownDetails() {
   const localTodos = getLocalStorageState('todos', '[]')
 
   const syncTodosMutation = useMutation({
-    mutationFn: () => syncTodos({ userId: user?.id, todos: localTodos }),
+    mutationFn: () => syncTodos({ userId: user?.id, todos: localTodos as Todo[] }),
   })
 
   useEffect(() => {

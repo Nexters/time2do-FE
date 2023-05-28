@@ -1,3 +1,5 @@
+import { getTimeFromSeconds } from '../../utils'
+
 const DEFAULT_INITIALLY_SET_SECONDS = 300
 const DEFAULT_DELAY_IN_MILLISECONDS = 1000
 

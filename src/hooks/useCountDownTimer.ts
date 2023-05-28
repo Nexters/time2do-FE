@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useInterval } from 'react-use'
-import { getSecondsFromExpiry, getTimeFromSeconds } from './utils'
+import { getTimeFromSeconds } from '../utils'
+import { getSecondsFromExpiry } from './utils'
 
 const DEFAULT_DELAY = 1000
 function getDelayFromExpiryTimestamp(expiryTimestamp: number) {

@@ -15,7 +15,7 @@ import ModalPortal from '../components/ModalPortal'
 import ReportCalendar from '../components/ReportCalendar'
 import { TodoList } from '../components/TodoList'
 import { userAtom } from '../recoil/atoms'
-import { GroupTimer } from '../types'
+import { GroupTimer, TimeRecord, Todo } from '../types'
 import { getLocalStorageState } from '../utils'
 
 // 47h0m0s -> 47:00:00
@@ -62,8 +62,8 @@ export function Report() {
       alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
     },
   })
-  const localTodos = getLocalStorageState('todos', '[]')
-  const localTimeRecords = getLocalStorageState('countUpTimerRecords', '[]')
+  const localTodos = getLocalStorageState<Todo[]>('todos', '[]')
+  const localTimeRecords = getLocalStorageState<TimeRecord[]>('countUpTimerRecords', '[]')
   const syncTodosMutation = useMutation({
     mutationFn: () => syncTodos({ userId, todos: localTodos }),
     onSuccess: () => {
