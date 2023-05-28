@@ -128,8 +128,10 @@ export function useLocalStorageSyncedCountUpTimer({
       resetTimer()
       return
     }
-    const { lastlyStartedAt, lastlyRecordedTotalSeconds } = countUpTimer
-    const currentTotalSeconds = getCurrentTotalPassedSeconds(lastlyStartedAt, lastlyRecordedTotalSeconds)
+    const { lastlyStartedAt, lastlyRecordedTotalSeconds, isRunning: isRunningInStorage } = countUpTimer
+    const currentTotalSeconds = !isRunningInStorage
+      ? lastlyRecordedTotalSeconds
+      : getCurrentTotalPassedSeconds(lastlyStartedAt, lastlyRecordedTotalSeconds)
     const updatedTimer = {
       ...countUpTimer,
       isRunning: false,

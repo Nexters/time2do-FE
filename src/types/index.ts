@@ -6,11 +6,12 @@ export type DateTime = Date | string // 'yyyy-MM-dd HH:mm:ss'
 
 export type Todo = {
   id: number
-  userId: number
+  userId?: number
   content: string
   completed: boolean
   createdTime: DateTime
   completedTime?: DateTime
+  timerId?: string
 }
 
 export type TimeRecord = {

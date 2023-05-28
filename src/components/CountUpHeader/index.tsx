@@ -65,12 +65,12 @@ export const CountUpHeader = () => {
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute left-0 top-0 flex w-full items-center justify-between px-5 py-6">
-          <HoveringButton
+          {/* <HoveringButton
             PrependedIcon={Switch}
             onClick={modeButtonClickHandler}
             buttonText=""
             buttonTextOnHover="그룹모드"
-          />
+          /> */}
           <HoveringButton
             PrependedIcon={Report}
             PrependedIconOnHover={ReportIcoWhite}

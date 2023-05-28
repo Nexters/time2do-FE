@@ -32,7 +32,9 @@ export const HoveringButton = ({
       {isHoveringButton && PrependedIconOnHover && <PrependedIconOnHover />}
       {(!isHoveringButton || (isHoveringButton && !PrependedIconOnHover)) && <PrependedIcon />}
 
-      <span className={isHoveringButton ? 'ml-2' : ''}>{isHoveringButton ? buttonTextOnHover : buttonText}</span>
+      <span className={isHoveringButton || buttonText ? 'ml-2' : ''}>
+        {isHoveringButton ? buttonTextOnHover : buttonText}
+      </span>
     </button>
   )
 }
