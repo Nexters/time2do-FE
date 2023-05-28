@@ -1,10 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useRecoilValue } from 'recoil'
 import EditIcon from '../../assets/svg/EditIcon'
-import Report from '../../assets/svg/ReportIcon'
 import { useModal } from '../../hooks/useModal'
 import { userAtom } from '../../recoil/atoms'
-import { HoveringButton } from '../HoveringButton'
 import { LoginModal } from '../modals/LoginModal'
 import { QuitConfirmModal } from '../timer/modals/QuitConfirmModal'
 import { TimerTitleChangeModal } from '../timer/modals/TimerTitleChangeModal'
@@ -16,8 +14,7 @@ import { useEffect, useState } from 'react'
 import { UpTimer } from '../../types'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../../models/db'
-import Switch from '../../assets/svg/Switch'
-import ReportIcoWhite from '../../assets/svg/ReportIconWhite'
+import { ReportIconGrey } from '../../assets/svg/ReportGrey'
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
@@ -37,11 +34,13 @@ export const CountUpHeader = () => {
   }
 
   const reportButtonClickHandler = () => {
-    if (user) {
-      navigate('/report')
-      return
-    }
-    openModal('Login')
+    navigate('/report')
+
+    // if (user) {
+    //   navigate('/report')
+    //   return
+    // }
+    // openModal('Login')
   }
 
   function handleUpTimerReset(timer: UpTimer) {
@@ -71,14 +70,20 @@ export const CountUpHeader = () => {
             buttonText=""
             buttonTextOnHover="그룹모드"
           /> */}
-          <HoveringButton
+          {/* <HoveringButton
             PrependedIcon={Report}
-            PrependedIconOnHover={ReportIcoWhite}
+            PrependedIconOnHover={ReportIconWhite}
             onClick={reportButtonClickHandler}
             buttonText=""
             buttonTextOnHover="리포트"
             backgroundColor="bg-transparent"
-          />
+          /> */}
+          <button
+            onClick={reportButtonClickHandler}
+            className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold hover:animate-pulse">
+            <ReportIconGrey />
+            <span className="ml-2">리포트</span>
+          </button>
         </div>
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
