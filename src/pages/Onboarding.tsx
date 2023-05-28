@@ -1,4 +1,3 @@
-import { putUser } from '../api/user'
 import OnboardingAnimation from '../components/OnboardingLotties'
 import { useNavigate } from 'react-router-dom'
 import React, { useRef, useState } from 'react'
@@ -18,12 +17,13 @@ const Onboarding = () => {
     // eslint-disable-next-line react/jsx-key
     <OnboardingAnimation.Second />,
     // eslint-disable-next-line react/jsx-key
-    <OnboardingAnimation.Third />,
+    // <OnboardingAnimation.Third />,
     // eslint-disable-next-line react/jsx-key
     <OnboardingAnimation.Forth />,
   ]
+
   const changeLocalOnboardingValue = () => {
-    if (user?.id) {
+    if (user) {
       setUser({ ...user, onboarding: true })
     }
   }
@@ -53,26 +53,13 @@ const Onboarding = () => {
       })
     } else {
       changeLocalOnboardingValue()
-      await putUser({
-        userId: user?.id ?? 0,
-        data: {
-          onboarding: true,
-        },
-      })
       navigate('/')
     }
   }
 
   const handleSkipClickEvent = async () => {
-    const response = await putUser({
-      userId: user?.id ?? 0,
-      data: {
-        onboarding: true,
-      },
-    })
-    await changeLocalOnboardingValue()
+    changeLocalOnboardingValue()
     navigate('/')
-    return response
   }
 
   return (
@@ -101,9 +88,9 @@ const Onboarding = () => {
           <div className="carousel-item w-full">
             <OnboardingAnimation.Second />
           </div>
-          <div className="carousel-item w-full">
+          {/* <div className="carousel-item w-full">
             <OnboardingAnimation.Third />
-          </div>
+          </div> */}
           <div className="carousel-item w-full">
             <OnboardingAnimation.Forth />
           </div>

@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
 import EditIcon from '../../assets/svg/EditIcon'
 import { useModal } from '../../hooks/useModal'
-import { userAtom } from '../../recoil/atoms'
 import { LoginModal } from '../modals/LoginModal'
 import { QuitConfirmModal } from '../timer/modals/QuitConfirmModal'
 import { TimerTitleChangeModal } from '../timer/modals/TimerTitleChangeModal'
@@ -12,26 +10,21 @@ import ModalPortal from './../ModalPortal'
 import { useLocalStorageSyncedCountUpTimer } from '../../hooks/useLocalStorageSyncedUpTimer'
 import { useEffect, useState } from 'react'
 import { UpTimer } from '../../types'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../../models/db'
 import { ReportIconGrey } from '../../assets/svg/ReportGrey'
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
-  const user = useRecoilValue(userAtom)
   const [timerName, setTimerName] = useState<string>('타이머 이름')
-  const lists = useLiveQuery(() => db.upTimers.toArray())
-  console.log(lists, '$$')
-
   const { modalName, openModal, closeModal } = useModal<'TimerTitleChange' | 'QuitConfirm' | 'Login'>()
 
-  const modeButtonClickHandler = () => {
-    if (user) {
-      navigate('/countdown')
-      return
-    }
-    openModal('Login')
-  }
+  // const modeButtonClickHandler = () => {
+  //   if (user) {
+  //     navigate('/countdown')
+  //     return
+  //   }
+  //   openModal('Login')
+  // }
 
   const reportButtonClickHandler = () => {
     navigate('/report')
@@ -44,7 +37,6 @@ export const CountUpHeader = () => {
   }
 
   function handleUpTimerReset(timer: UpTimer) {
-    console.log(timer, '&&&')
     db.upTimers.add(timer)
   }
 

@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { getReportData, putUserNickname, syncTimeRecords, syncTodos, syncTodosAndTimeRecords } from '../api/report'
 import bombCharacterImageUrl from '../assets/images/bombCharacterSingle.png'
 import closeIconUrl from '../assets/svg/Close.svg'
@@ -16,8 +16,9 @@ import ReportCalendar from '../components/ReportCalendar'
 import { TodoList } from '../components/TodoList'
 import { userAtom } from '../recoil/atoms'
 import { GroupTimer, TimeRecord, Todo } from '../types'
-import { getLocalStorageState } from '../utils'
+import { getLocalStorageState, setLocalStorageState } from '../utils'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '../models/db'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -28,92 +29,37 @@ const formatTotalDuration = (totalDuration: string) => {
 
 const today = new Date(new Date().toDateString())
 
-export function Report() {
-  const calendarHook = useCalendar()
-  const { cursorDate } = calendarHook
-  const lists = useLiveQuery(() => db.upTimers.toArray())
+export function ReportPage() {
+  const upTimerList = useLiveQuery(() => db.upTimers.toArray())
+  console.log(upTimerList, 'UpTimerList')
 
-  const user = useRecoilValue(userAtom)
-  const userId = user?.id
-
-  if (!userId) {
-    return <Navigate to="/" replace />
-  }
+  const [user, setUser] = useRecoilState(userAtom)
+  const [nickname, setNickname] = useState('')
+  console.log(user, 'user')
 
   const [modalVisible, setModalVisible] = useState(false)
-  const [nickname, setNickname] = useState('')
 
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(today)
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null
 
-  const { data: reportData, refetch: refetchReportData } = useQuery({
-    queryKey: ['getReportData'],
-    queryFn: () => getReportData({ userId, date: cursorDate }),
-  })
-
-  const nicknameMutation = useMutation({
-    mutationFn: () => putUserNickname({ userId, nickname }),
-    onSuccess: () => {
-      setNickname('')
-      closeModal()
-      refetchReportData()
-    },
-    onError: () => {
-      alert('닉네임을 변경하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
-    },
-  })
-  const localTodos = getLocalStorageState<Todo[]>('todos', '[]')
-  const localTimeRecords = getLocalStorageState<TimeRecord[]>('countUpTimerRecords', '[]')
-  const syncTodosMutation = useMutation({
-    mutationFn: () => syncTodos({ userId, todos: localTodos }),
-    onSuccess: () => {
-      refetchReportData()
-    },
-    onError: () => {
-      alert('투두를 동기화하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
-    },
-  })
-
-  const syncTimeRecordsMutation = useMutation({
-    mutationFn: () => syncTimeRecords({ userId, timeRecords: localTimeRecords }),
-    onSuccess: () => {
-      refetchReportData()
-    },
-    onError: e => {
-      console.log(e)
-      alert('타이머 정보를 동기화하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
-    },
-  })
-
-  const syncTodosAndTimeRecordsMutation = useMutation({
-    mutationFn: () => syncTodosAndTimeRecords({ userId, timeRecords: localTimeRecords, todos: localTodos }),
-    onSuccess: () => {
-      refetchReportData()
-    },
-    onError: e => {
-      console.log(e)
-      alert('동기화하는 도중에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.')
-    },
-  })
-
-  const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
-  const todos =
-    reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
-      ? reportData.timeBlocks[selectedDateString].toDos.map(toDo => ({
-          id: toDo.id,
-          userId: toDo.userId,
-          content: toDo.content,
-          completed: true,
-          createdTime: new Date(toDo.createdTime),
-          completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
-        }))
-      : []
-  const groupTimers =
-    reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
-      ? reportData.timeBlocks[selectedDateString].groupTimers
-      : []
+  // const totalDuration = reportData?.totalDuration ? formatTotalDuration(reportData.totalDuration) : '00:00:00'
+  // const todos =
+  //   reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
+  //     ? reportData.timeBlocks[selectedDateString].toDos.map(toDo => ({
+  //         id: toDo.id,
+  //         userId: toDo.userId,
+  //         content: toDo.content,
+  //         completed: true,
+  //         createdTime: new Date(toDo.createdTime),
+  //         completedTime: toDo.completedTime ? new Date(toDo.completedTime) : undefined,
+  //       }))
+  //     : []
+  // const groupTimers =
+  //   reportData?.timeBlocks && selectedDateString && reportData.timeBlocks[selectedDateString]
+  //     ? reportData.timeBlocks[selectedDateString].groupTimers
+  //     : []
 
   const openModal = () => {
     setModalVisible(true)
@@ -129,8 +75,8 @@ export function Report() {
 
   const nicknameSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
-    nicknameMutation.mutate()
+    setUser({ ...user, userName: nickname })
+    setModalVisible(false)
   }
 
   const dateMouseEnterHandler = (date: Date) => {
@@ -144,10 +90,6 @@ export function Report() {
   const dateClickHandler = (date: Date) => {
     setSelectedDate(date)
   }
-
-  useEffect(() => {
-    refetchReportData()
-  }, [cursorDate])
 
   const getDuration = (groupTimer: GroupTimer) => {
     if (!groupTimer.endTime || !groupTimer.startTime) return ''
@@ -167,13 +109,13 @@ export function Report() {
             <div className="flex items-center justify-center">
               <img src={profileImageUrl} alt="프로필" />
               <p className="ml-[0.9375rem] mr-[0.625rem] text-[1.4375rem] font-semibold text-grey-200">
-                {reportData?.userName || user?.userName}
+                {user?.userName || '이름을 지어주세요'}
               </p>
               <button className="border-none bg-none" onClick={openModal}>
                 <img src={editIconUrl} alt="수정" />
               </button>
             </div>
-            <div className="flex flex-col items-center justify-center">
+            {/* <div className="flex flex-col items-center justify-center">
               <button
                 onClick={() => syncTodosAndTimeRecordsMutation.mutate()}
                 className="btn-primary btn-sm btn-circle btn">
@@ -192,13 +134,13 @@ export function Report() {
                 </svg>
               </button>
               <span className="mt-1 text-sm">동기화</span>
-            </div>
+            </div> */}
           </div>
         </div>
 
         <div className="h-2 bg-grey-900" />
 
-        {reportData && (
+        {/* {reportData && (
           <div className="py-[1.625rem]">
             <ReportCalendar
               useCalendarHook={calendarHook}
@@ -211,23 +153,23 @@ export function Report() {
               onClickDate={dateClickHandler}
             />
           </div>
-        )}
+        )} */}
 
-        {reportData && todos.length === 0 && groupTimers.length === 0 && (
+        {/* {reportData && todos.length === 0 && groupTimers.length === 0 && (
           <div className="px-6 py-10 text-center">
             <img src={bombCharacterImageUrl} alt="폭탄이" className="inline-block" />
             <p className="mt-[1.25rem] text-[1.375rem] font-bold text-grey-300">이런! 아무것도 하지 않았군요?</p>
           </div>
-        )}
+        )} */}
 
-        {todos.length > 0 && (
+        {/* {todos.length > 0 && (
           <div className="px-6 py-7">
             <TodoList name="완료한 할 일 목록" todos={todos} readonly />
             {todos.length === 0 && <div className="py-12" />}
           </div>
-        )}
+        )} */}
 
-        {groupTimers.length > 0 && (
+        {/* {groupTimers.length > 0 && (
           <div className="px-6 py-7">
             <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
             {groupTimers.map(groupTimer => (
@@ -253,7 +195,7 @@ export function Report() {
             ))}
             {groupTimers.length === 0 && <div className="py-12" />}
           </div>
-        )}
+        )} */}
       </div>
 
       {modalVisible && (

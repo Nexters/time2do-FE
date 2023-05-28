@@ -74,8 +74,7 @@ export type GroupTimer = Omit<Timer, 'startTime' | 'endTime'> & {
 }
 
 export type User = {
-  id: number
-  idToken: string
+  id?: string
   userName: string
   onboarding: boolean
 }
