@@ -11,7 +11,10 @@ interface Props {
 export const useTodoList = ({ where }: Props = {}) => {
   function query() {
     if (where) {
-      return db.todoItems.where('completedTime').between(where.startTimestamp, where.endTimestamp).reverse().toArray()
+      return db.todoItems
+        .where('completedTime')
+        .between(where.startTimestamp, where.endTimestamp)
+        .sortBy('completedTime')
     }
     return db.todoItems.reverse().toArray()
   }

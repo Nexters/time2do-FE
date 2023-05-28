@@ -17,7 +17,6 @@ export function ReportPage() {
   const { totalDurationFormattedString, timersAndAggregationAtDates } = useUpTimerReport()
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(today)
-  console.log(selectedDate, startOfDay(selectedDate), ' **', endOfDay(selectedDate), '$$')
   const { todoList } = useTodoList(
     selectedDate
       ? { where: { startTimestamp: selectedDate.getTime(), endTimestamp: endOfDay(selectedDate).getTime() } }
