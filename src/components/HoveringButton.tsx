@@ -1,23 +1,38 @@
 import { useState } from 'react'
-import Switch from '../assets/svg/Switch'
+import { twMerge } from 'tailwind-merge'
 
 interface Props {
   onClick: () => void
   buttonText: string
   buttonTextOnHover: string
+  PrependedIcon: React.ElementType
+  PrependedIconOnHover?: React.ElementType
+  backgroundColor?: string
 }
 
-export const HoveringButton = ({ onClick, buttonText = '', buttonTextOnHover = '' }: Props) => {
-  const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
+export const HoveringButton = ({
+  onClick,
+  PrependedIcon,
+  PrependedIconOnHover,
+  buttonText = '',
+  buttonTextOnHover = '',
+  backgroundColor = '',
+}: Props) => {
+  const [isHoveringButton, setIsHoveringButton] = useState(false)
 
   return (
     <button
-      onPointerEnter={() => setIsHoveringModeButton(true)}
-      onPointerLeave={() => setIsHoveringModeButton(false)}
+      onPointerEnter={() => setIsHoveringButton(true)}
+      onPointerLeave={() => setIsHoveringButton(false)}
       onClick={onClick}
-      className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold">
-      <Switch classNames={isHoveringModeButton ? 'mr-2' : ''} />
-      {isHoveringModeButton ? buttonTextOnHover : buttonText}
+      className={twMerge(
+        'btn-primary btn-sm btn h-10 border-0 text-lg font-bold hover:animate-pulse',
+        backgroundColor,
+      )}>
+      {isHoveringButton && PrependedIconOnHover && <PrependedIconOnHover />}
+      {(!isHoveringButton || (isHoveringButton && !PrependedIconOnHover)) && <PrependedIcon />}
+
+      <span className={isHoveringButton ? 'ml-2' : ''}>{isHoveringButton ? buttonTextOnHover : buttonText}</span>
     </button>
   )
 }

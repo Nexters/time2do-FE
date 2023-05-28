@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
  */
 
 // 이전 배포 버전과 localStorage 에 저장되는 timer 의 버전이 다르면 리셋하도록 한다.
-const VERSION = '1.0.0'
+const VERSION = '1'
 
 interface Props {
   timerName: string

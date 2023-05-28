@@ -14,11 +14,17 @@ import ModalPortal from './../ModalPortal'
 import { useLocalStorageSyncedCountUpTimer } from '../../hooks/useLocalStorageSyncedUpTimer'
 import { useEffect, useState } from 'react'
 import { UpTimer } from '../../types'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '../../models/db'
+import Switch from '../../assets/svg/Switch'
+import ReportIcoWhite from '../../assets/svg/ReportIconWhite'
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
   const user = useRecoilValue(userAtom)
   const [timerName, setTimerName] = useState<string>('타이머 이름')
+  const lists = useLiveQuery(() => db.upTimers.toArray())
+  console.log(lists, '$$')
 
   const { modalName, openModal, closeModal } = useModal<'TimerTitleChange' | 'QuitConfirm' | 'Login'>()
 
@@ -40,6 +46,7 @@ export const CountUpHeader = () => {
 
   function handleUpTimerReset(timer: UpTimer) {
     console.log(timer, '&&&')
+    db.upTimers.add(timer)
   }
 
   const { timer, seconds, minutes, hours, isRunning, start, pause, reset, restart } = useLocalStorageSyncedCountUpTimer(
@@ -58,10 +65,20 @@ export const CountUpHeader = () => {
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
         <div className="absolute left-0 top-0 flex w-full items-center justify-between px-5 py-6">
-          <HoveringButton onClick={modeButtonClickHandler} buttonText="" buttonTextOnHover="그룹모드" />
-          <button onClick={reportButtonClickHandler}>
-            <Report />
-          </button>
+          <HoveringButton
+            PrependedIcon={Switch}
+            onClick={modeButtonClickHandler}
+            buttonText=""
+            buttonTextOnHover="그룹모드"
+          />
+          <HoveringButton
+            PrependedIcon={Report}
+            PrependedIconOnHover={ReportIcoWhite}
+            onClick={reportButtonClickHandler}
+            buttonText=""
+            buttonTextOnHover="리포트"
+            backgroundColor="bg-transparent"
+          />
         </div>
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">

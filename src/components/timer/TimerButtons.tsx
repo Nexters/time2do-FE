@@ -18,7 +18,9 @@ export const TimerButtons = ({
   if (!hasStarted)
     return (
       <div>
-        <button onClick={onStartClick} className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg text-white">
+        <button
+          onClick={onStartClick}
+          className="btn-primary btn h-14 gap-2 rounded-full px-5 text-lg text-white hover:animate-pulse">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
             <path
               fillRule="evenodd"
