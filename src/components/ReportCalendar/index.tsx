@@ -104,7 +104,7 @@ const ReportCalendar: React.FC<ReportCalendarProps> = ({
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 place-items-center gap-1">
           {body.value.map(({ value: days }) =>
             days.map(({ key, value }) => {
               const valueMonth = getMonth(value) + 1
