@@ -34,7 +34,7 @@ const Register = () => {
       return null
     } else {
       const response = await postUser({
-        username: data.username,
+        userName: data.userName,
         password: data.password,
       })
       const statusCode = response.status
@@ -74,7 +74,7 @@ const Register = () => {
         <div className="px-5">
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-              <InputBox InputBoxName="닉네임" placeHolder="닉네임을 입력해주세요." registerName="username" />
+              <InputBox InputBoxName="닉네임" placeHolder="닉네임을 입력해주세요." registerName="userName" />
               <InputBox
                 InputBoxName="비밀번호"
                 placeHolder="비밀번호를 입력해주세요."
@@ -95,7 +95,7 @@ const Register = () => {
         </div>
       </div>
       {modalVisible && (
-        <ModalPortal closePortal={closeModal} isOpened={modalVisible}>
+        <ModalPortal onClose={closeModal} isOpened={modalVisible}>
           <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
             <div className="flex flex-col">
               <p className="mb-4 text-[1.375rem] font-bold leading-[140%] text-grey-200">{modalContent.modalTitle}</p>

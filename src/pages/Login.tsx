@@ -2,7 +2,7 @@ import InputBox from '../components/InputBox'
 import LoginPageImg from '../../public/img/tmpLoginImg.png'
 import { FormProvider, useForm } from 'react-hook-form'
 import Header from '../components/Header'
-import { postUser } from '../api/user'
+import { login, postUser } from '../api/user'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useSetRecoilState } from 'recoil'
@@ -13,14 +13,19 @@ export function Login() {
   const navigate = useNavigate()
   const [errorMessage, setErrorMessage] = useState('')
   const onSubmit = async (data: any) => {
-    const response = await postUser(data)
-    if (response.status === 409) {
-      setErrorMessage('중복되는 닉네임이에요.')
-    } else {
-      setErrorMessage('')
-      setUser(response.data)
-      navigate('/')
+    const response = await login(data)
+    if (response.status === 401) {
+      setErrorMessage('존재하지 않는 유저정보입니다.')
+      return
     }
+    if (!response.data) {
+      setErrorMessage('서버오류가 발생했습니다.')
+      return
+    }
+
+    setErrorMessage('')
+    setUser(response.data)
+    navigate('/')
     return response
   }
 
@@ -60,11 +65,10 @@ export function Login() {
         <div className="mt-6 text-grey-400">
           <p
             className="underline underline-offset-4"
-            // onClick={() => {
-            //   navigate('/register')
-            // }}
-          >
-            중복된 닉네임이 없으면 자동으로 가입됩니다.
+            onClick={() => {
+              navigate('/register')
+            }}>
+            계정이 없다면? 회원가입하기
           </p>
         </div>
       </div>

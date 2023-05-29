@@ -1,40 +1,37 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useStopwatch } from 'react-timer-hook'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { v4 as uuid } from 'uuid'
+import { useLocalStorage } from 'react-use'
+import { useRecoilValue } from 'recoil'
 
 import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
-import { countUpTimerAtom, countUpTimerRecordsAtom, userAtom } from '../recoil/atoms'
-import { totalCountUpTimerSecondsSelector } from '../recoil/selectors'
+import { defaultCountUpTimer } from '../consts'
+import { userAtom } from '../recoil/atoms'
+import { Timer, TimeRecord } from '../types'
 import ModalPortal from './ModalPortal'
+import { useLocalStorageSyncedCountUpTimer } from '../hooks/useLocalStorageSyncedUpTimer'
+import { TimerDisplayedNumbers } from './timer/TimerDisplayedNumbers'
 
-const SECOUNDS_IN_ONE_MINUTE = 60
-const MINUTES_IN_ONE_HOUR = 60
+type LocalStorageState = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'
 
-export const CountUpHeader = () => {
+const getLocalStorageState = (key: LocalStorageState, defaultValue: any) => {
+  return JSON.parse(localStorage.getItem(key) ?? defaultValue)
+}
+
+export const DownHeader = () => {
   const navigate = useNavigate()
   const user = useRecoilValue(userAtom)
 
-  const [timer, setTimer] = useRecoilState(countUpTimerAtom)
-  const [timerRecords, setTimerRecords] = useRecoilState(countUpTimerRecordsAtom)
-
-  const totalCountUpTimerSeconds = useRecoilValue(totalCountUpTimerSecondsSelector(timer.id))
-  const { isRunning: isTimerRunning, startTime } = timer
+  const [_timer = defaultCountUpTimer, setTimer] = useLocalStorage<Timer>('countDownTimer', defaultCountUpTimer)
+  const [_timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countUpTimerRecords', [])
 
   const [modalVisible, setModalVisible] = useState(false)
-  const [isTriggered, setIsTriggered] = useState(false)
-  const [timeOffset, setTimeOffset] = useState<{ hours: number; minutes: number; seconds: number }>({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  })
+  const [isQuitModalShown, setIsQuitModalShown] = useState(false)
 
-  const getLastTimeRecord = () => {
-    const sortedTimerRecords = (timerRecords ?? [])
-      .filter(timeRecord => timeRecord.timerId === timer.id)
+  const getLastTimeRecord = (timeRecords: TimeRecord[], id: number): TimeRecord | undefined => {
+    const sortedTimerRecords = (timeRecords ?? [])
+      .filter((timeRecord: TimeRecord) => timeRecord.timerId === id)
       .sort((a, b) => {
         const aTime = new Date(a.startTime).getTime()
         const bTime = new Date(b.startTime).getTime()
@@ -57,6 +54,7 @@ export const CountUpHeader = () => {
 
   const closeModal = () => {
     setModalVisible(false)
+    setIsQuitModalShown(false)
   }
 
   const [reportLoginModalVisible, setReportLoginModalVisible] = useState(false)
@@ -82,118 +80,72 @@ export const CountUpHeader = () => {
   const reportButtonClickHandler = () => {
     if (user) {
       navigate('/report')
-
       return
     }
 
     openReportLoginModal()
   }
 
-  const { seconds, minutes, hours, isRunning, start, pause, reset } = useStopwatch({
-    autoStart: false,
-  })
-  let newHours = hours + timeOffset.hours
-  let newMinutes = minutes + timeOffset.minutes
-  let newSeconds = seconds + timeOffset.seconds
-  if (newSeconds >= SECOUNDS_IN_ONE_MINUTE) {
-    newMinutes += 1
-    newSeconds -= SECOUNDS_IN_ONE_MINUTE
-  }
-  if (newMinutes >= MINUTES_IN_ONE_HOUR) {
-    newHours += 1
-    newMinutes -= MINUTES_IN_ONE_HOUR
-  }
-
-  useEffect(() => {
-    if (!startTime || !timer.id) return
-    const stopWatchAndRecordsSecondsDiff = totalCountUpTimerSeconds - hours * 3600 - minutes * 60 - seconds
-    if (stopWatchAndRecordsSecondsDiff < 1) {
-      setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
-      return
-    }
-
-    const offsetHours = Math.floor(stopWatchAndRecordsSecondsDiff / 3600)
-    const offsetMinutes = Math.floor((stopWatchAndRecordsSecondsDiff - offsetHours * 3600) / 60)
-    const offsetSeconds = Math.floor(stopWatchAndRecordsSecondsDiff - offsetHours * 3600 - offsetMinutes * 60)
-    setTimeOffset({ hours: offsetHours, minutes: offsetMinutes, seconds: offsetSeconds })
-
-    setIsTriggered(true)
-  }, [totalCountUpTimerSeconds])
-
-  useEffect(() => {
-    if (isTriggered && !isRunning && isTimerRunning) {
-      start()
-    }
-    setIsTriggered(false)
-  }, [isTriggered])
-
-  if (!isTimerRunning && isRunning && !timer.id) {
-    reset()
-    setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
-  }
-  if (!isTimerRunning && isRunning && timer.id) pause()
-
   const startTimer = () => {
-    start()
     const newId = new Date().getTime()
-    setTimer(prev => ({ ...prev, id: newId, isRunning: true, startTime: new Date() }))
-    setTimerRecords(prev => [
-      ...prev,
+    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
+    const timerRecords = getLocalStorageState('countUpTimerRecords', [])
+    setTimer({ ...timer, id: timer.id || newId, isRunning: true, startTime: new Date() })
+    setTimerRecords([
+      ...timerRecords,
       {
         id: new Date().getTime(),
         userId: timer?.makerId ?? 'LOCAL',
-        timerId: newId,
+        timerId: timer.id || newId,
         startTime: new Date(),
+        timerName: timer?.name,
       },
     ])
   }
 
   const resetTimer = () => {
-    const lastRecord = getLastTimeRecord()
+    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
+    const timerRecords = getLocalStorageState('countUpTimerRecords', [])
+    const lastRecord = getLastTimeRecord(timerRecords, timer.id)
     if (timer?.id && isRunning) {
-      setTimerRecords(prev => [
-        ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+      setTimerRecords([
+        ...(timerRecords.filter((timeRecord: TimeRecord) => timeRecord.id !== lastRecord?.id ?? 0) ?? []),
         { ...lastRecord, endTime: new Date() },
       ])
     }
 
-    setTimer(prev => ({ ...prev, id: 0, endTime: new Date(), isRunning: false }))
-    reset(undefined, false)
-    setTimeOffset({ hours: 0, minutes: 0, seconds: 0 })
+    setTimer({ ...timer, id: 0, startTime: undefined, endTime: undefined, isRunning: false })
+
+    setIsQuitModalShown(true)
   }
 
   const pauseTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: false }))
-    pause()
+    const timer = getLocalStorageState('countUpTimer', defaultCountUpTimer)
+    setTimer({ ...timer, isRunning: false })
 
     if (!timer.id) return
-    const lastRecord = getLastTimeRecord()
-    setTimerRecords(prev => [
-      ...(prev.filter(timeRecord => timeRecord.id !== lastRecord.id) ?? []),
+    const countUpTimerRecords: TimeRecord[] = getLocalStorageState('countUpTimerRecords', '[]')
+    const lastRecord = getLastTimeRecord(countUpTimerRecords, timer.id)
+    if (!lastRecord) return
+    setTimerRecords([
+      ...countUpTimerRecords.filter(timeRecord => timeRecord.id !== lastRecord?.id),
       { ...lastRecord, endTime: new Date() },
     ])
   }
 
-  const restartTimer = () => {
-    setTimer(prev => ({ ...prev, isRunning: true }))
-    setTimerRecords(prev => [
-      ...prev,
-      {
-        id: new Date().getTime(),
-        userId: timer?.makerId ?? 'LOCAL',
-        timerId: timer.id,
-        startTime: new Date(),
-      },
-    ])
-    start()
-  }
+  const { seconds, minutes, hours, isRunning, start, pause, reset } = useLocalStorageSyncedCountUpTimer({
+    timerName: 'test',
+    onStart: startTimer,
+    onPause: pauseTimer,
+    onReset: resetTimer,
+  })
 
   const [isHoveringModeButton, setIsHoveringModeButton] = useState(false)
 
   return (
     <>
-      <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
-        <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
+      <div className="relative h-full w-full bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">
+        <div className="absolute left-0 top-0 flex w-full items-center justify-between px-5 py-6">
           <button
             onPointerEnter={() => setIsHoveringModeButton(true)}
             onPointerLeave={() => setIsHoveringModeButton(false)}
@@ -210,41 +162,49 @@ export const CountUpHeader = () => {
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
             <div className="mb-3">
-              <TimerDisplayedNumbers hours={newHours} minutes={newMinutes} seconds={newSeconds} />
+              <TimerDisplayedNumbers hours={hours} minutes={minutes} seconds={seconds} />
             </div>
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={openModal} className="mr-1">
-              {timer.name}
+              {getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
             </h1>
             <button onClick={openModal}>
               <EditIcon />
             </button>
           </div>
           <TimerButtons
-            hasStarted={Boolean(timer.id)}
-            isRunning={isRunning}
-            onStartClick={startTimer}
-            onResetClick={resetTimer}
-            onPauseClick={pauseTimer}
-            onRestartAfterPauseClick={restartTimer}
+            hasStarted={Boolean(getLocalStorageState('countUpTimer', defaultCountUpTimer).id)}
+            isRunning={getLocalStorageState('countUpTimer', defaultCountUpTimer).isRunning}
+            onStartClick={() => start()}
+            onResetClick={() => reset()}
+            onPauseClick={() => pause()}
+            onRestartAfterPauseClick={() => start()}
           />
         </div>
       </div>
 
       {modalVisible && (
-        <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
+        <ModalPortal onClose={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
-            name={timer.name}
+            name={getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
             onClose={closeModal}
-            onSubmit={newTitle => setTimer(prev => ({ ...prev, name: newTitle }))}
+            onSubmit={newTitle =>
+              setTimer({ ...getLocalStorageState('countUpTimer', defaultCountUpTimer), name: newTitle })
+            }
           />
         </ModalPortal>
       )}
 
+      {isQuitModalShown && (
+        <ModalPortal onClose={() => setModalVisible(false)} isOpened={modalVisible}>
+          <QuitConfirmModal onClose={closeModal} />
+        </ModalPortal>
+      )}
+
       {reportLoginModalVisible && (
-        <ModalPortal closePortal={closeReportLoginModal} isOpened={reportLoginModalVisible}>
-          <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
+        <ModalPortal onClose={closeReportLoginModal} isOpened={reportLoginModalVisible}>
+          <div className="fixed bottom-1/2 right-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
             <div className="flex flex-col">
               <p className="mb-4 text-[1.375rem] font-bold leading-[140%] text-grey-200">로그인이 필요해요</p>
               <p className="mb-[1.375rem] text-[1rem] font-semibold leading-[1.4375rem]">
@@ -370,9 +330,9 @@ export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleCha
           value={timerTitle}
           onChange={e => setTimerTitle(e.target.value)}
           type="text"
-          id="nickname"
-          className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pt-[1.1875rem] pb-[1.25rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300 focus:border-primary"
+          className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pb-[1.25rem] pt-[1.1875rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300 focus:border-primary"
           autoFocus
+          maxLength={15}
         />
         <div className="flex w-full justify-center gap-3">
           <button
@@ -392,18 +352,27 @@ export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleCha
   )
 }
 
-interface TimerDisplayedNumbersProps {
-  hours: number
-  minutes: number
-  seconds: number
-}
-
-const TimerDisplayedNumbers = ({ hours, minutes, seconds }: TimerDisplayedNumbersProps) => {
+export const QuitConfirmModal = ({ onClose }: { onClose: () => void }) => {
+  const navigate = useNavigate()
   return (
-    <span className="countdown font-montserrat text-[4rem] font-bold">
-      {/* @ts-ignore */}
-      <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:{/* @ts-ignore */}
-      <span style={{ '--value': seconds }}></span>
-    </span>
+    <div className="w-[24.25rem] rounded-2xl bg-grey-850 px-5 pb-[1.125rem] pt-6">
+      <h1 className="mb-4 text-2xl font-bold text-grey-200">타이머를 끝낼까요?</h1>
+      <div className="text-grey-400">다 못 끝낸 할 일 목록은 남아있어요.</div>
+      <div className="mb-4 text-grey-400">하지만 시간을 저장하고 싶다면 로그인이 필요해요</div>
+      <div className="flex w-full justify-center gap-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="width-full flex-1 rounded-[0.625rem] bg-grey-800  py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white">
+          끝내기
+        </button>
+        <button
+          onClick={() => navigate('/login')}
+          type="submit"
+          className="width-full flex-1 rounded-[0.625rem] bg-primary py-[1.125rem] text-[1.25rem] font-semibold leading-[1.5rem] text-white">
+          로그인
+        </button>
+      </div>
+    </div>
   )
 }

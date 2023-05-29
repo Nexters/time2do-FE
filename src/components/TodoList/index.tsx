@@ -1,13 +1,13 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import XMark from '../../assets/svg/XMark'
-import { useSetRecoilState } from 'recoil'
-import { todosAtom } from '../../recoil/atoms'
-import { BooleanNumberTypes, defaultTodo } from '../../consts'
+import { useRecoilValue } from 'recoil'
+import { userAtom } from '../../recoil/atoms'
 import Plus from '../../assets/svg/Plus'
 import { Todo } from '../../types'
 import { cls } from '../../utils/cls'
 import { usePrevious } from 'react-use'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { db } from '@/models/db'
 
 interface Props {
   name?: string
@@ -16,30 +16,51 @@ interface Props {
 }
 
 export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Props) => {
-  const setTodos = useSetRecoilState(todosAtom)
+  const user = useRecoilValue(userAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
-
+  console.log(todos)
   const addTodo = (value: string) => {
-    const id = new Date().getTime()
     const newTodo = {
-      ...defaultTodo,
-      id,
       content: value,
-    }
-    setTodos(prev => [newTodo, ...prev])
+      userId: user?.id ?? '',
+      userName: user?.userName ?? '',
+      createdTime: new Date().getTime(),
+      completedTime: 0,
+      completed: false,
+    } as Todo
+    db.todoItems.add(newTodo)
   }
 
   const prevLength = usePrevious(todos.length)
   useEffect(() => {
-    if (typeof prevLength === 'undefined') return
     if (todos.length > (prevLength ?? 0)) {
       newTodoInputRef.current?.focus()
     }
   }, [todos.length])
 
-  const updateTodo = (newTodo: Todo) => {
-    setTodos(prev => prev.map(todo => (todo.id === newTodo.id ? newTodo : todo)))
+  const updateTodo = (todo: Todo) => {
+    db.todoItems.put({ ...todo })
+  }
+
+  const removeTodo = (deletedTodo: Todo) => {
+    db.todoItems.delete(deletedTodo.id)
+  }
+
+  function completeTodo(todo: Todo) {
+    updateTodo({
+      ...todo,
+      completed: true,
+      completedTime: new Date().getTime(),
+    })
+  }
+
+  function unCompleteTodo(todo: Todo) {
+    updateTodo({
+      ...todo,
+      completed: false,
+      completedTime: 0,
+    })
   }
 
   return (
@@ -65,9 +86,11 @@ export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Prop
             key={todo.id}
             todo={todo}
             readonly={Boolean(readonly)}
-            onRemoveTodo={deletedTodo => setTodos(todos.filter(todo => todo.id !== deletedTodo.id))}
+            onRemoveTodo={removeTodo}
             onUpdateTodo={updateTodo}
             onAddTodo={() => addTodo('')}
+            onCompleteTodo={completeTodo}
+            onUnCompleteTodo={unCompleteTodo}
           />
         ))}
       </ul>
@@ -81,10 +104,12 @@ interface TodoItemProps {
   onAddTodo: () => void
   onRemoveTodo: (deletedTodo: Todo) => void
   onUpdateTodo: (newTodo: Todo) => void
+  onCompleteTodo: (todo: Todo) => void
+  onUnCompleteTodo: (todo: Todo) => void
 }
 
 const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
-  ({ todo, readonly, onRemoveTodo, onUpdateTodo, onAddTodo }, ref) => {
+  ({ todo, readonly, onRemoveTodo, onUpdateTodo, onAddTodo, onCompleteTodo, onUnCompleteTodo }, ref) => {
     const [isFocused, setIsFocused] = useState(false)
     const handleFocus = () => {
       if (readonly) return
@@ -112,11 +137,13 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
           disabled={readonly}
           onChange={e => {
             if (readonly) return
-            onUpdateTodo({
-              ...todo,
-              completed: e.target.checked ? BooleanNumberTypes.TRUE : BooleanNumberTypes.FALSE,
-              completedTime: new Date(),
-            })
+            const isComplete = e.target.checked
+            if (isComplete) {
+              onCompleteTodo(todo)
+              return
+            } else {
+              onUnCompleteTodo(todo)
+            }
           }}
           onFocus={handleFocus}
           onBlur={handleBlur}
