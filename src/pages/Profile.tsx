@@ -12,7 +12,8 @@ import closeIconUrl from '../assets/svg/Close.svg'
 import { getReportData, putUserNickname } from '../api/report'
 import { ko } from 'date-fns/locale'
 import ModalPortal from '../components/ModalPortal'
-import { BooleanNumberTypes } from '../consts'
+import { useTodoList } from '@/hooks/useTodoList'
+import { useUpTimerReport } from '@/hooks/useUpTimerReport'
 
 // 47h0m0s -> 47:00:00
 const formatTotalDuration = (totalDuration: string) => {
@@ -28,6 +29,8 @@ const today = new Date(new Date().toDateString())
 export function Report() {
   const calendarHook = useCalendar()
   const { cursorDate } = calendarHook
+  const { timersAndAggregationAtDates } = useUpTimerReport()
+  const { todoList } = useTodoList()
 
   const [modalVisible, setModalVisible] = useState(false)
   const [nickname, setNickname] = useState('')
@@ -84,14 +87,6 @@ export function Report() {
     nicknameMutation.mutate()
   }
 
-  const dateMouseEnterHandler = (date: Date) => {
-    setHoveredDate(date)
-  }
-
-  const dateMouseLeaveHandler = () => {
-    setHoveredDate(null)
-  }
-
   const dateClickHandler = (date: Date) => {
     setSelectedDate(date)
   }
@@ -115,27 +110,23 @@ export function Report() {
         {reportData && (
           <div className="py-[1.625rem]">
             <ReportCalendar
-              useCalendarHook={calendarHook}
-              timeBlocks={reportData?.timeBlocks ?? {}}
+              timersAndAggregationAtDates={timersAndAggregationAtDates}
               totalDuration={totalDuration}
-              hoveredDate={hoveredDate}
               selectedDate={selectedDate}
-              onMouseEnterDate={dateMouseEnterHandler}
-              onMouseLeaveDate={dateMouseLeaveHandler}
               onClickDate={dateClickHandler}
             />
           </div>
         )}
 
         {todos.length > 0 && (
-          <div className="py-7 px-6">
-            <TodoList name="완료한 할 일 목록" todos={todos} readonly />
+          <div className="px-6 py-7">
+            <TodoList name="완료한 할 일 목록" todos={todoList} readonly />
             {todos.length === 0 && <div className="py-12" />}
           </div>
         )}
 
         {groupTimers.length > 0 && (
-          <div className="py-7 px-6">
+          <div className="px-6 py-7">
             <p className="mb-4 text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">참여한 그룹 타이머</p>
             {groupTimers.map(groupTimer => (
               <div key={groupTimer.name} className="rounded-[0.625rem] bg-grey-900 px-4 py-4">
@@ -165,7 +156,7 @@ export function Report() {
       </div>
       {modalVisible && (
         <ModalPortal onClose={closeModal} isOpened={modalVisible}>
-          <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[0.875rem] pb-[1.125rem] pt-[2.9375rem]">
+          <div className="fixed bottom-1/2 right-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[0.875rem] pb-[1.125rem] pt-[2.9375rem]">
             <div className="absolute right-[0.875rem] top-[0.875rem]">
               <button>
                 <img src={closeIconUrl} alt="닫기" onClick={closeModal} />
@@ -180,7 +171,7 @@ export function Report() {
               <input
                 type="text"
                 id="nickname"
-                className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pt-[1.1875rem] pb-[1.25rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300"
+                className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pb-[1.25rem] pt-[1.1875rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300"
                 value={nickname}
                 onChange={nicknameChangeHandler}
                 autoFocus

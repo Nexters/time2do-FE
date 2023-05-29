@@ -8,7 +8,6 @@ import { cls } from '../../utils/cls'
 import { usePrevious } from 'react-use'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { db } from '@/models/db'
-import { getUpTimer, setUpTimer } from '@/utils'
 
 interface Props {
   name?: string
@@ -18,7 +17,6 @@ interface Props {
 
 export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Props) => {
   const user = useRecoilValue(userAtom)
-  const countUpTimer = getUpTimer()
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
   console.log(todos)

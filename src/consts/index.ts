@@ -1,10 +1,4 @@
-import { Timer, Todo, UpTimer } from '../types'
-
-export const defaultTodo: Todo = {
-  content: '',
-  id: new Date().getTime(),
-  completed: false,
-}
+import { Timer, Todo } from '../types'
 
 export const TimerTypes = {
   COUNT_UP: 1,

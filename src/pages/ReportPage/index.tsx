@@ -9,7 +9,7 @@ import { getFormattedStringFromSeconds } from '@/utils'
 import { TodoList } from '@/components/TodoList'
 import bombCharacterImageUrl from '@/assets/images/bombCharacterSingle.png'
 import { useTodoList } from '@/hooks/useTodoList'
-import { endOfDay, startOfDay } from 'date-fns'
+import { endOfDay } from 'date-fns'
 
 const today = new Date(new Date().toDateString())
 
