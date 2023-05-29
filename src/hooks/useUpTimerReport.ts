@@ -78,8 +78,6 @@ export const useUpTimerReport = () => {
       { totalSeconds: 0, timersAndAggregationAtDates: {} },
     )
 
-    console.log(totalSeconds ?? 0, '계산됨')
-
     const totalDurationFormattedString = getFormattedStringFromSeconds(totalSeconds ?? 0)
 
     return {

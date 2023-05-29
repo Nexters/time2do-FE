@@ -19,7 +19,7 @@ export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Prop
   const user = useRecoilValue(userAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
-  console.log(todos)
+
   const addTodo = (value: string) => {
     const newTodo = {
       content: value,

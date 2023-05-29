@@ -9,7 +9,6 @@ const useCopyClipBoard = (): useCopyClipBoardProps => {
       await navigator.clipboard.writeText(text)
       setIsCopy(true)
     } catch (e) {
-      console.log(e)
       setIsCopy(false)
     }
   }

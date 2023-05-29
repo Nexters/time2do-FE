@@ -22,8 +22,6 @@ export function NicknameEdit() {
     closeModal()
   }
 
-  console.log(user, 'user')
-
   return (
     <>
       <div className="flex items-center justify-center">
