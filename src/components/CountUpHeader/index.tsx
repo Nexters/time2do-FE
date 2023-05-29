@@ -61,7 +61,6 @@ export const CountUpHeader = () => {
 
   useEffect(() => {
     function checkTimerPassedMoreThan24Hours() {
-      return true
       if (timer?.id && passedSeconds >= SECONDS_PER_DAY) return true
       return false
     }
