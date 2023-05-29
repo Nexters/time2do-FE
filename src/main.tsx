@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 })
 
 const WrapperRouter = ({ children }: { children: ReactNode }) => {
-  if (window?.chrome?.storage) {
+  if (window?.chrome?.storage || window?.whale?.extension) {
     return <MemoryRouter>{children}</MemoryRouter>
   }
   return <BrowserRouter>{children}</BrowserRouter>
