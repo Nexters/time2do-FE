@@ -100,6 +100,7 @@ export type TimersAndAggregation = {
   aggregation: TimersAggregation
 }
 
+// 여기서 string 은 format(new Date(), 'yyyy-MM-dd') 의 결과값이다.
 export type TimersAndAggregationAtDates = Record<string, TimersAndAggregation>
 
 export type UpTimerReport = {
