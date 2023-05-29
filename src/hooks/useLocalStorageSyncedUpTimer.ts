@@ -143,11 +143,13 @@ export function useLocalStorageSyncedCountUpTimer({
 
   return {
     ...getTimeFromSeconds(passedSeconds),
+    passedSeconds,
     timer,
     start,
     pause,
     reset,
     restart,
+    resetTimerWithoutRecord: () => resetTimer(true),
     isRunning,
   }
 }

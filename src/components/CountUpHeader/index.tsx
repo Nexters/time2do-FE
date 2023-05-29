@@ -12,11 +12,13 @@ import { useEffect, useState } from 'react'
 import { UpTimer } from '../../types'
 import { db } from '../../models/db'
 import { ReportIconGrey } from '../../assets/svg/ReportGrey'
+import { SECONDS_PER_DAY } from '@/consts/time'
+import { AbuseAlertModal } from '../timer/modals/AbuseAlertModal'
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
   const [timerName, setTimerName] = useState<string>('타이머 이름')
-  const { modalName, openModal, closeModal } = useModal<'TimerTitleChange' | 'QuitConfirm' | 'Login'>()
+  const { modalName, openModal, closeModal } = useModal<'TimerTitleChange' | 'QuitConfirm' | 'Login' | 'AbuseAlert'>()
 
   // const modeButtonClickHandler = () => {
   //   if (user) {
@@ -40,12 +42,34 @@ export const CountUpHeader = () => {
     db.upTimers.add(timer)
   }
 
-  const { timer, seconds, minutes, hours, isRunning, start, pause, reset, restart } = useLocalStorageSyncedCountUpTimer(
-    {
-      timerName,
-      onReset: handleUpTimerReset,
-    },
-  )
+  const {
+    timer,
+    passedSeconds,
+    seconds,
+    minutes,
+    hours,
+    isRunning,
+    start,
+    pause,
+    reset,
+    restart,
+    resetTimerWithoutRecord,
+  } = useLocalStorageSyncedCountUpTimer({
+    timerName,
+    onReset: handleUpTimerReset,
+  })
+
+  useEffect(() => {
+    function checkTimerPassedMoreThan24Hours() {
+      return true
+      if (timer?.id && passedSeconds >= SECONDS_PER_DAY) return true
+      return false
+    }
+    if (checkTimerPassedMoreThan24Hours()) {
+      openModal('AbuseAlert')
+      resetTimerWithoutRecord()
+    }
+  }, [seconds])
 
   useEffect(() => {
     if (timer?.name && timer.name !== timerName) setTimerName(timer.name)
@@ -104,6 +128,7 @@ export const CountUpHeader = () => {
       <ModalPortal onClose={closeModal} isOpened={modalName !== undefined}>
         {modalName === 'Login' && <LoginModal onClose={closeModal} onConfirm={() => navigate('/login')} />}
         {modalName === 'QuitConfirm' && <QuitConfirmModal onConfirm={() => navigate('/login')} onClose={closeModal} />}
+        {modalName === 'AbuseAlert' && <AbuseAlertModal onClose={closeModal} />}
         {modalName === 'TimerTitleChange' && (
           <TimerTitleChangeModal
             name={timer?.name ?? '타이머 이름'}
