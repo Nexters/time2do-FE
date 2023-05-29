@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && rsync -ar src/public/* dist/",
+    "build-w": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
