@@ -9,7 +9,7 @@ import { CountDownHeader } from '../components/CountDownHeader'
 import Participants from '../components/Participants'
 import { TodoList } from '../components/TodoList'
 import { todosAtom, userAtom } from '../recoil/atoms'
-import { User } from '../types'
+import { Todo, User } from '../types'
 import { getLocalStorageState } from '../utils'
 
 export function CountDownDetails() {
@@ -28,15 +28,15 @@ export function CountDownDetails() {
   })
   const localTodos = getLocalStorageState('todos', '[]')
 
-  const syncTodosMutation = useMutation({
-    mutationFn: () => syncTodos({ userId: user?.id, todos: localTodos }),
-  })
+  // const syncTodosMutation = useMutation({
+  //   mutationFn: () => syncTodos({ userId: user?.id, todos: localTodos as Todo[] }),
+  // })
 
-  useEffect(() => {
-    if (user?.id) {
-      syncTodosMutation.mutate()
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user?.id) {
+  //     syncTodosMutation.mutate()
+  //   }
+  // }, [user])
 
   const { data: participants } = useQuery({
     queryKey: ['getParticipants'],
@@ -120,7 +120,7 @@ export function CountDownDetails() {
           participants={participants}
         />
         <div className="border-2 border-grey-850 opacity-50"></div>
-        <div className=" py-7 px-6">
+        <div className=" px-6 py-7">
           <TodoList todos={selectedTodos} />
         </div>
       </div>

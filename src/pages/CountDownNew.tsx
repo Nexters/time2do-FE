@@ -27,7 +27,7 @@ export function CountDownNew() {
   const methods = useForm<Timer>({
     defaultValues: {
       name: '',
-      makerId: user?.id ?? 0,
+      makerId: 0,
       type: 2,
       tag: '',
       startTime: formatISO(new Date()),
@@ -68,7 +68,7 @@ export function CountDownNew() {
             </form>
           </FormProvider>
           {modalVisible && (
-            <ModalPortal closePortal={modalClose} isOpened={modalVisible}>
+            <ModalPortal onClose={modalClose} isOpened={modalVisible}>
               {isError ? (
                 <TimerMakeModal.ErrorModal closePortal={modalClose} />
               ) : (

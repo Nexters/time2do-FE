@@ -7,10 +7,11 @@ import EditIcon from '../assets/svg/EditIcon'
 import Report from '../assets/svg/ReportIcon'
 import Switch from '../assets/svg/Switch'
 import { defaultCountUpTimer } from '../consts'
-import { useCountUpTimer } from '../hooks/useCountUpTimer'
 import { userAtom } from '../recoil/atoms'
 import { Timer, TimeRecord } from '../types'
 import ModalPortal from './ModalPortal'
+import { useLocalStorageSyncedCountUpTimer } from '../hooks/useLocalStorageSyncedUpTimer'
+import { TimerDisplayedNumbers } from './timer/TimerDisplayedNumbers'
 
 type LocalStorageState = 'countUpTimer' | 'countUpTimerRecords' | 'countDownTimer' | 'user' | 'todos'
 
@@ -18,11 +19,11 @@ const getLocalStorageState = (key: LocalStorageState, defaultValue: any) => {
   return JSON.parse(localStorage.getItem(key) ?? defaultValue)
 }
 
-export const CountUpHeader = () => {
+export const DownHeader = () => {
   const navigate = useNavigate()
   const user = useRecoilValue(userAtom)
 
-  const [_timer = defaultCountUpTimer, setTimer] = useLocalStorage<Timer>('countUpTimer', defaultCountUpTimer)
+  const [_timer = defaultCountUpTimer, setTimer] = useLocalStorage<Timer>('countDownTimer', defaultCountUpTimer)
   const [_timerRecords = [], setTimerRecords] = useLocalStorage<TimeRecord[]>('countUpTimerRecords', [])
 
   const [modalVisible, setModalVisible] = useState(false)
@@ -132,8 +133,8 @@ export const CountUpHeader = () => {
     ])
   }
 
-  const { seconds, minutes, hours, isRunning, start, pause, reset } = useCountUpTimer({
-    autoStart: false,
+  const { seconds, minutes, hours, isRunning, start, pause, reset } = useLocalStorageSyncedCountUpTimer({
+    timerName: 'test',
     onStart: startTimer,
     onPause: pauseTimer,
     onReset: resetTimer,
@@ -143,8 +144,8 @@ export const CountUpHeader = () => {
 
   return (
     <>
-      <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
-        <div className="absolute top-0 left-0 flex w-full items-center justify-between px-5 py-6">
+      <div className="relative h-full w-full bg-[url('/img/countdowntimer.png')] bg-cover bg-center text-white">
+        <div className="absolute left-0 top-0 flex w-full items-center justify-between px-5 py-6">
           <button
             onPointerEnter={() => setIsHoveringModeButton(true)}
             onPointerLeave={() => setIsHoveringModeButton(false)}
@@ -184,7 +185,7 @@ export const CountUpHeader = () => {
       </div>
 
       {modalVisible && (
-        <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
+        <ModalPortal onClose={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal
             name={getLocalStorageState('countUpTimer', defaultCountUpTimer).name ?? '타이머 이름'}
             onClose={closeModal}
@@ -196,14 +197,14 @@ export const CountUpHeader = () => {
       )}
 
       {isQuitModalShown && (
-        <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
+        <ModalPortal onClose={() => setModalVisible(false)} isOpened={modalVisible}>
           <QuitConfirmModal onClose={closeModal} />
         </ModalPortal>
       )}
 
       {reportLoginModalVisible && (
-        <ModalPortal closePortal={closeReportLoginModal} isOpened={reportLoginModalVisible}>
-          <div className="fixed right-1/2 bottom-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
+        <ModalPortal onClose={closeReportLoginModal} isOpened={reportLoginModalVisible}>
+          <div className="fixed bottom-1/2 right-1/2 w-[24.25rem] translate-x-1/2 translate-y-1/2 rounded-2xl bg-grey-850 px-[1.375rem] pb-[1.125rem] pt-[1.5625rem]">
             <div className="flex flex-col">
               <p className="mb-4 text-[1.375rem] font-bold leading-[140%] text-grey-200">로그인이 필요해요</p>
               <p className="mb-[1.375rem] text-[1rem] font-semibold leading-[1.4375rem]">
@@ -329,7 +330,7 @@ export const TimerTitleChangeModal = ({ name, onClose, onSubmit }: TimerTitleCha
           value={timerTitle}
           onChange={e => setTimerTitle(e.target.value)}
           type="text"
-          className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pt-[1.1875rem] pb-[1.25rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300 focus:border-primary"
+          className="mb-6 rounded-[0.625rem] border border-solid border-grey-800 bg-grey-900 px-[0.8125rem] pb-[1.25rem] pt-[1.1875rem] text-[1.125rem] font-medium leading-[1.3125rem] text-grey-300 focus:border-primary"
           autoFocus
           maxLength={15}
         />
@@ -373,21 +374,5 @@ export const QuitConfirmModal = ({ onClose }: { onClose: () => void }) => {
         </button>
       </div>
     </div>
-  )
-}
-
-interface TimerDisplayedNumbersProps {
-  hours: number
-  minutes: number
-  seconds: number
-}
-
-const TimerDisplayedNumbers = ({ hours, minutes, seconds }: TimerDisplayedNumbersProps) => {
-  return (
-    <span className="countdown font-montserrat text-[4rem] font-bold">
-      {/* @ts-ignore */}
-      <span style={{ '--value': hours }}></span>:<span style={{ '--value': minutes }}></span>:{/* @ts-ignore */}
-      <span style={{ '--value': seconds }}></span>
-    </span>
   )
 }

@@ -1,84 +1,85 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useInterval } from 'react-use'
+import { getTimeFromSeconds } from '../utils'
+import { getSecondsFromExpiry } from './utils'
 
-const DEFAULT_INITIALLY_SET_SECONDS = 300
-const DEFAULT_DELAY_IN_MILLISECONDS = 1000
-
-const HOURS_PER_DAY = 24
-const MINUTES_PER_HOUR = 60
-const SECONDS_PER_MINUTE = 60
-const SECONDS_PER_DAY = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY
-const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR
-const MILLISECONDS_PER_SECOND = 1000
-
-function getTimeFromSeconds(secondsRemained: number) {
-  const totalSeconds = Math.ceil(secondsRemained)
-  const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
-  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
-  const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE)
-  const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE)
-
-  return {
-    seconds,
-    minutes,
-    hours,
-    days,
+const DEFAULT_DELAY = 1000
+function getDelayFromExpiryTimestamp(expiryTimestamp: number) {
+  if (new Date(expiryTimestamp).getTime() <= 0) {
+    return null
   }
-}
 
-function getSecondsRemained(expirationTimestamp: number, shouldRound: boolean) {
-  const now = new Date().getTime()
-  const milliSecondsDistance = expirationTimestamp - now
-  if (milliSecondsDistance > 0) {
-    const val = milliSecondsDistance / 1000
-    return shouldRound ? Math.round(val) : val
-  }
-  return 0
-}
-
-function getDelayForNextInterval(expirationTimestamp: number) {
-  const secondsRemained = getSecondsRemained(expirationTimestamp)
-  const milliSecondsRemaind = Math.floor((secondsRemained - Math.floor(secondsRemained)) * MILLISECONDS_PER_SECOND)
-  return milliSecondsRemaind > 0 ? milliSecondsRemaind : DEFAULT_DELAY_IN_MILLISECONDS
+  const seconds = getSecondsFromExpiry(expiryTimestamp, true)
+  const extraMilliSeconds = Math.floor((seconds - Math.floor(seconds)) * 1000)
+  return extraMilliSeconds > 0 ? extraMilliSeconds : DEFAULT_DELAY
 }
 
 interface Props {
-  initiallySetSeconds: number
-  onExpire: Function
+  expiryTimestamp: number
+  onExpire: () => void
   autoStart?: boolean
 }
 
-export function useTimer({ onExpire, initiallySetSeconds = DEFAULT_INITIALLY_SET_SECONDS, autoStart = false }: Props) {
-  const expirationTimestampRef = useRef(new Date().getTime() + initiallySetSeconds * MILLISECONDS_PER_SECOND)
-  const [displayingSeconds, setDisplayingSeconds] = useState<number>(getSecondsRemained(expirationTimestampRef.current))
-  const [delay, setDelay] = useState<number | null>(autoStart ? getDelayForNextInterval(initiallySetSeconds) : null)
+export function useTimer({ expiryTimestamp: expiry, onExpire, autoStart = false }: Props) {
+  const [expiryTimestamp, setExpiryTimestamp] = useState(expiry)
+  const [seconds, setSeconds] = useState(getSecondsFromExpiry(expiryTimestamp, true))
+  const [isRunning, setIsRunning] = useState(autoStart)
+  const [didStart, setDidStart] = useState(autoStart)
+  const [delay, setDelay] = useState(getDelayFromExpiryTimestamp(expiryTimestamp))
 
-  function handleExpiration() {
-    setDelay(null)
-    onExpire?.()
-  }
-
-  function start(initiallySetSeconds: number) {
-    const expirationTimestamp = new Date().getTime() + initiallySetSeconds * MILLISECONDS_PER_SECOND
-    expirationTimestampRef.current = expirationTimestamp
-    setDelay(getDelayForNextInterval(expirationTimestamp))
-    setDisplayingSeconds(getSecondsRemained(expirationTimestamp))
-  }
-
-  function stop() {
+  function handleExpire() {
+    onExpire()
+    setIsRunning(false)
     setDelay(null)
   }
 
-  useInterval(() => {
-    if (delay !== DEFAULT_DELAY_IN_MILLISECONDS) setDelay(DEFAULT_DELAY_IN_MILLISECONDS)
-    const secondsRemained = getSecondsRemained(expirationTimestampRef.current)
-    setDisplayingSeconds(secondsRemained)
-    if (secondsRemained <= 0) handleExpiration()
-  }, delay)
+  function pause() {
+    setIsRunning(false)
+  }
+
+  function restart(newExpiryTimestamp: number, newAutoStart = true) {
+    setDelay(getDelayFromExpiryTimestamp(newExpiryTimestamp))
+    setDidStart(newAutoStart)
+    setIsRunning(newAutoStart)
+    setExpiryTimestamp(newExpiryTimestamp)
+    setSeconds(getSecondsFromExpiry(newExpiryTimestamp, true))
+  }
+
+  function resume() {
+    const time = new Date()
+    time.setMilliseconds(time.getMilliseconds() + seconds * 1000)
+    restart(time.getTime())
+  }
+
+  function start() {
+    if (didStart) {
+      setSeconds(getSecondsFromExpiry(expiryTimestamp, true))
+      setIsRunning(true)
+    } else {
+      resume()
+    }
+  }
+
+  useInterval(
+    () => {
+      if (delay !== DEFAULT_DELAY) {
+        setDelay(DEFAULT_DELAY)
+      }
+      const secondsValue = getSecondsFromExpiry(expiryTimestamp, true)
+      setSeconds(secondsValue)
+      if (secondsValue <= 0) {
+        handleExpire()
+      }
+    },
+    isRunning ? delay : null,
+  )
 
   return {
-    ...getTimeFromSeconds(displayingSeconds),
+    ...getTimeFromSeconds(seconds),
     start,
-    stop,
+    pause,
+    resume,
+    restart,
+    isRunning,
   }
 }

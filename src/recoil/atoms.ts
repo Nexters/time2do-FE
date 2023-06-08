@@ -95,8 +95,12 @@ export const countDownTimerAtom = atom<Timer>({
   effects: [localStorageEffect('countDownTimer')],
 })
 
-export const userAtom = atom<User | null>({
+export const userAtom = atom<User>({
   key: 'userAtom',
-  default: null,
+  default: {
+    userName: '이름을 지어주세요',
+    id: '',
+    onboarding: false,
+  },
   effects: [localStorageEffect('user')],
 })

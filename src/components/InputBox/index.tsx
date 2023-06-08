@@ -270,7 +270,7 @@ InputBox.StartTimeSet = ({ InputBoxName, startTime, setStartTime }: StartTimeSet
           </label>
         </div>
         {modalVisible && (
-          <ModalPortal closePortal={modalClose} isOpened={modalVisible}>
+          <ModalPortal onClose={modalClose} isOpened={modalVisible}>
             {modalState === 'date' ? (
               <TimerMakeModal.StartDatePicker
                 startTime={startTime}

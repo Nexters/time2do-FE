@@ -115,7 +115,7 @@ export const CountDownHeader = ({ timer, expires, onCheerUpClick, showCheerUpAni
         )}
       </div>
       {modalVisible && (
-        <ModalPortal closePortal={() => setModalVisible(false)} isOpened={modalVisible}>
+        <ModalPortal onClose={() => setModalVisible(false)} isOpened={modalVisible}>
           <TimerTitleChangeModal name={timer.name} onClose={closeModal} onSubmit={() => {}} />
         </ModalPortal>
       )}

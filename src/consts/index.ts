@@ -1,13 +1,5 @@
 import { Timer, Todo } from '../types'
 
-export const defaultTodo: Todo = {
-  content: '',
-  id: new Date().getTime(),
-  completed: false,
-  userId: 0,
-  createdTime: new Date(),
-}
-
 export const TimerTypes = {
   COUNT_UP: 1,
   COUNT_DOWN: 2,
