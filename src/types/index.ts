@@ -14,6 +14,7 @@ export type Todo = {
   createdTime: Timestamp
   completedTime: Timestamp
   timerId?: string
+  private?: boolean | 0 | 1
 }
 
 export type TimeRecord = {
