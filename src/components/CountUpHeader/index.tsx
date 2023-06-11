@@ -11,9 +11,11 @@ import { useLocalStorageSyncedCountUpTimer } from '../../hooks/useLocalStorageSy
 import { useEffect, useState } from 'react'
 import { UpTimer } from '../../types'
 import { db } from '../../models/db'
-import { ReportIconGrey } from '../../assets/svg/ReportGrey'
+import ReportIcon from '../../assets/svg/ReportIcon'
+import ReportIconWhite from '../../assets/svg/ReportIconWhite'
 import { SECONDS_PER_DAY } from '@/consts/time'
 import { AbuseAlertModal } from '../timer/modals/AbuseAlertModal'
+import { HoveringButton } from '../HoveringButton'
 
 export const CountUpHeader = () => {
   const navigate = useNavigate()
@@ -78,27 +80,27 @@ export const CountUpHeader = () => {
   return (
     <>
       <div className="relative h-full w-full bg-[url('/img/countuptimer.png')] bg-cover bg-center text-white">
-        <div className="absolute left-0 top-0 flex w-full items-center justify-between px-5 py-6">
+        <div className="absolute left-0 top-0 flex w-full items-center justify-end px-5 py-6">
           {/* <HoveringButton
             PrependedIcon={Switch}
             onClick={modeButtonClickHandler}
             buttonText=""
             buttonTextOnHover="그룹모드"
           /> */}
-          {/* <HoveringButton
-            PrependedIcon={Report}
+          <HoveringButton
+            PrependedIcon={ReportIcon}
             PrependedIconOnHover={ReportIconWhite}
             onClick={reportButtonClickHandler}
             buttonText=""
             buttonTextOnHover="리포트"
             backgroundColor="bg-transparent"
-          /> */}
-          <button
+          />
+          {/* <button
             onClick={reportButtonClickHandler}
             className="btn-primary btn-sm btn h-10 border-0 text-lg font-bold hover:animate-pulse">
             <ReportIconGrey />
             <span className="ml-2">리포트</span>
-          </button>
+          </button> */}
         </div>
         <div className="absolute bottom-0 mb-9 min-w-full text-center text-white">
           <div className="mb-3">
