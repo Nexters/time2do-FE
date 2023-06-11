@@ -16,12 +16,12 @@ const today = new Date(new Date().toDateString())
 export function ReportPage() {
   const { totalDurationFormattedString, timersAndAggregationAtDates } = useUpTimerReport()
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(today)
-  const { todoList } = useTodoList(
-    selectedDate
-      ? { where: { startTimestamp: selectedDate.getTime(), endTimestamp: endOfDay(selectedDate).getTime() } }
-      : undefined,
-  )
+  const [selectedDate, setSelectedDate] = useState<Date>(today)
+  const [whereQuery, setWhereQuery] = useState<{ startTimestamp: number; endTimestamp: number }>({
+    startTimestamp: selectedDate.getTime(),
+    endTimestamp: endOfDay(selectedDate).getTime(),
+  })
+  const { todoList } = useTodoList(selectedDate ? { where: whereQuery } : undefined)
 
   const selectedDateString = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''
   const {
@@ -35,6 +35,10 @@ export function ReportPage() {
 
   const dateClickHandler = (date: Date) => {
     setSelectedDate(date)
+    setWhereQuery({
+      startTimestamp: date.getTime(),
+      endTimestamp: endOfDay(date).getTime(),
+    })
   }
 
   return (

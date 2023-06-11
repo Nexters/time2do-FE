@@ -5,7 +5,7 @@ interface Props {
   where?: {
     startTimestamp: number
     endTimestamp: number
-  }
+  } | null
   hideCompletes?: boolean
 }
 
@@ -25,7 +25,7 @@ export const useTodoList = ({ where, hideCompletes }: Props = {}) => {
     return [...notCompleted, ...completed]
   }
 
-  const todoList = useLiveQuery(query, [hideCompletes, where], [])
+  const todoList = useLiveQuery(query, [where])
 
   return {
     todoList: todoList ?? [],

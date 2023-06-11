@@ -161,7 +161,9 @@ const ReportCalendar: React.FC<ReportCalendarProps> = ({
                       isCursorMonth ? 'text-grey-200' : 'text-grey-800'
                     }`}
                     onMouseLeave={() => dateMouseLeaveHandler(value, isCursorMonth)}
-                    onClick={() => dateClickHandler(value, isCursorMonth)}>
+                    onClick={() => {
+                      dateClickHandler(value, isCursorMonth)
+                    }}>
                     {isCursorMonth && isInGroupTimer && (
                       <div className="absolute right-[-0.125rem] top-[-0.125rem]">
                         <GroupTimerIcon />
