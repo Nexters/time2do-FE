@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const useTodoList = ({ where, hideCompletes }: Props = {}) => {
-  function query() {
+  async function query() {
     if (where) {
       return db.todoItems
         .where('completedTime')
@@ -20,7 +20,9 @@ export const useTodoList = ({ where, hideCompletes }: Props = {}) => {
     if (hideCompletes) {
       return db.todoItems.where('completedTime').equals(0).reverse().toArray()
     }
-    return db.todoItems.reverse().toArray()
+    const notCompleted = await db.todoItems.where('completedTime').equals(0).reverse().toArray()
+    const completed = await db.todoItems.where('completedTime').above(0).reverse().toArray()
+    return [...notCompleted, ...completed]
   }
 
   const todoList = useLiveQuery(query, [hideCompletes, where], [])

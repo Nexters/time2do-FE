@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTodoList } from '@/hooks/useTodoList'
 
 export function Home() {
-  const [hideCompletes, setHideCompletes] = useState<boolean>(false)
+  const [hideCompletes, _setHideCompletes] = useState<boolean>(false)
   const { todoList } = useTodoList({ hideCompletes })
   const user = useRecoilValue(userAtom)
   const navigate = useNavigate()
@@ -24,14 +24,7 @@ export function Home() {
         <CountUpHeader />
       </header>
       <div className="min-h-[400px] bg-grey-1000 px-6 py-7">
-        <TodoList
-          showFilter
-          todos={todoList}
-          completesOnly={hideCompletes}
-          onCompletesOnlyChange={newCompletesOnly => {
-            setHideCompletes(newCompletesOnly)
-          }}
-        />
+        <TodoList todos={todoList} />
       </div>
     </>
   )
