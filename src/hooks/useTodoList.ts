@@ -15,6 +15,7 @@ export const useTodoList = ({ where, hideCompletes }: Props = {}) => {
       return db.todoItems
         .where('completedTime')
         .between(where.startTimestamp, where.endTimestamp)
+        .reverse()
         .sortBy('completedTime')
     }
     if (hideCompletes) {
