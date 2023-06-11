@@ -2,6 +2,13 @@
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px',
+      },
+    },
     extend: {
       fontFamily: {
         pretendard: "'Pretendard', sans-serif",
@@ -17,6 +24,12 @@ module.exports = {
         'header-footer': 'auto 1fr auto',
       },
       colors: {
+        ...require('daisyui/src/colors'),
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         grey: {
           50: '#F9FAFB',
           100: '#F2F4F6',
@@ -67,7 +80,12 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms'), require('daisyui')],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    require('daisyui'),
+    require('tailwindcss-animate'),
+  ],
   daisyui: {
     themes: [
       {
@@ -75,9 +93,12 @@ module.exports = {
           ...require('daisyui/src/colors/themes')['[data-theme=dark]'],
           primary: '#6C5CFF',
           'primary-focus': '#6E64E7',
+          'primary-content': '#ffffff',
           secondary: '#5FDF30',
           'secondary-focus': '#56CB2D',
           accent: '#FF6D6D',
+          'secondary-content': '#6C5CFF',
+          'accent-content': '#6C5CFF',
         },
       },
     ],

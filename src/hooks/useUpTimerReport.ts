@@ -11,6 +11,7 @@ export const useUpTimerReport = () => {
   const { totalSeconds, totalDurationFormattedString, timersAndAggregationAtDates } = useMemo(() => {
     const { totalSeconds, timersAndAggregationAtDates } = (upTimerList ?? []).reduce<UpTimerReport>(
       (acc, cur) => {
+        if (!cur.lastlyRecordedTotalSeconds || !cur.startedAt || !cur.id) return acc
         const totalSeconds = acc.totalSeconds + cur.lastlyRecordedTotalSeconds
         const formattedDate = format(new Date(cur.startedAt), 'yyyy-MM-dd')
         const { timers, aggregation } = acc.timersAndAggregationAtDates[formattedDate] ?? {

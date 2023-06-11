@@ -8,14 +8,25 @@ import { cls } from '../../utils/cls'
 import { usePrevious } from 'react-use'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { db } from '@/models/db'
+import { cn } from '@/lib/utils'
 
 interface Props {
   name?: string
   readonly?: boolean
   todos: Todo[]
+  showFilter?: boolean
+  completesOnly?: boolean
+  onCompletesOnlyChange?: (completesOnly: boolean) => void
 }
 
-export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Props) => {
+export const TodoList = ({
+  name = '할 일 목록',
+  readonly,
+  todos = [],
+  showFilter = false,
+  completesOnly = false,
+  onCompletesOnlyChange,
+}: Props) => {
   const user = useRecoilValue(userAtom)
   const newTodoInputRef = useRef<HTMLInputElement>(null)
   const [parent] = useAutoAnimate()
@@ -65,19 +76,35 @@ export const TodoList = ({ name = '할 일 목록', readonly, todos = [] }: Prop
 
   return (
     <div className="relative w-full">
-      <div className="mb-4 flex items-center justify-start gap-2">
-        <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{name}</h1>
-        <div>
-          {!readonly && (
-            <button
-              onClick={() => {
-                addTodo('')
-              }}
-              className="btn-primary btn-xs btn-circle btn text-white">
-              <Plus />
-            </button>
-          )}
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h1 className="font-pretendard text-[1.1875rem] font-medium leading-[1.4375rem] text-grey-200">{name}</h1>
+          <div>
+            {!readonly && (
+              <button
+                onClick={() => {
+                  addTodo('')
+                }}
+                className="btn-primary btn-xs btn-circle btn text-white">
+                <Plus />
+              </button>
+            )}
+          </div>
         </div>
+        {showFilter && (
+          <div className="flex items-center">
+            <button
+              onClick={() => onCompletesOnlyChange?.(!completesOnly)}
+              className={cn(
+                'rounded-md bg-opacity-30 px-2 py-1 text-grey-400 transition-colors duration-300 hover:bg-primary hover:bg-opacity-30 hover:text-opacity-75',
+                {
+                  'bg-primary': completesOnly,
+                },
+              )}>
+              완료된 할 일 숨기기
+            </button>
+          </div>
+        )}
       </div>
       <ul ref={parent} className="block">
         {todos.map((todo, index) => (
