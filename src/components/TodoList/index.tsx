@@ -156,7 +156,7 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
 
     const handleBlur = () => {
       if (readonly) return
-      if (!todo.content || !tempState) {
+      if (!todo.content && !tempState) {
         onRemoveTodo(todo)
         setIsFocused(false)
         return
