@@ -147,6 +147,7 @@ interface TodoItemProps {
 const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
   ({ todo, readonly, onRemoveTodo, onUpdateTodo, onAddTodo, onCompleteTodo, onUnCompleteTodo }, ref) => {
     const [isFocused, setIsFocused] = useState(false)
+    const [tempState, setTempState] = useState(todo.content)
     const handleFocus = () => {
       if (readonly) return
 
@@ -155,9 +156,19 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
 
     const handleBlur = () => {
       if (readonly) return
-
-      if (!todo.content) onRemoveTodo(todo)
+      if (!todo.content || !tempState) {
+        onRemoveTodo(todo)
+        setIsFocused(false)
+        return
+      }
+      onUpdateTodo({ ...todo, content: tempState })
       setIsFocused(false)
+    }
+
+    const handleUpateTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (readonly) return
+      const content = e.target.value
+      setTempState(content)
     }
 
     return (
@@ -189,9 +200,9 @@ const TodoItem = forwardRef<HTMLInputElement, TodoItemProps>(
           type="text"
           enterKeyHint="done"
           className="w-full border-0 bg-grey-900 p-0 text-lg font-medium text-grey-300 caret-primary focus:outline-none focus:ring-0"
-          value={todo.content}
+          value={tempState}
           spellCheck={false}
-          onChange={e => onUpdateTodo({ ...todo, content: e.target.value })}
+          onChange={handleUpateTodo}
           placeholder="오늘의 할 일을 작성해주세요"
           disabled={readonly}
           onFocus={handleFocus}
