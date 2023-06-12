@@ -70,6 +70,8 @@ export const CountUpHeader = () => {
     }
   }, [seconds])
 
+  console.log(timer?.name, timerName)
+
   useEffect(() => {
     if (timer?.name && timer.name !== timerName) setTimerName(timer.name)
     else if (!timer?.name) setTimerName('타이머 이름')
@@ -93,7 +95,7 @@ export const CountUpHeader = () => {
           </div>
           <div className="mb-4 flex items-center justify-center text-xl font-semibold">
             <h1 onClick={() => openModal('TimerTitleChange')} className="mr-1">
-              {timer?.name ?? '타이머 이름'}
+              {timer?.name ?? timerName ?? '타이머 이름'}
             </h1>
             <button onClick={() => openModal('TimerTitleChange')}>
               <EditIcon />
@@ -115,7 +117,7 @@ export const CountUpHeader = () => {
         {modalName === 'AbuseAlert' && <AbuseAlertModal onClose={closeModal} />}
         {modalName === 'TimerTitleChange' && (
           <TimerTitleChangeModal
-            name={timer?.name ?? '타이머 이름'}
+            name={timer?.name ?? timerName ?? '타이머 이름'}
             onClose={closeModal}
             onSubmit={newTitle => setTimerName(newTitle)}
           />
